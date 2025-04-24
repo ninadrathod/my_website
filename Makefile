@@ -15,17 +15,13 @@ frontend_install:
 	@echo "Frontend dependencies installed."
 
 # Target to build and start the Docker Compose application
-initial_build: backend_install frontend_install
-	@echo "Building and starting Docker Compose application..."
-	docker-compose up -d --build
-	docker exec -d -it frontend npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch
-	@echo "Docker Compose application is running."
-
 build: 
 	@echo "Building and starting Docker Compose application..."
 	docker-compose up -d --build
 	docker exec -d -it frontend npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch
 	@echo "Docker Compose application is running."
+
+initial_build: backend_install frontend_install build
 
 up:
 	@echo "Building and starting Docker Compose application..."
@@ -43,7 +39,7 @@ down:
 rebuild: down build
 
 destroy_project:
-	@echo "Detroying all containers"
+	@echo "Destroying all containers"
 	docker-compose down
 	docker image prune
 	docker volume prune
