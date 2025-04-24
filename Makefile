@@ -40,7 +40,7 @@ down:
 	@echo "Docker Compose containers stopped and removed."
 
 # Optional target to rebuild the Docker images
-rebuild: down up
+rebuild: down build
 
 destroy_project:
 	@echo "Detroying all containers"
