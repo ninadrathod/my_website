@@ -1,0 +1,24 @@
+{
+    "name": "static-site",
+    "version": "1.0.0",
+    "description": "Simple static site served with Docker",
+    "scripts": {
+        "start": "serve -p 3000 .",
+        "dev": "serve -p 3000 .",
+        "build-css": "npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@tailwindcss/cli": "^4.1.4",
+        "tailwindcss": "latest",
+        "cors": "latest",
+        "dotenv": "latest"
+    },
+    "devDependencies": {
+        "cors": "latest",
+        "dotenv": "latest",
+        "@tailwindcss/cli": "latest",
+        "tailwindcss": "latest"
+    }
+}

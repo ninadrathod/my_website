@@ -1,0 +1,188 @@
+[
+    {
+      "category": "work_exp",
+      "Company": "MathWorks",
+      "Location": "Hyderabad, India",
+      "Role": "Release Engineer 2",
+      "from_month_year": "2023-07",
+      "responsibilities": "I currently manage release pipelines, ensuring seamless integration of code from different teams. I troubleshoot pipeline issues using my debugging skills and automate repetitive tasks to prevent failures and reduce manual effort."
+    },
+    {
+      "category": "work_exp",
+      "Company": "Tata Consultancy Services",
+      "Location": "Pune, India",
+      "Role": "Systems Engineer",
+      "from_month_year": "2018-06",
+      "to_month_year": "2020-08",
+      "responsibilities": "I served as the Subject Matter Expert and Single Point of Contact for Automation. My role involved developing processes and scripts to automate repetitive manual tasks, reports, and alerts. I played a key role in guiding individuals with diverse skill sets to successfully complete projects. Additionally, I analyzed the incident database to identify recurring failures, investigated root causes, and resolved issues with support from relevant teams."
+    },
+    {
+        "category": "work_exp",
+        "Company": "Videocon Infodart",
+        "Location": "Aurangabad, India",
+        "Role": "Inplant Trainee",
+        "from_month_year": "2017-04",
+        "to_month_year": "2017-05",
+        "responsibilities": "Worked on a web application that tracks a vendor's human resources (or consultants). The primary feature of the web application was to shortlist the consultants as per client requirements and skillsets possessed by the consultants.<br><b>Technical Specifications of the application</b>: Front End ASP.net with VB.net scripting and Backend hosted on MS SQL Server."
+    },
+    {
+      "category": "education",
+      "institution_name": "Indian Institute of Technology Ropar, India",
+      "degree_program_certificate": "M. Tech Computer Science and Engineering",
+      "from_month_year": "2021-07",
+      "to_month_year": "2023-06",
+      "score_type": "CGPA",
+      "score": 8.97,
+      "score_on_scale": 10.0
+    },
+    {
+      "category": "education",
+      "institution_name": "Government College of Engineering Aurangabad, India",
+      "degree_program_certificate": "B. E. Computer Science and Engineering",
+      "from_month_year": "2014-07",
+      "to_month_year": "2018-06",
+      "score_type": "CGPA",
+      "score": 7.859,
+      "score_on_scale": 10.0
+    },
+    {
+      "category": "publication",
+      "title": "Smart Physical Intruder Detection System for Highly Sensitive Area",
+      "conference_journal_name": "SmartCom, 2019: Third international conference on smart trend for computing and communication",
+      "book_series": "The Smart Innovation, Systems, and Technologies <br>Volume: 165"
+    },
+    {
+      "category": "certificates",
+      "cert_title": "MATLAB Onramp",
+      "offering_organization": "MathWorks",
+      "certification_month_year": "2023-07"
+    },
+    {
+        "category": "certificates",
+        "cert_title": "Problem Solving (Basic)",
+        "offering_organization": "HackerRank",
+        "certification_month_year": "2021-02"
+    },
+    {
+        "category": "certificates",
+        "cert_title": "Splunk 7.x Fundamentals Part 1 (eLearning)",
+        "offering_organization": "Splunk",
+        "certification_month_year": "2018-10"
+    },
+    {
+        "category": "certificates",
+        "cert_title": "Splunk 7.x Fundamentals Part 2 (IOD)",
+        "offering_organization": "Splunk",
+        "certification_month_year": "2018-10"
+    },
+    {
+      "category": "projects",
+      "project_title": "Crop On-Location",
+      "type": "academic",
+      "course_or_domain": "Course: Agricultural Cyber-Physical Systems",
+      "project_description": "In this project, my teammate and I developed an Android application that will generate crop recommendations at the click of a button based on Indian soil conditions. The application is cost-efficient and runs on minimal data input from the user. It gives significantly less response time, with no heavy database and hardware requirement."
+    },
+    {
+      "category": "projects",
+      "project_title": "Secondary Memory-Based Implementation of Shortest Path Algorithm",
+      "type": "academic",
+      "course_or_domain": "Course: PG Lab",
+      "project_description": "In this project, the disk blocks in a secondary memory have been depicted as text files, with node and edge details stored in these files. Every file will hold limited tuples (node/edge details). Consecutive blocks are linked to each other using links in the file. I efficiently implemented Dijkstra’s algorithm to find the shortest path between the source and destination nodes. We tested the solution on a graph with 50000 nodes, thus can be scaled."
+    },
+    {
+      "category": "technical_skills",
+      "type": "Programming Languages",
+      "specific_list": ["Python", "C", "C++"]
+    },
+    {
+      "category": "technical_skills",
+      "type": "Data Analysis and Mining",
+      "specific_list": ["Splunk SSL"]
+    },
+    {
+        "category": "technical_skills",
+        "type": "Tools/Operating Systems",
+        "specific_list": ["Splunk","GIMP","Adobe Photoshop","Autosys (UNIX)","Ubuntu","Raspberry Pi OS (Linux)"]
+    },
+    {
+      "category": "areas_of_interest",
+      "interest_area": "Automations (RPA)"
+    },
+    {
+      "category": "areas_of_interest",
+      "interest_area": "Data Structures and Algorithm"
+    },
+    {
+        "category": "areas_of_interest",
+        "interest_area": "Data Analysis"
+    },
+    {
+      "category": "awards_and_recognitions",
+      "award_title": "Client appreciation award for automation work using Splunk",
+      "year_of_recognition": 2019,
+      "institution_or_organization": "Tata Consultancy Services"
+    },
+    {
+        "category": "awards_and_recognitions",
+        "award_title": " ‘On the Spot’ award for the Python script to monitor and trigger alerts on critical issues and save SLA breaches.",
+        "year_of_recognition": 2018,
+        "institution_or_organization": "Tata Consultancy Services"
+    },
+    {
+        "category": "awards_and_recognitions",
+        "award_title": "UNSUNG HERO of the Institution",
+        "year_of_recognition": 2018,
+        "institution_or_organization": "Government College of Institution Aurangabad, India"
+    },
+    {
+      "category": "positions_of_responsibilities",
+      "por": "Co-ordinator",
+      "club_group": "Career Development & Placement Cell",
+      "institution": "IIT Ropar",
+      "from_year": 2022,
+      "to_year": 2023
+    },
+    {
+      "category": "positions_of_responsibilities",
+      "por": "Batch Representative",
+      "club_group": "M.Tech Computer Science and Engineering",
+      "institution": "IIT Ropar",
+      "from_year": 2021,
+      "to_year": 2023
+    },
+    {
+        "category": "positions_of_responsibilities",
+        "por": "Office co-ordinator",
+        "club_group": "Training and Placement Cell",
+        "institution": "Government College of Engineering Aurangabad, IN",
+        "from_year": 2017,
+        "to_year": 2018
+    },
+    {
+        "category": "positions_of_responsibilities",
+        "por": "College Contingency Leader",
+        "club_group": "Mood Indigo - Inter Collegeate Cultural Fest organized by IIT Bombay",
+        "institution": "Government College of Engineering Aurangabad, IN",
+        "from_year": 2017
+    },
+    {
+          "category": "positions_of_responsibilities",
+          "por": "Sports Secretary",
+          "club_group": "Department of Computer Science and Engineering",
+          "institution": "Government College of Engineering Aurangabad, IN",
+          "from_year": 2016,
+          "to_year": 2017
+    },
+    {
+      "category": "extracurricular_activities",
+      "activity": "Designing team member for the International Conference of Agriculture Centric Computation 2023, hosted by IIT Ropar."
+    },
+    {
+      "category": "extracurricular_activities",
+      "activity": "Represented IIT Ropar at the Inter-IIT Sports Meet 2022 in the Basketball team. IIT Delhi and IIT Roorkee hosted the tournament in December 2023."
+    },
+    {
+      "category": "extracurricular_activities",
+      "activity": "Inter-Year Sports Championship (Intra-College tournament hosted by IIT Ropar).<br> -1st position  (2022)<br> -3rd position (2023)"
+    }
+]
