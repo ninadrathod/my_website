@@ -1,6 +1,7 @@
 import pymongo
 import json
 import os
+import datetime
 
 # Load data from the JSON file
 def load_data_from_json(filepath):
@@ -43,12 +44,20 @@ def insert_data_to_mongodb(data, connection_string, database_name, collection_na
 
 # Main execution
 if __name__ == "__main__":
-    filepath = os.path.join(os.getcwd(), "data.json")  # Replace with your JSON file path
+    datapath = os.path.join(os.getcwd(), "data.json")  # resume data
+    metadatapath = os.path.join(os.getcwd(), "metadata.json")  # resume metadata
+   
     connection_string = "mongodb://admin:qwerty@localhost:27017/"  # Replace with your MongoDB connection string
     database_name = "resume_database"
-    collection_name = "resume_data"
+    collection1_name = "resume_data"
+    collection2_name = "resume_metadata"
 
-    data = load_data_from_json(filepath)
-
+    data = load_data_from_json(datapath)
     if data:
-        insert_data_to_mongodb(data, connection_string, database_name, collection_name)
+        insert_data_to_mongodb(data, connection_string, database_name, collection1_name)
+    
+    metadata = load_data_from_json(metadatapath)
+    if metadata:
+        metadata[0]['update_ts'] = datetime.datetime.now() # Get the current timestamp
+        print(metadata)
+        insert_data_to_mongodb(metadata, connection_string, database_name, collection2_name)
