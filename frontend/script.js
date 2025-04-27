@@ -1,4 +1,4 @@
-async function fetchAndDisplayName(property, displayPropertyId) {
+async function fetchAndDisplayProperty(property, displayPropertyId) {
   try {
     const apiUrl = `http://localhost:3001/api/metadata/${property}`;
     const response = await fetch(apiUrl);
@@ -44,12 +44,12 @@ async function fetchAndReturnLink(property, linkId) {
 }
 
 window.onload = () => {
-  fetchAndDisplayName('name', 'name-display');
-  fetchAndDisplayName('bio', 'bio-display');
-  fetchAndDisplayName('summary', 'summary-display');
-  fetchAndDisplayName('email_id', 'email_id-display');
-  fetchAndDisplayName('linkedin', 'linkedin-display');
-  fetchAndDisplayName('github', 'github-display');
+  fetchAndDisplayProperty('name', 'name-display');
+  fetchAndDisplayProperty('bio', 'bio-display');
+  fetchAndDisplayProperty('summary', 'summary-display');
+  fetchAndDisplayProperty('email_id', 'email_id-display');
+  fetchAndDisplayProperty('linkedin', 'linkedin-display');
+  fetchAndDisplayProperty('github', 'github-display');
   fetchAndReturnLink('email_id', 'email_id-link');
   fetchAndReturnLink('linkedin', 'linkedin-link');
   fetchAndReturnLink('github', 'github-link');
