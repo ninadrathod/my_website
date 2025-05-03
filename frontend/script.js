@@ -73,7 +73,7 @@ function displayWorkExperience(workExperienceData, containerId) {
   if (workExperienceData && workExperienceData.length > 0) {
     workExperienceData.forEach(experience => {
       const experienceDiv = document.createElement('div');
-      experienceDiv.classList.add('green-card','w-[49%]', 'md:w-[32.7%]', 'max-h-40', 'overflow-hidden', 'hover:max-h-full', 'transition-max-h', 'duration-100', 'mb-3');
+      experienceDiv.classList.add('off-pink-card','w-[49%]', 'md:w-[32.7%]', 'max-h-40', 'overflow-hidden', 'hover:max-h-full', 'transition-max-h', 'duration-100', 'mb-3');
 
       const headingPara = document.createElement('p');
 

@@ -10,23 +10,32 @@
     --color-palette-light-yellow: #FCF5C7;
     --color-palette-blue: #A0CED9;
     --color-palette-green: #ADF7B6; 
+    --color-palette-off-pink: #ffc8dd;
+    --color-palette-very-dark-green: #15616d;
+    --color-palette-mid-dark-purple: #7b2cbf;
+    --color-palette-very-dark-red: #b7094c;
+    --color-palette-body-bg: #edf2fb;
     --color-theme-text: #3D8D7A;
     --font-montserrat: 'Montserrat', sans-serif;
     --color-subtitle: #184E77;
 }
 @layer base{
     body {
-        @apply bg-palette-light-yellow p-8;
+        @apply bg-palette-body-bg p-8;
     }
 }
 
 @layer components {
     .blue-card {
-      @apply p-6 rounded-2xl border-solid border-3 bg-palette-blue shadow-lg shadow-gray-300 hover:shadow-gray-500;
+      @apply p-6 rounded-2xl border-solid border-palette-very-dark-red border-3 bg-palette-blue shadow-lg shadow-gray-300 hover:shadow-gray-500;
     }
 
     .green-card {
-        @apply p-6 rounded-2xl border-solid border-3 bg-palette-green shadow-lg shadow-gray-300 hover:shadow-gray-500;
-      }
+        @apply p-6 rounded-2xl border-solid border-palette-very-dark-green border-3 bg-palette-green shadow-lg shadow-gray-300 hover:shadow-gray-500;
+    }
+
+    .off-pink-card {
+        @apply p-6 rounded-2xl border-solid border-palette-mid-dark-purple border-3 bg-palette-off-pink shadow-lg shadow-gray-300 hover:shadow-gray-500;
+    }
   }
   
