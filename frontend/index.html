@@ -6,55 +6,18 @@
   <link href="./src/output.css" rel="stylesheet">
   <title>Resume</title>
 </head>
-<body class="min-h-screen bg-slate-50 dark:bg-black dark:text-white">
-  <header class="bg-indigo-200 text-white sticky top-0 border-y-slate-600 border-y-2">
-    <section class="max-w-4xl mx-auto p-4 flex justify-between">
-      <div class="mr-8">
-        <h1 id="name-display" class="text-3xl text-slate-800 font-bold mb-1">Loading name...</h1>
-        <p id="bio-display" class=" font-sans font-medium text-slate-700 mb-3">Loading bio...</p>
-        <p id="summary-display" class="font-sans text-zinc-600">Loading summary...</p>
-      </div>
-      <div>
-      <div id="links-container" class="align-top flex flex-wrap md:flex-nowrap md:space-x-4">
-        <p class="flex items-center mr-4 md:mr-0 mb-2 md:mb-0">
-          <a id="email_id-link" href="#" target="_blank">
-            <img id="email_id-icon" src="/icons/gmail.svg" alt="Email Icon" class="w-20 h-20 mr-2">
-          </a>
-          <span class="sr-only" id="email_id-display">Loading email id...</span>
-        </p>
-        <p class="flex items-center mr-4 md:mr-0 mb-2 md:mb-0">
-          <a id="linkedin-link" href="#" target="_blank">
-            <img id="linkedin-icon" src="/icons/linkedin.svg" alt="LinkedIn Icon" class="w-20 h-20 mr-2">
-          </a>
-          <span class="sr-only" id="linkedin-display">Loading linkedin id...</span>
-        </p>
-        <p class="flex items-center mb-2 md:mb-0">
-          <a id="github-link" href="#" target="_blank">
-            <img id="github-icon" src="/icons/github.svg" alt="GitHub Icon" class="w-20 h-20 mr-2">
-          </a>
-          <span class="sr-only" id="github-display">Loading github link...</span>
-        </p>
-      </div>
-    </section>
-  </header>
-  
-  <main class="p-8">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Work Experience</h2>
-    <div id="work-experience-container">
-    <p class="text-gray-500 italic">Loading work experience...</p>
+<body>
+    <div class="flex flex-col green-card">
+      <div id="name-display" class="text-center font-montserrat font-bold text-xl md:text-2xl tracking-[0.3em]"></div>
+      <div id="bio-display" class="mt-4 text-center font-mono text-sm md:text-base  text-gray-600"></div>
+      <div id="summary-display" class="mt-8 text-center font-montserrat text-base md:text-xl text-gray-800"></div>
     </div>
-
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Education</h2>
-    <div id="education-container">
-    <p class="text-gray-500 italic">Loading Education...</p>
+    <h2 class="text-center mt-4 blue-card font-montserrat text-base md:text-xl tracking-[0.2em]">
+      WORK EXPERIENCE
+    </h2>
+    <div id="work-experience-container" class="flex flex-wrap justify-between mt-4">
+      <p class="text-gray-500 italic">Loading Work Experience...</p>
     </div>
-    
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Publication</h2>
-    <div id="publication-container">
-    <p class="text-gray-500 italic">Loading Publication...</p>
-    </div>
-    
-  </main>
 
   <script src="script.js"></script>
 </body>

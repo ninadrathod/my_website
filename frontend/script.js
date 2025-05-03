@@ -73,28 +73,36 @@ function displayWorkExperience(workExperienceData, containerId) {
   if (workExperienceData && workExperienceData.length > 0) {
     workExperienceData.forEach(experience => {
       const experienceDiv = document.createElement('div');
-      experienceDiv.classList.add('mb-4', 'border', 'border-gray-300', 'rounded-md', 'p-4');
+      experienceDiv.classList.add('green-card','w-[49%]', 'md:w-[32.7%]', 'max-h-40', 'overflow-hidden', 'hover:max-h-full', 'transition-max-h', 'duration-100', 'mb-3');
 
       const headingPara = document.createElement('p');
 
           const companyHeading = document.createElement('span');
-          companyHeading.classList.add('text-xl', 'font-semibold', 'text-gray-800', 'mb-1');
+          companyHeading.classList.add('font-montserrat', 'text-base', 'md:text-xl');
           companyHeading.textContent = experience.Company;
 
           const companyLocation = document.createElement('span');
-          companyLocation.classList.add('text-lg', 'font-medium', 'text-gray-800', 'mb-1');
+          companyLocation.classList.add('font-montserrat', 'text-sm', 'md:text-base', 'text-gray-700');
           companyLocation.textContent = `, ${experience.Location}`;
 
-          const roleSpan = document.createElement('span');
-          roleSpan.classList.add('text-lg', 'font-medium', 'italic', 'text-gray-700', 'mb-1');
-          roleSpan.textContent = ` - ${experience.Role}`;
-      
           headingPara.appendChild(companyHeading);
           headingPara.appendChild(companyLocation);
-          headingPara.appendChild(roleSpan);
+       
+      const rolePara = document.createElement('p');
+
+          const role =document.createElement('span');
+          role.classList.add('font-montserrat', 'font-semibold', 'text-gray-700', 'mb-1');
+          role.textContent = 'Role: ';
+          
+          const roleDesc = document.createElement('span');
+          roleDesc.classList.add('font-montserrat', 'text-sm', 'md:text-base', 'text-gray-700', 'italic');
+          roleDesc.textContent = experience.Role;
+
+          rolePara.appendChild(role);
+          rolePara.appendChild(roleDesc);
 
       const durationPara = document.createElement('p');
-      durationPara.classList.add('text-base', 'font-thin', 'text-gray-700', 'mb-1');
+      durationPara.classList.add('text-sm', 'font-thin', 'text-gray-700', 'mb-1');
       to_month_year = experience.to_month_year ? ' to ' + experience.to_month_year : ' to Present'
       durationPara.textContent = `${experience.from_month_year}${to_month_year}`;
 
@@ -106,13 +114,15 @@ function displayWorkExperience(workExperienceData, containerId) {
 
         const responsibilitiesParagraph = document.createElement('span');
         responsibilitiesParagraph.classList.add('text-gray-600');
-        responsibilitiesParagraph.innerHTML = `Responsibilities: ${experience.responsibilities}`;
+        responsibilitiesParagraph.innerHTML = `${experience.responsibilities}`;
 
         responsibilitiesPara.appendChild(responsibilitiesHeading);
         responsibilitiesPara.appendChild(responsibilitiesParagraph);
 
       experienceDiv.appendChild(headingPara);
       experienceDiv.appendChild(durationPara);
+      experienceDiv.appendChild(rolePara);
+
       experienceDiv.appendChild(responsibilitiesPara);
       container.appendChild(experienceDiv);
     });
@@ -220,3 +230,8 @@ window.onload = () => {
   fetchAndDisplayWorkExperience('education');
   fetchAndDisplayWorkExperience('publication');
 };
+
+/*
+Color palettes:
+https://colorhunt.co/palette/3d8d7ab3d8a8fbffe4a3d1c6
+*/
