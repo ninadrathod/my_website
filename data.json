@@ -4,7 +4,7 @@
       "Company": "MathWorks",
       "Location": "Hyderabad, India",
       "Role": "Release Engineer 2",
-      "from_month_year": "2023-07",
+      "from_month_year": "July 2023",
       "responsibilities": "I currently manage release pipelines, ensuring seamless integration of code from different teams. I troubleshoot pipeline issues using my debugging skills and automate repetitive tasks to prevent failures and reduce manual effort."
     },
     {
@@ -12,8 +12,8 @@
       "Company": "Tata Consultancy Services",
       "Location": "Pune, India",
       "Role": "Systems Engineer",
-      "from_month_year": "2018-06",
-      "to_month_year": "2020-08",
+      "from_month_year": "June 2018",
+      "to_month_year": "August 2020",
       "responsibilities": "I served as the Subject Matter Expert and Single Point of Contact for Automation. My role involved developing processes and scripts to automate repetitive manual tasks, reports, and alerts. I played a key role in guiding individuals with diverse skill sets to successfully complete projects. Additionally, I analyzed the incident database to identify recurring failures, investigated root causes, and resolved issues with support from relevant teams."
     },
     {
@@ -21,8 +21,8 @@
         "Company": "Videocon Infodart",
         "Location": "Aurangabad, India",
         "Role": "Inplant Trainee",
-        "from_month_year": "2017-04",
-        "to_month_year": "2017-05",
+        "from_month_year": "April 2017",
+        "to_month_year": "May 2017",
         "responsibilities": "Worked on a web application that tracks a vendor's human resources (or consultants). The primary feature of the web application was to shortlist the consultants as per client requirements and skillsets possessed by the consultants.<br><b>Technical Specifications of the application</b>: Front End ASP.net with VB.net scripting and Backend hosted on MS SQL Server."
     },
     {
