@@ -43,8 +43,18 @@
   }  
 
 @layer components {
+    
     .card {
-        @apply flex flex-col justify-center p-6 rounded-2xl w-[25%] mx-5 border-1 hover:bg-light-purple hover:border-palette-mid-dark-purple hover:text-dark-purple hover:shadow-2xl hover:scale-105 transition-transform duration-100 ease-in-out;
+        @apply flex flex-col justify-center p-6 rounded-2xl w-[25%] mx-5 border-1 hover:bg-light-purple hover:border-palette-mid-dark-purple hover:text-dark-purple hover:shadow-2xl hover:scale-105 transition-all duration-200 ease-in-out;
     }
+
+    .left {
+        @apply w-[50%] text-right py-[2%] pr-[2%] border-r-1 border-gray-400;
+    }
+
+    .right {
+        @apply w-[50%] text-left py-[2%] pl-[2%];
+    }
+    
   }
   

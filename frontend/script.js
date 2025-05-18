@@ -43,7 +43,7 @@ async function fetchAndReturnLink(property, linkId) {
   }
 }
 
-async function fetchAndDisplayCards(category) {
+async function fetchAndDisplayCards(category, containerId) {
   try {
     apiUrl = `http://localhost:3001/api/data/${category}`
     const response = await fetch(apiUrl);
@@ -51,9 +51,9 @@ async function fetchAndDisplayCards(category) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    if(category === 'work_exp')          { displayWorkExperience(data.data, 'work-experience-container'); } 
-    else if(category === 'education')    { displayEducation(data.data, 'education-container'); }
-    else if(category === 'publication')  { displayPublication(data.data, 'publication-container'); }
+    if(category === 'work_exp')          { displayWorkExperience(data.data, containerId); } 
+    else if(category === 'education')    { displayEducation(data.data, containerId); }
+    else if(category === 'publication')  { displayPublication(data.data, containerId); }
   } catch (error) {
     console.error(`Error fetching ${category}:`, error);
     if(category === 'work_exp')
@@ -73,7 +73,7 @@ function displayWorkExperience(workExperienceData, containerId) {
   if (workExperienceData && workExperienceData.length > 0) {
     workExperienceData.forEach(experience => {
       const experienceDiv = document.createElement('div');
-      experienceDiv.classList.add('card');
+      experienceDiv.classList.add('card','group');
 
       const headingPara = document.createElement('p');
 
@@ -119,8 +119,8 @@ function displayWorkExperience(workExperienceData, containerId) {
       experienceDiv.appendChild(headingPara);
       experienceDiv.appendChild(durationPara);
       experienceDiv.appendChild(rolePara);
-
       experienceDiv.appendChild(responsibilitiesPara);
+      
       container.appendChild(experienceDiv);
     });
   } else {
@@ -131,36 +131,63 @@ function displayWorkExperience(workExperienceData, containerId) {
 function displayEducation(educationData, containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = ''; // Clear any existing content
+  //container.classList.add('w-full','text-center','flex border-2');
 
+  let x = 1; 
   if (educationData && educationData.length > 0) {
+     
     educationData.forEach(education => {
       
       const educationDiv = document.createElement('div');
-      //educationDiv.classList.add('off-pink-card');
-
+      educationDiv.classList.add('w-full','text-center','flex','mb-10');
+      
+      const collegeDiv = document.createElement('div');
+      const yearsDiv = document.createElement('div');
+      if(x==1){
+        collegeDiv.classList.add('left');
+        yearsDiv.classList.add('right');        
+      }
+      else{
+        collegeDiv.classList.add('right');
+        yearsDiv.classList.add('left');
+      }
+      
           const headingPara = document.createElement('p');
-          headingPara.classList.add('text-xl', 'font-semibold', 'text-gray-800', 'mb-1');
+          headingPara.classList.add('monserrat-regular','text-lg','tracking-wider');
           headingPara.textContent = education.institution_name;
 
-          const durationPara = document.createElement('p');
-          durationPara.classList.add('text-base', 'font-thin', 'text-gray-700', 'mb-1');
-          to_month_year = education.to_month_year ? ' to ' + education.to_month_year : ' to Present'
-          durationPara.textContent = `${education.from_month_year}${to_month_year}`;
-
           const degreePara = document.createElement('p');
-          degreePara.classList.add('text-md', 'font-semibold', 'text-gray-700', 'mb-1');
+          degreePara.classList.add('montserrat-light','mt-2','text-base');
           degreePara.textContent = `${education.degree_program_certificate}`;
 
           const scorePara = document.createElement('p');
-          scorePara.classList.add('text-md', 'font-semibold', 'text-gray-700', 'mb-1');
-          scorePara.textContent = `${education.score_type}: ${education.score}/${education.score_on_scale}`;
-    
-      educationDiv.appendChild(headingPara);
-      educationDiv.appendChild(durationPara);
-      educationDiv.appendChild(degreePara);
-      educationDiv.appendChild(scorePara);
+          scorePara.classList.add('montserrat-light','mt-2');
+          scorePara.textContent = `${education.score_type}: ${education.score} / ${education.score_on_scale}`;
 
+          const durationPara = document.createElement('p');
+          durationPara.classList.add('montserrat-extralight','text-lg');
+          to_month_year = education.to_month_year ? ' to ' + education.to_month_year : ' to Present'
+          durationPara.textContent = `${education.from_month_year}${to_month_year}`;
+
+      
+      collegeDiv.appendChild(headingPara);
+      collegeDiv.appendChild(degreePara);
+      collegeDiv.appendChild(scorePara);
+      
+      yearsDiv.appendChild(durationPara);
+
+      if(x==1){
+        educationDiv.appendChild(collegeDiv);
+        educationDiv.appendChild(yearsDiv);
+      }
+      else{
+        educationDiv.appendChild(yearsDiv);
+        educationDiv.appendChild(collegeDiv);
+      }
+      
       container.appendChild(educationDiv);
+      
+      x = (x%2)+1;
     });
   } else {
     container.textContent = 'No education data available.';
@@ -170,6 +197,7 @@ function displayEducation(educationData, containerId) {
 function displayPublication(publicationData, containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = ''; // Clear any existing content
+  //container.classList.add('mt-10','flex','flex-col','text-center','justify-center')
 
   if (publicationData && publicationData.length > 0) {
     publicationData.forEach(publication => {
@@ -212,11 +240,21 @@ function displayPublication(publicationData, containerId) {
     container.textContent = 'No education data available.';
   }
 }
+/*
+const loaderContainer = document.querySelector('#loader-container');
+const pageContent = document.querySelector('#page-content');
+
+window.addEventListener('load', () => {
+  loaderContainer.classList.add('hidden');
+  pageContent.classList.add('visible');
+});
+*/
 
 window.onload = () => {
   fetchAndDisplayProperty('name', 'name-display');
   fetchAndDisplayProperty('summary', 'summary-display');
-  fetchAndDisplayCards('work_exp');
+  fetchAndDisplayCards('work_exp','work-experience-container');
+  fetchAndDisplayCards('education','education-container');
 };
 
 /*

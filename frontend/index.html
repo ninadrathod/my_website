@@ -7,24 +7,39 @@
   <title>Resume</title>
 </head>
 <body>
-  <header id="top-box" class="bg-black opacity-90 flex justify-center flex-col relative">
-    <!--<iframe class="top-0 left-0 h-full w-full absolute object-cover -z-10 " src="https://www.youtube.com/embed/X-HL-r5TOiU?si=VVdYWCzomRdG9_at&amp;controls=0&amp;autoplay=1&amp;mute=1&amp;loop=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> -->
-    <div id="name-display" class="text-white montserrat-regular text-4xl pt-20 pb-10 px-10 text-center tracking-widest">Loading Name</div>
-    <div id="summary-display" class="text-white montserrat-extralight text-xl py-10 px-10 text-center tracking-wider">Loading Summary</div>
-  </header>
+  <!----------------------- Page loader ------------------------>
+  
+  <!--<div id="loader-container" class=" bg-palette-body-bg fixed top-0 left-0 w-full h-full flex justify-center items-center z-10">
+      <div id="loader" class="h-20 w-20 border-5 border-x-transparent rounded-[50%] animate-spin"></div>
+      <div id="loader" class="h-16 w-16 border-3 border-x-transparent rounded-[50%] animate-wiggle"></div>
+  </div>-->
 
-  <main class="mb-10">
-    <!-- The work experience cards -->
-    <div class="flex justify-center flex-col relative mt-10">
-      <div class="montserrat-light text-xl text-center tracking-widest">WORK EXPERIENCE</div>
-      <div id="work-experience-container" class="mt-10 text-center flex flex-row justify-center">Loading Work Experience...</div>
-    </div>
-  </main>
+  <!----------------------- Page content ----------------------->
+  
 
+    <header id="top-box" class="bg-black opacity-90 flex justify-center flex-col relative">
+      <!--<iframe class="top-0 left-0 h-full w-full absolute object-cover -z-10 " src="https://www.youtube.com/embed/X-HL-r5TOiU?si=VVdYWCzomRdG9_at&amp;controls=0&amp;autoplay=1&amp;mute=1&amp;loop=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>-->
+      <div id="name-display" class="text-white montserrat-regular text-4xl pt-20 pb-10 px-10 text-center tracking-widest">Loading Name</div>
+      <div id="summary-display" class="text-white montserrat-extralight text-xl py-10 px-10 text-center tracking-wider">Loading Summary</div>
+    </header>
 
-  <footer>
+    <main class="mb-10">
+      
+      <div class="flex justify-center flex-col relative mt-10">
+        <div class="montserrat-regular text-xl text-center tracking-widest">WORK EXPERIENCE</div>
+        <div id="work-experience-container" class="mt-10 text-center flex flex-row flex-wrap justify-center">Loading Work Experience...</div>
+      </div>
 
-  </footer>
+      <div class="flex flex-col mt-10">
+        <div class="montserrat-regular text-xl text-center tracking-widest mb-10">EDUCATION</div>
+        <div id="education-container">Loading Education...</div>
+      </div>
+
+    </main>
+
+    <footer>
+    </footer>
+
   <script src="script.js"></script>
 </body>
 </html>

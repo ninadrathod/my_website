@@ -29,8 +29,8 @@
       "category": "education",
       "institution_name": "Indian Institute of Technology Ropar, India",
       "degree_program_certificate": "M. Tech Computer Science and Engineering",
-      "from_month_year": "2021-07",
-      "to_month_year": "2023-06",
+      "from_month_year": "July 2021",
+      "to_month_year": "June 2023",
       "score_type": "CGPA",
       "score": 8.97,
       "score_on_scale": 10.0
@@ -39,8 +39,8 @@
       "category": "education",
       "institution_name": "Government College of Engineering Aurangabad, India",
       "degree_program_certificate": "B. E. Computer Science and Engineering",
-      "from_month_year": "2014-07",
-      "to_month_year": "2018-06",
+      "from_month_year": "July 2014",
+      "to_month_year": "June 2018",
       "score_type": "CGPA",
       "score": 7.859,
       "score_on_scale": 10.0
