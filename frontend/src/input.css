@@ -6,6 +6,60 @@
     --color-palette-mid-dark-purple: #7b2cbf;
     --color-dark-purple: #112A46;
     --color-light-purple: #e5d2f5;
+    --animate-circle1: circle1 2s ease-in-out infinite;
+    --animate-circle2: circle2 2s ease-in-out infinite;
+    --animate-circle3: circle3 2s ease-in-out infinite;
+    --animate-circle4: circle4 2s ease-in-out infinite;
+    --animate-text-appear-from-left: text-appear-from-left 1s ease-in;
+    --animate-text-appear-from-right: text-appear-from-right 1s ease-in;
+    @keyframes circle1 {
+      32% {
+        transform: scale(1.4);
+        background-color: #000000;
+        margin: 0px 10px 0px 10px;
+      }
+    }
+    @keyframes circle2 {
+      44% {
+        transform: scale(1.4);
+        background-color: #000000;
+        margin: 0px 10px 0px 10px;
+      }
+    }
+    @keyframes circle3 {
+      56% {
+        transform: scale(1.4);
+        background-color: #000000;
+        margin: 0px 10px 0px 10px;
+      }
+    }
+    @keyframes circle4 {
+      68% {
+        transform: scale(1.4);
+        background-color: #000000;
+        margin: 0px 10px 0px 10px;
+      }
+    }
+    @keyframes text-appear-from-left {
+      0% {
+        opacity: 0%;
+        transform: translateX(-40px);
+      }
+      100% {
+        opacity: 100%;
+        transform: translateX(0px);
+      }
+    }
+    @keyframes text-appear-from-right {
+      0% {
+        opacity: 0%;
+        transform: translateX(40px);
+      }
+      100% {
+        opacity: 100%;
+        transform: translateX(0px);
+      }
+    }
 }
 
 @layer base{

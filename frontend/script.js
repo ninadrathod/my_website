@@ -73,7 +73,7 @@ function displayWorkExperience(workExperienceData, containerId) {
   if (workExperienceData && workExperienceData.length > 0) {
     workExperienceData.forEach(experience => {
       const experienceDiv = document.createElement('div');
-      experienceDiv.classList.add('card','group');
+      experienceDiv.classList.add('card');
 
       const headingPara = document.createElement('p');
 
@@ -139,10 +139,13 @@ function displayEducation(educationData, containerId) {
     educationData.forEach(education => {
       
       const educationDiv = document.createElement('div');
-      educationDiv.classList.add('w-full','text-center','flex','mb-10');
+      educationDiv.classList.add('w-full','text-center','flex','mb-10','px-[10%]');
       
       const collegeDiv = document.createElement('div');
+      const line = document.createElement('div');
+      line.classList.add('border-r-1','border-gray-500');
       const yearsDiv = document.createElement('div');
+
       if(x==1){
         collegeDiv.classList.add('left');
         yearsDiv.classList.add('right');        
@@ -157,7 +160,7 @@ function displayEducation(educationData, containerId) {
           headingPara.textContent = education.institution_name;
 
           const degreePara = document.createElement('p');
-          degreePara.classList.add('montserrat-light','mt-2','text-base');
+          degreePara.classList.add('montserrat-light','mt-2','text-base')
           degreePara.textContent = `${education.degree_program_certificate}`;
 
           const scorePara = document.createElement('p');
@@ -178,10 +181,12 @@ function displayEducation(educationData, containerId) {
 
       if(x==1){
         educationDiv.appendChild(collegeDiv);
+        educationDiv.appendChild(line);
         educationDiv.appendChild(yearsDiv);
       }
       else{
         educationDiv.appendChild(yearsDiv);
+        educationDiv.appendChild(line);
         educationDiv.appendChild(collegeDiv);
       }
       
@@ -240,22 +245,34 @@ function displayPublication(publicationData, containerId) {
     container.textContent = 'No education data available.';
   }
 }
-/*
+
 const loaderContainer = document.querySelector('#loader-container');
 const pageContent = document.querySelector('#page-content');
+const workExpOuterContainer = document.querySelector('#work-exp-outer-container');
+const topBoxText = document.querySelector('#top-box-text');
 
 window.addEventListener('load', () => {
-  loaderContainer.classList.add('hidden');
-  pageContent.classList.add('visible');
+  //  Fetch and display data:
+  Promise.all([
+    fetchAndDisplayProperty('name', 'name-display'),
+    fetchAndDisplayProperty('summary', 'summary-display'),
+    fetchAndDisplayCards('work_exp', 'work-experience-container'),
+    fetchAndDisplayCards('education', 'education-container'),
+  ]).then(() => {
+    // This code runs after all promises in Promise.all have resolved
+    loaderContainer.classList.remove('visible');
+    loaderContainer.classList.add('invisible');
+    pageContent.classList.remove('invisible');
+    pageContent.classList.add('visible');
+    topBoxText.classList.add('animate-text-appear-from-right');
+    workExpOuterContainer.classList.add('animate-text-appear-from-left');
+  }).catch(error => {
+    console.error("Failed to load data:", error);
+    //  Handle the error appropriately, e.g., display an error message to the user
+    loaderContainer.classList.remove('invisible'); // Optionally keep loader
+    pageContent.classList.add('invisible');
+  });
 });
-*/
-
-window.onload = () => {
-  fetchAndDisplayProperty('name', 'name-display');
-  fetchAndDisplayProperty('summary', 'summary-display');
-  fetchAndDisplayCards('work_exp','work-experience-container');
-  fetchAndDisplayCards('education','education-container');
-};
 
 /*
 Color palettes:
