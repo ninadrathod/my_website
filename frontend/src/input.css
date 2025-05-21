@@ -12,6 +12,31 @@
     --animate-circle4: circle4 2s ease-in-out infinite;
     --animate-text-appear-from-left: text-appear-from-left 1s ease-in;
     --animate-text-appear-from-right: text-appear-from-right 1s ease-in;
+    --animate-draw-stroke: 5s ease-in infinite draw-stroke;
+    
+    @keyframes draw-stroke {
+      0% {
+        stroke: #112A46;
+        stroke-width: 1;
+        stroke-dasharray: 0 32%;
+        stroke-dashoffset: 25%;
+        fill: transparent;
+      }
+      50% {
+        stroke: #112A46;
+        stroke-width: 1;
+        fill: transparent;
+      }
+      80%,
+      100% {
+        stroke: transparent;
+        stroke-width: 0;
+        stroke-dasharray: 32% 0;
+        stroke-dashoffset: -25%;
+        fill: #112A46;
+      }
+    }
+
     @keyframes circle1 {
       32% {
         transform: scale(1.4);
