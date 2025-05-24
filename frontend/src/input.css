@@ -144,7 +144,7 @@
     }
 
     .project-card {
-      @apply p-[2%] my-[2.5%] rounded-2xl hover:border-1 hover:border-palette-mid-dark-purple hover:bg-light-purple hover:text-dark-purple hover:scale-102 hover:shadow-2xl transition-all duration-100 ease-in-out;
+      @apply p-[2%] my-[2.5%];
     }
     
   }

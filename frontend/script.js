@@ -249,7 +249,7 @@ function displaySkills(skillsData, containerId) {
   if (skillsData && skillsData.length > 0) {
     skillsData.forEach(skill => {
       const skillsDiv = document.createElement('div');
-      skillsDiv.classList.add('my-[7.5%]','group-hover:text-dark-purple','transition-all','duration-100','ease-in-out');
+      skillsDiv.classList.add('my-[7.5%]');
 
       const skillType = document.createElement('p');
       skillType.classList.add('montserrat-regular');
