@@ -39,14 +39,32 @@
 
     <main class="mb-10">
       
+      <!-- Work experience -->
       <div id="work-exp-outer-container" class="flex justify-center flex-col relative mt-10">
         <div class="montserrat-regular text-xl text-center tracking-widest">WORK EXPERIENCE</div>
-        <div id="work-experience-container" class="mt-10 text-center flex flex-row flex-wrap justify-center">Loading Work Experience...</div>
+        <div id="work-experience-container" class="mt-[2%] text-center flex flex-col lg:flex-row items-center lg:items-stretch justify-center">Loading Work Experience...</div>
       </div>
 
+      <!-- education -->
       <div class="flex flex-col mt-10">
         <div class="montserrat-regular text-xl text-center tracking-widest mb-10">EDUCATION</div>
         <div id="education-container">Loading Education...</div>
+      </div>
+
+      <!-- project on left and skills on right -->
+      
+      <div id="projects-and-skills" class="flex flex-col lg:flex-row items-center justify-center">
+        <!-- Projects -->
+        <div id="projects" class="w-[60%] py-[1%]">
+          <div class="montserrat-regular text-xl text-center tracking-widest mb-[2%]">PROJECTS</div>
+          <div id="projects-container">Loading Projects...</div>
+        </div>
+        <!-- Skills -->
+        <div id="skills" class="w-[60%] lg:w-[20%] ml-[5%] pl-[1%] py-[1%] bg-dark-purple hover:bg-transparent text-seashell hover:text-dark-purple hover:border-1 hover:border-dark-purple 
+        hover:scale-105 hover:shadow-2xl rounded-2xl transition-all duration-100 ease-in-out group">
+          <div class="montserrat-regular text-xl text-left tracking-widest mb-[2%]">SKILLS</div>
+          <div id="skills-container">Loading Skills...</div>
+        </div>  
       </div>
 
     </main>

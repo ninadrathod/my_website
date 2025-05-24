@@ -54,6 +54,8 @@ async function fetchAndDisplayCards(category, containerId) {
     if(category === 'work_exp')          { displayWorkExperience(data.data, containerId); } 
     else if(category === 'education')    { displayEducation(data.data, containerId); }
     else if(category === 'publication')  { displayPublication(data.data, containerId); }
+    else if(category === 'projects')     { displayProjects(data.data, containerId); }
+    else if(category === 'technical_skills')     { displaySkills(data.data, containerId); }
   } catch (error) {
     console.error(`Error fetching ${category}:`, error);
     if(category === 'work_exp')
@@ -62,6 +64,10 @@ async function fetchAndDisplayCards(category, containerId) {
     { document.getElementById('education-container').textContent = 'Failed to load education.'; }
     else if(category === 'publication')
     { document.getElementById('publication-container').textContent = 'Failed to load publication.'; }
+    else if(category === 'projects')
+      { document.getElementById('projects-container').textContent = 'Failed to load projects.'; }
+    else if(category === 'technical_skills')
+      { document.getElementById('skills-container').textContent = 'Failed to load skills.'; }
 
   }
 }
@@ -73,7 +79,7 @@ function displayWorkExperience(workExperienceData, containerId) {
   if (workExperienceData && workExperienceData.length > 0) {
     workExperienceData.forEach(experience => {
       const experienceDiv = document.createElement('div');
-      experienceDiv.classList.add('card');
+      experienceDiv.classList.add('card','mb-[2.5%]','lg:mb-[0%]');
 
       const headingPara = document.createElement('p');
 
@@ -199,6 +205,88 @@ function displayEducation(educationData, containerId) {
   }
 }
 
+function displayProjects(projectsData, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ''; // Clear any existing content
+
+  if (projectsData && projectsData.length > 0) {
+    projectsData.forEach(project => {
+      const projectDiv = document.createElement('div');
+      projectDiv.classList.add('project-card');
+
+      const projectType = document.createElement('p');
+      projectType.classList.add('montserrat-extralight-i','text-sm');
+      projectType.textContent = `${project.type} project`;
+
+      const projectTitle = document.createElement('p');
+      projectTitle.classList.add('montserrat-regular','text-lg');
+      projectTitle.textContent = project.project_title;
+      
+      const domain = document.createElement('p');
+      domain.classList.add('montserrat-light','my-[0.5%]');
+      domain.textContent = project.course_or_domain;
+
+      const description = document.createElement('p');
+      description.classList.add('montserrat-extralight');
+      description.textContent = project.project_description;
+
+      projectDiv.appendChild(projectType);
+      projectDiv.appendChild(projectTitle);
+      projectDiv.appendChild(domain);
+      projectDiv.appendChild(description);
+      
+      container.appendChild(projectDiv);
+    });
+  } else {
+    container.textContent = 'No project data available.';
+  }
+}
+
+function displaySkills(skillsData, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ''; // Clear any existing content
+
+  if (skillsData && skillsData.length > 0) {
+    skillsData.forEach(skill => {
+      const skillsDiv = document.createElement('div');
+      skillsDiv.classList.add('my-[7.5%]','group-hover:text-dark-purple','transition-all','duration-100','ease-in-out');
+
+      const skillType = document.createElement('p');
+      skillType.classList.add('montserrat-regular');
+      skillType.textContent = skill.type;
+
+      /*const skillList = document.createElement('p');
+      skillList.classList.add('montserrat-regular','text-lg');
+      skillList.textContent = skill.specific_list;*/
+      
+      // Create a list for specific skills
+      const specificListDiv = document.createElement('div');
+      specificListDiv.classList.add('montserrat-light','ml-[3%]','mt-[1%]'); // Indent the list
+
+      if (skill.specific_list && skill.specific_list.length > 0) {
+        skill.specific_list.forEach(name => {
+          const skillItem = document.createElement('p');
+          skillItem.classList.add('mb-[1%]'); // Small margin below each item
+          skillItem.textContent = name;
+          specificListDiv.appendChild(skillItem);
+        });
+      } else {
+        const noSkillsMessage = document.createElement('p');
+        noSkillsMessage.textContent = "No specific skills listed for this category.";
+        specificListDiv.appendChild(noSkillsMessage);
+      }
+
+
+      skillsDiv.appendChild(skillType);
+      skillsDiv.appendChild(specificListDiv);
+      
+      container.appendChild(skillsDiv);
+    });
+  } else {
+    container.textContent = 'No skill data available.';
+  }
+}
+
 function displayPublication(publicationData, containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = ''; // Clear any existing content
@@ -242,7 +330,7 @@ function displayPublication(publicationData, containerId) {
       container.appendChild(publicationDiv);
     });
   } else {
-    container.textContent = 'No education data available.';
+    container.textContent = 'No publication data available.';
   }
 }
 
@@ -258,6 +346,8 @@ window.addEventListener('load', () => {
     fetchAndDisplayProperty('summary', 'summary-display'),
     fetchAndDisplayCards('work_exp', 'work-experience-container'),
     fetchAndDisplayCards('education', 'education-container'),
+    fetchAndDisplayCards('projects', 'projects-container'),
+    fetchAndDisplayCards('technical_skills', 'skills-container'),
   ]).then(() => {
     // This code runs after all promises in Promise.all have resolved
     loaderContainer.classList.remove('visible');

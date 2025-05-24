@@ -78,14 +78,14 @@
     {
       "category": "projects",
       "project_title": "Crop On-Location",
-      "type": "academic",
+      "type": "Academic",
       "course_or_domain": "Course: Agricultural Cyber-Physical Systems",
       "project_description": "In this project, my teammate and I developed an Android application that will generate crop recommendations at the click of a button based on Indian soil conditions. The application is cost-efficient and runs on minimal data input from the user. It gives significantly less response time, with no heavy database and hardware requirement."
     },
     {
       "category": "projects",
       "project_title": "Secondary Memory-Based Implementation of Shortest Path Algorithm",
-      "type": "academic",
+      "type": "Academic",
       "course_or_domain": "Course: PG Lab",
       "project_description": "In this project, the disk blocks in a secondary memory have been depicted as text files, with node and edge details stored in these files. Every file will hold limited tuples (node/edge details). Consecutive blocks are linked to each other using links in the file. I efficiently implemented Dijkstra’s algorithm to find the shortest path between the source and destination nodes. We tested the solution on a graph with 50000 nodes, thus can be scaled."
     },
