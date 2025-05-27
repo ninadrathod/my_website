@@ -1,3 +1,36 @@
+// scrolling transitions
+
+// Initialize a new Lenis instance for smooth scrolling
+const lenis = new Lenis({
+  damping: 0.5,
+});
+
+// Synchronize Lenis scrolling with GSAP's ScrollTrigger plugin
+lenis.on('scroll', ScrollTrigger.update);
+
+// Add Lenis's requestAnimationFrame (raf) method to GSAP's ticker
+// This ensures Lenis's smooth scroll animation updates on each GSAP tick
+gsap.ticker.add((time) => {
+  lenis.raf(time * 1000); // Convert time from seconds to milliseconds
+});
+
+// Disable lag smoothing in GSAP to prevent any delay in scroll animations
+gsap.ticker.lagSmoothing(0);
+
+//---------------
+
+/*gsap.from("#page-content #top-box #top-box-text #name-display",{
+  transform: translateX(-100),
+  duration: 2,
+  scrollTrigger:{
+    trigger: "#page-content #top-box #top-box-text #name-display",
+    scroller: "body",
+    markers: true
+  }
+})
+*/
+//---------------------------------------------------
+
 async function fetchAndDisplayProperty(property, displayPropertyId) {
   try {
     const apiUrl = `http://localhost:3001/api/metadata/${property}`;
@@ -75,7 +108,7 @@ async function fetchAndDisplayCards(category, containerId) {
 function displayWorkExperience(workExperienceData, containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = ''; // Clear any existing content
-
+  
   if (workExperienceData && workExperienceData.length > 0) {
     workExperienceData.forEach(experience => {
       const experienceDiv = document.createElement('div');
@@ -138,7 +171,7 @@ function displayEducation(educationData, containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = ''; // Clear any existing content
   //container.classList.add('w-full','text-center','flex border-2');
-
+  
   let x = 1; 
   if (educationData && educationData.length > 0) {
      
@@ -354,8 +387,83 @@ window.addEventListener('load', () => {
     loaderContainer.classList.add('invisible');
     pageContent.classList.remove('invisible');
     pageContent.classList.add('visible');
-    topBoxText.classList.add('animate-text-appear-from-right');
-    workExpOuterContainer.classList.add('animate-text-appear-from-left');
+    //topBoxText.classList.add('animate-text-appear-from-right');
+    //workExpOuterContainer.classList.add('animate-text-appear-from-left');
+
+    /*gsap.from("#page-content #top-box #name-display",{
+      x: "34vw",
+      paddingTop: "2%",
+      duration: 2,
+      paddingBottom: "2%",
+      scrollTrigger:{
+        trigger: "main",
+        scroller: "body",
+        markers: true,
+        start:"top 10%",
+        scrub: 2
+      }
+    })*/
+   /* gsap.to("#page-content #top-box #summary-display",{
+      height:"10%",
+      opacity: 1,
+      duration: 2,
+      paddingBlock: "1%",
+      scrollTrigger:{
+        trigger: "main",
+        scroller: "body",
+        markers: true,
+        start:"top 10%",
+        scrub: true
+      }
+    });*/
+
+    /*gsap.to("#summary-display", {
+      height: 0,          // Animate height to 0
+      paddingTop: 0,      // Animate top padding to 0
+      paddingBottom: 0,   // Animate bottom padding to 0
+      opacity: 0,         // Animate opacity to 0
+      duration: 1.5,      // Duration of the animation (will be stretched by scrub)
+      ease: "power2.out", // Easing function
+      scrollTrigger: {
+        trigger: "main",      // The element that triggers the animation
+        start: "top 30%",     // Animation starts when the top of 'main' hits 10% from viewport top
+        end: "top -50%",      // Animation ends when the top of 'main' goes 50% *above* viewport top (adjust as needed)
+        scroller: "body",     // Explicitly use the body as the scroller
+        markers: true,        // Uncomment for visual debugging
+        scrub: true           // Links the animation progress directly to the scroll position
+      }
+    });*/
+
+    ScrollTrigger.create({
+      trigger: "main",      // The element that triggers the action
+      start: "top 36%",     // When the top of 'main' hits 10% from viewport top
+      scroller: "body",     // Explicitly use the body as the scroller
+      markers: true,        // Uncomment for visual debugging
+      onEnter: () => {
+        // When scrolling down and the trigger is met, smoothly animate to the LEFT (34vw)
+        gsap.to("#name-display", { x: "-30vw", paddingTop: "2%", paddingBottom: "2%", duration: 1, ease: "sine.in" });
+      },
+      onLeaveBack: () => {
+        // When scrolling up and passing the trigger point again, smoothly animate back to CENTER (x: 0)
+        gsap.to("#name-display", { x: 0, paddingTop: "2%", paddingBottom: "2%", duration: 1, ease: "sine.in" });
+      }
+    });
+
+    ScrollTrigger.create({
+      trigger: "main",      // The element that triggers the action
+      start: "top 36%",     // When the top of 'main' hits 10% from viewport top
+      scroller: "body",     // Explicitly use the body as the scroller
+      markers: true,        // Uncomment for visual debugging
+      onEnter: () => {
+        // When scrolling down and the trigger is met, smoothly animate to hidden state
+        gsap.to("#summary-display", { height: 0, paddingTop: 0, paddingBottom: 0, opacity: 0, duration: 1, marginBottom: 10, ease: "sine.in" });
+      },
+      onLeaveBack: () => {
+        // When scrolling up and passing the trigger point again, smoothly animate to visible state
+        gsap.to("#summary-display", { height: "auto", paddingTop: "1%", paddingBottom: "1%", opacity: 1, duration: 1, ease: "sine.in" });
+      }
+      // No scrub, no duration on the ScrollTrigger itself for instant changes
+    });
   }).catch(error => {
     console.error("Failed to load data:", error);
     //  Handle the error appropriately, e.g., display an error message to the user
@@ -363,6 +471,13 @@ window.addEventListener('load', () => {
     pageContent.classList.add('invisible');
   });
 });
+
+const header = document.querySelector('#top-box');
+
+//window.addEventListener('scroll', () => {
+//  const scrollPosition = window.scrollY;
+
+//}
 
 /*
 Color palettes:
