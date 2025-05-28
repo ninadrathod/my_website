@@ -29,7 +29,7 @@
   
   <section id="page-content" class="invisible">
    
-    <header id="top-box" class="bg-black opacity-80 flex justify-center flex-col sticky top-0 z-100">
+    <header id="top-box" class="bg-black opacity-80 flex justify-center flex-col"> <!-- sticky top-0 z-100">-->
       <!--<iframe class="top-0 left-0 h-full w-full absolute object-cover -z-10 " src="https://www.youtube.com/embed/X-HL-r5TOiU?si=VVdYWCzomRdG9_at&amp;controls=0&amp;autoplay=1&amp;mute=1&amp;loop=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>-->
       <div id="name-display" class="text-white montserrat-regular text-4xl py-[1%] px-10 tracking-widest text-center">Loading Name</div>
       <div id="summary-display" class="text-white montserrat-extralight text-xl py-[1%] px-[2%] text-center tracking-wider">Loading Summary</div>  
@@ -51,32 +51,51 @@
             <div id="areas-of-interest-container">Loading Areas of Interest...</div>
           </div>
           <!-- education -->
-          <div id="education-box" class="flex flex-col ml-[6%] w-[50%] my-[1%]">
+          <div id="education-box" class="flex flex-col ml-[6%] w-[50%] my-[1%] py-[2%] lg:translate-x-[15%]">
             <div class="montserrat-regular text-xl text-center tracking-widest mb-10 text-seashell">EDUCATION</div>
             <div id="education-container">Loading Education...</div>
           </div>
       </div>
+
       <!-- project on left and skills on right -->
-      
-      <div id="projects-and-skills" class="flex flex-col lg:flex-row items-center justify-center">
+      <div id="projects-and-skills" class="flex flex-col lg:flex-row items-center justify-center lg:items-start">
         <!-- Projects -->
         <div id="projects" class="w-[60%] py-[1%]">
           <div class="montserrat-regular text-xl text-center tracking-widest mb-[2%]">PROJECTS</div>
           <div id="projects-container">Loading Projects...</div>
         </div>
         
-          <!-- Skills -->
-       <!--<div id="skills" class="w-[60%] pr-[2%] lg:w-[20%] lg:ml-[5%] pl-[2%] hover:pl-[3%] py-[1%] bg-dark-purple text-seashell 
-        hover:scale-105 hover:shadow-2xl rounded-2xl transition-all duration-100 ease-in-out group">-->
-          
-         
-          <div id="skills" class="w-[60%] pr-[2%] lg:w-[20%] lg:ml-[5%] pl-[2%] py-[1%]
+        <!-- Skills -->         
+        <div id="skills" class="w-[60%] pr-[2%] lg:w-[20%] lg:ml-[5%] pl-[2%] py-[1%] mb-[2%]
           backdrop-blur-md bg-gray-300/50 border border-gray-400/50 rounded-xl shadow-lg">
-            <div class="montserrat-regular text-xl tracking-widest mb-[2%]">SKILLS</div>
-            <div id="skills-container">Loading Skills...</div>
+           <div class="montserrat-regular text-xl tracking-widest mb-[2%]">SKILLS</div>
+           <div id="skills-container">Loading Skills...</div>
+        </div>
+      </div>
+
+      <!-- publication -->
+      <div id="publication-block" class="flex flex-col py-[3%] items-center justify-center shadow-2xl
+           gradient-teal-dusk">
+          <div class="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl shadow-lg pt-[2%]"> 
+            <div class="montserrat-regular text-xl text-center tracking-widest text-seashell mb-[2%] ">PUBLICATION</div>
+            <div id="publication-container">Loading Publication...</div>
           </div>
+      </div>
+
+      <!-- extracurricular and pors -->
+      <div id="extracurricular-and-pors" class="flex flex-col lg:flex-row items-center justify-center lg:items-start mt-[2%]">
+          <!-- extracurricular activities -->
+        <div id="extracurricular-block" class="w-[45%] py-[1%] px-[2%]">
+          <div class="montserrat-regular text-xl text-center tracking-widest mb-[5%]">EXTRACURRICULAR ACTIVITIES</div>
+          <div id="extracurricular-container">Loading Extracurricular Activities...</div>
+        </div>
         
-        <!--</div>-->
+        <!-- PORs -->         
+        <div id="por-block" class="w-[45%] py-[1%] px-[2%]">
+           <div class="montserrat-regular text-xl text-center tracking-widest mb-[5%]">POSITIONS OF RESPONSIBILITY</div>
+           <div id="por-container">Loading PORs...</div>
+        </div>
+
       </div>
 
     </main>

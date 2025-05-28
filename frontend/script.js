@@ -90,21 +90,26 @@ async function fetchAndDisplayCards(category, containerId) {
     else if(category === 'projects')     { displayProjects(data.data, containerId); }
     else if(category === 'technical_skills')     { displaySkills(data.data, containerId); }
     else if(category === 'areas_of_interest')     { displayInterestAreas(data.data, containerId); }
+    else if(category === 'extracurricular_activities') {displayExtracurricularActivities(data.data, containerId);}
+    else if(category === 'positions_of_responsibilities') {displayPOR(data.data, containerId);}
   } catch (error) {
     console.error(`Error fetching ${category}:`, error);
     if(category === 'work_exp')
-    { document.getElementById('work-experience-container').textContent = 'Failed to load work experience.'; }
+    { document.getElementById(containerId).textContent = 'Failed to load work experience.'; }
     else if(category === 'education')
-    { document.getElementById('education-container').textContent = 'Failed to load education.'; }
+    { document.getElementById(containerId).textContent = 'Failed to load education.'; }
     else if(category === 'publication')
-    { document.getElementById('publication-container').textContent = 'Failed to load publication.'; }
+    { document.getElementById(containerId).textContent = 'Failed to load publication.'; }
     else if(category === 'projects')
-      { document.getElementById('projects-container').textContent = 'Failed to load projects.'; }
+      { document.getElementById(containerId).textContent = 'Failed to load projects.'; }
     else if(category === 'technical_skills')
-      { document.getElementById('skills-container').textContent = 'Failed to load skills.'; }
+      { document.getElementById(containerId).textContent = 'Failed to load skills.'; }
     else if(category === 'areas_of_interest')
-      { document.getElementById('areas-of-interest-container').textContent = 'Failed to load areas of interest.'; }
-
+      { document.getElementById(containerId).textContent = 'Failed to load areas of interest.'; }
+    else if(category === 'extracurricular_activities')
+      { document.getElementById(containerId).textContent = 'Failed to load extracurricular activities.'; }
+    else if(category === 'positions_of_responsibilities')
+      { document.getElementById(containerId).textContent = 'Failed to load positions of responsibilities.'; }
   }
 }
 
@@ -263,6 +268,7 @@ function displayProjects(projectsData, containerId) {
     container.textContent = 'No project data available.';
   }
 }
+
 function displayInterestAreas(interestAreasData, containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = ''; // Clear any existing content
@@ -279,6 +285,73 @@ function displayInterestAreas(interestAreasData, containerId) {
   }
 }
 
+function displayExtracurricularActivities(extracurricularActivitiesData, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ''; // Clear any existing content
+  container.classList.add('text-center','text-gray-800');
+
+  var cntr = 0;
+  dataLen = extracurricularActivitiesData.length;
+  if (extracurricularActivitiesData && extracurricularActivitiesData.length > 0) {
+    extracurricularActivitiesData.forEach(activityItem => {
+      const activity_li = document.createElement('div');
+      activity_li.classList.add('montserrat-regular','text-sm');
+      activity_li.innerHTML = activityItem.activity;      
+     
+      const bottomSeparator = document.createElement('hr');
+      bottomSeparator.classList.add('w-[10%]','mx-auto','my-[4%]','opacity-70','border-gray-400');
+      
+      container.appendChild(activity_li);
+      if(cntr < dataLen-1) { container.appendChild(bottomSeparator); }
+      cntr++;
+    
+    });
+  } else {
+    container.textContent = 'No extracurriular activity data available.';
+  }
+}
+
+function displayPOR(porData, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ''; // Clear any existing content
+  container.classList.add('text-center','text-gray-800');
+
+  var cntr = 0;
+  portDataLen = porData.length;
+  if (porData && porData.length > 0) {
+    porData.forEach(porItem => {
+      const por_li = document.createElement('div');
+      
+      const por_title = document.createElement('p');
+      por_title.classList.add('montserrat-regular','text-sm');
+      por_title.textContent = `${porItem.por} (${porItem.from_year} - ${porItem.to_year})`;
+
+      const por_club = document.createElement('p');
+      por_club.classList.add('montserrat-light','text-sm');
+      por_club.textContent = porItem.club_group;
+
+      const por_institution = document.createElement('p');
+      por_institution.classList.add('montserrat-light','text-sm');
+      por_institution.textContent = porItem.institution;
+      
+      const bottomSeparator = document.createElement('hr');
+      bottomSeparator.classList.add('w-[10%]','mx-auto','my-[4%]','opacity-70','border-gray-400');
+
+      por_li.appendChild(por_title);
+      por_li.appendChild(por_club);
+      por_li.appendChild(por_institution);
+      if(cntr < portDataLen-1) { por_li.appendChild(bottomSeparator); }
+      cntr++;
+      container.appendChild(por_li);
+
+
+    });
+
+  } else {
+    container.textContent = 'No POR data available.';
+  }
+}
+
 function displaySkills(skillsData, containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = ''; // Clear any existing content
@@ -291,10 +364,6 @@ function displaySkills(skillsData, containerId) {
       const skillType = document.createElement('p');
       skillType.classList.add('montserrat-regular');
       skillType.textContent = skill.type;
-
-      /*const skillList = document.createElement('p');
-      skillList.classList.add('montserrat-regular','text-lg');
-      skillList.textContent = skill.specific_list;*/
       
       // Create a list for specific skills
       const specificListDiv = document.createElement('div');
@@ -312,7 +381,6 @@ function displaySkills(skillsData, containerId) {
         noSkillsMessage.textContent = "No specific skills listed for this category.";
         specificListDiv.appendChild(noSkillsMessage);
       }
-
 
       skillsDiv.appendChild(skillType);
       skillsDiv.appendChild(specificListDiv);
@@ -333,36 +401,27 @@ function displayPublication(publicationData, containerId) {
     publicationData.forEach(publication => {
       
       const publicationDiv = document.createElement('div');
-      publicationDiv.classList.add('mb-4', 'border', 'border-gray-300', 'rounded-md', 'p-4');
+      publicationDiv.classList.add('text-seashell','rounded-md','text-center','items-center','p-[3%]');
 
-          const headingPara = document.createElement('p');
+              const topSeparator = document.createElement('hr');
+              topSeparator.classList.add('w-[40%]','mx-auto','mb-[5%]','opacity-50');
 
-              const paperTitle = document.createElement('span')
-              paperTitle.classList.add('text-xl', 'font-semibold', 'text-gray-800', 'mb-1');
+              const paperTitle = document.createElement('p');
+              paperTitle.classList.add('montserrat-regular','text-lg', 'mb-[1%]');
               paperTitle.textContent = publication.title;
 
-              const paperPublication = document.createElement('span')
-              paperPublication.classList.add('text-ls', 'italic', 'font-medium', 'text-gray-800', 'mb-1');
-              paperPublication.textContent = ` - ${publication.conference_journal_name}`;
+              const paperPublication = document.createElement('p');
+              paperPublication.classList.add('montserrat-light', 'mb-[1%]');
+              paperPublication.textContent = publication.conference_journal_name;
 
-          headingPara.appendChild(paperTitle);
-          headingPara.appendChild(paperPublication);
+              const bookSeries = document.createElement('p');
+              bookSeries.classList.add('montserrat-extralight', 'mb-[1%]');
+              bookSeries.textContent = `Book series: ${publication.book_series}`;
 
-          const bookSeriesPara = document.createElement('p');
-
-              const bookSeriesHeading = document.createElement('span');
-              bookSeriesHeading.classList.add('text-md', 'font-semibold', 'text-gray-700', 'mb-1');
-              bookSeriesHeading.textContent = 'Book Series: ';
-
-              const bookSeries = document.createElement('span');
-              bookSeries.classList.add('text-base', 'font-medium', 'text-gray-700', 'mb-1');
-              bookSeries.textContent = publication.book_series;
-
-              bookSeriesPara.appendChild(bookSeriesHeading);
-              bookSeriesPara.appendChild(bookSeries);
-    
-      publicationDiv.appendChild(headingPara);
-      publicationDiv.appendChild(bookSeriesPara);
+      publicationDiv.appendChild(topSeparator);
+      publicationDiv.appendChild(paperTitle);
+      publicationDiv.appendChild(paperPublication);
+      publicationDiv.appendChild(bookSeries);
 
       container.appendChild(publicationDiv);
     });
@@ -386,6 +445,10 @@ window.addEventListener('load', () => {
     fetchAndDisplayCards('projects', 'projects-container'),
     fetchAndDisplayCards('technical_skills', 'skills-container'),
     fetchAndDisplayCards('areas_of_interest', 'areas-of-interest-container'),
+    fetchAndDisplayCards('publication', 'publication-container'),
+    fetchAndDisplayCards('extracurricular_activities', 'extracurricular-container'),
+    fetchAndDisplayCards('positions_of_responsibilities', 'por-container'),
+
   ]).then(() => {
     // This code runs after all promises in Promise.all have resolved
     loaderContainer.classList.remove('visible');
@@ -438,7 +501,7 @@ window.addEventListener('load', () => {
         scrub: true           // Links the animation progress directly to the scroll position
       }
     });*/
-
+    /*
     ScrollTrigger.create({
       trigger: "main",      // The element that triggers the action
       start: "top 31%",     // When the top of 'main' hits 10% from viewport top
@@ -453,7 +516,8 @@ window.addEventListener('load', () => {
         gsap.to("#name-display", { x: 0, paddingTop: "1%", paddingBottom: "1%", duration: 1, ease: "sine.in" });
       }
     });
-
+    */
+    /*
     ScrollTrigger.create({
       trigger: "main",      // The element that triggers the action
       start: "top 31%",     // When the top of 'main' hits 10% from viewport top
@@ -468,7 +532,7 @@ window.addEventListener('load', () => {
         gsap.to("#summary-display", { height: "auto", paddingTop: "1%", paddingBottom: "1%", opacity: 1, duration: 1, ease: "sine.in" });
       }
       // No scrub, no duration on the ScrollTrigger itself for instant changes
-    });
+    });*/
   }).catch(error => {
     console.error("Failed to load data:", error);
     //  Handle the error appropriately, e.g., display an error message to the user
