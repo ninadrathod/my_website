@@ -448,6 +448,9 @@ window.addEventListener('load', () => {
     fetchAndDisplayCards('publication', 'publication-container'),
     fetchAndDisplayCards('extracurricular_activities', 'extracurricular-container'),
     fetchAndDisplayCards('positions_of_responsibilities', 'por-container'),
+    fetchAndReturnLink('email_id', 'email_id-link'),
+    fetchAndReturnLink('linkedin', 'linkedin-link'),
+    fetchAndReturnLink('github', 'github-link'),
 
   ]).then(() => {
     // This code runs after all promises in Promise.all have resolved
