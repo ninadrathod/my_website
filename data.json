@@ -106,11 +106,15 @@
     },
     {
       "category": "areas_of_interest",
-      "interest_area": "Automations (RPA)"
+      "interest_area": "Automations - Shell and Python scripting"
     },
     {
       "category": "areas_of_interest",
       "interest_area": "Data Structures and Algorithm"
+    },
+    {
+      "category": "areas_of_interest",
+      "interest_area": "Full Stack Web Development"
     },
     {
         "category": "areas_of_interest",

@@ -55,6 +55,7 @@ html.lenis body {
 
 @theme {
     --color-palette-body-bg: #EDF2FB;
+    --color-patette-bg-darker: #DCE4F5;
     --color-palette-mid-dark-purple: #7b2cbf;
     --color-dark-purple: #112A46;
     --color-light-purple: #e5d2f5;
@@ -143,6 +144,13 @@ html.lenis body {
     font-weight: 300;
     font-style: normal;
   }
+
+  .montserrat-light-i {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: italic;
+  }
   
   .montserrat-regular {
     font-family: "Montserrat", sans-serif;
@@ -158,11 +166,11 @@ html.lenis body {
     }
 
     .left {
-        @apply w-[50%] text-right py-[2%] pr-[2%];
+        @apply w-[50%] text-right py-[2%] pr-[2%] text-seashell;
     }
 
     .right {
-        @apply w-[50%] text-left py-[2%] pl-[2%];
+        @apply w-[50%] text-left py-[2%] pl-[2%] text-seashell;
     }
 
     .project-card {

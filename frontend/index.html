@@ -31,7 +31,7 @@
    
     <header id="top-box" class="bg-black opacity-80 flex justify-center flex-col sticky top-0 z-100">
       <!--<iframe class="top-0 left-0 h-full w-full absolute object-cover -z-10 " src="https://www.youtube.com/embed/X-HL-r5TOiU?si=VVdYWCzomRdG9_at&amp;controls=0&amp;autoplay=1&amp;mute=1&amp;loop=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>-->
-      <div id="name-display" class="text-white montserrat-regular text-4xl py-[2%] px-10 tracking-widest text-center">Loading Name</div>
+      <div id="name-display" class="text-white montserrat-regular text-4xl py-[1%] px-10 tracking-widest text-center">Loading Name</div>
       <div id="summary-display" class="text-white montserrat-extralight text-xl py-[1%] px-[2%] text-center tracking-wider">Loading Summary</div>  
     </header>
 
@@ -43,12 +43,19 @@
         <div id="work-experience-container" class="mt-[2%] text-center flex flex-col lg:flex-row items-center lg:items-stretch justify-center">Loading Work Experience...</div>
       </div>
 
-      <!-- education -->
-      <div id="education-box" class="flex flex-col mt-10">
-        <div class="montserrat-regular text-xl text-center tracking-widest mb-10">EDUCATION</div>
-        <div id="education-container">Loading Education...</div>
+      <!-- areas of interest and education -->
+      <div id="interest-areas-and-education" class="flex flex-col lg:flex-row my-[3%] items-center justify-center shadow-2xl bg-gradient-to-r from-fuchsia-900 via-purple-900 to-indigo-900">
+          <!-- areas of interest -->
+          <div id="areas-of-interest-box" class="h-[10%] w-[40%] lg:w-[22%] my-[2%] p-[2%] backdrop-blur-md bg-white/10 border border-white/20 rounded-xl shadow-lg ">
+            <div class="montserrat-regular text-xl text-left tracking-widest mb-10 text-seashell">AREAS OF INTEREST</div>
+            <div id="areas-of-interest-container">Loading Areas of Interest...</div>
+          </div>
+          <!-- education -->
+          <div id="education-box" class="flex flex-col ml-[6%] w-[50%] my-[1%]">
+            <div class="montserrat-regular text-xl text-center tracking-widest mb-10 text-seashell">EDUCATION</div>
+            <div id="education-container">Loading Education...</div>
+          </div>
       </div>
-
       <!-- project on left and skills on right -->
       
       <div id="projects-and-skills" class="flex flex-col lg:flex-row items-center justify-center">
@@ -57,12 +64,19 @@
           <div class="montserrat-regular text-xl text-center tracking-widest mb-[2%]">PROJECTS</div>
           <div id="projects-container">Loading Projects...</div>
         </div>
-        <!-- Skills -->
-        <div id="skills" class="w-[60%] pr-[2%] lg:w-[20%] lg:ml-[5%] pl-[2%] hover:pl-[3%] py-[1%] bg-dark-purple text-seashell 
-        hover:scale-105 hover:shadow-2xl rounded-2xl transition-all duration-100 ease-in-out group">
-          <div class="montserrat-regular text-xl text-left tracking-widest mb-[2%]">SKILLS</div>
-          <div id="skills-container">Loading Skills...</div>
-        </div>  
+        
+          <!-- Skills -->
+       <!--<div id="skills" class="w-[60%] pr-[2%] lg:w-[20%] lg:ml-[5%] pl-[2%] hover:pl-[3%] py-[1%] bg-dark-purple text-seashell 
+        hover:scale-105 hover:shadow-2xl rounded-2xl transition-all duration-100 ease-in-out group">-->
+          
+         
+          <div id="skills" class="w-[60%] pr-[2%] lg:w-[20%] lg:ml-[5%] pl-[2%] py-[1%]
+          backdrop-blur-md bg-gray-300/50 border border-gray-400/50 rounded-xl shadow-lg">
+            <div class="montserrat-regular text-xl tracking-widest mb-[2%]">SKILLS</div>
+            <div id="skills-container">Loading Skills...</div>
+          </div>
+        
+        <!--</div>-->
       </div>
 
     </main>

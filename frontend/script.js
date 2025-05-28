@@ -89,6 +89,7 @@ async function fetchAndDisplayCards(category, containerId) {
     else if(category === 'publication')  { displayPublication(data.data, containerId); }
     else if(category === 'projects')     { displayProjects(data.data, containerId); }
     else if(category === 'technical_skills')     { displaySkills(data.data, containerId); }
+    else if(category === 'areas_of_interest')     { displayInterestAreas(data.data, containerId); }
   } catch (error) {
     console.error(`Error fetching ${category}:`, error);
     if(category === 'work_exp')
@@ -101,6 +102,8 @@ async function fetchAndDisplayCards(category, containerId) {
       { document.getElementById('projects-container').textContent = 'Failed to load projects.'; }
     else if(category === 'technical_skills')
       { document.getElementById('skills-container').textContent = 'Failed to load skills.'; }
+    else if(category === 'areas_of_interest')
+      { document.getElementById('areas-of-interest-container').textContent = 'Failed to load areas of interest.'; }
 
   }
 }
@@ -172,7 +175,6 @@ function displayEducation(educationData, containerId) {
   container.innerHTML = ''; // Clear any existing content
   //container.classList.add('w-full','text-center','flex border-2');
   
-  let x = 1; 
   if (educationData && educationData.length > 0) {
      
     educationData.forEach(education => {
@@ -182,17 +184,11 @@ function displayEducation(educationData, containerId) {
       
       const collegeDiv = document.createElement('div');
       const line = document.createElement('div');
-      line.classList.add('border-r-1','border-gray-500');
+      line.classList.add('border-r-1','border-seashell');
       const yearsDiv = document.createElement('div');
 
-      if(x==1){
-        collegeDiv.classList.add('left');
-        yearsDiv.classList.add('right');        
-      }
-      else{
-        collegeDiv.classList.add('right');
-        yearsDiv.classList.add('left');
-      }
+      collegeDiv.classList.add('left');
+      yearsDiv.classList.add('right');        
       
           const headingPara = document.createElement('p');
           headingPara.classList.add('monserrat-regular','text-lg','tracking-wider');
@@ -218,20 +214,13 @@ function displayEducation(educationData, containerId) {
       
       yearsDiv.appendChild(durationPara);
 
-      if(x==1){
         educationDiv.appendChild(collegeDiv);
         educationDiv.appendChild(line);
         educationDiv.appendChild(yearsDiv);
-      }
-      else{
-        educationDiv.appendChild(yearsDiv);
-        educationDiv.appendChild(line);
-        educationDiv.appendChild(collegeDiv);
-      }
       
       container.appendChild(educationDiv);
       
-      x = (x%2)+1;
+   
     });
   } else {
     container.textContent = 'No education data available.';
@@ -274,6 +263,21 @@ function displayProjects(projectsData, containerId) {
     container.textContent = 'No project data available.';
   }
 }
+function displayInterestAreas(interestAreasData, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ''; // Clear any existing content
+
+  if (interestAreasData && interestAreasData.length > 0) {
+    interestAreasData.forEach(interest => {
+      const interestsDiv = document.createElement('div');
+      interestsDiv.classList.add('my-[2.5%]','montserrat-light-i','text-seashell');
+      interestsDiv.textContent = `> ${interest.interest_area}`;      
+      container.appendChild(interestsDiv);
+    });
+  } else {
+    container.textContent = 'No areas of interests data available.';
+  }
+}
 
 function displaySkills(skillsData, containerId) {
   const container = document.getElementById(containerId);
@@ -294,12 +298,12 @@ function displaySkills(skillsData, containerId) {
       
       // Create a list for specific skills
       const specificListDiv = document.createElement('div');
-      specificListDiv.classList.add('montserrat-light','ml-[3%]','mt-[1%]'); // Indent the list
+      specificListDiv.classList.add('montserrat-light-i','ml-[3%]','mt-[1%]'); // Indent the list
 
       if (skill.specific_list && skill.specific_list.length > 0) {
         skill.specific_list.forEach(name => {
           const skillItem = document.createElement('p');
-          skillItem.classList.add('mb-[1%]'); // Small margin below each item
+          //skillItem.classList.add('mb-[1%]'); // Small margin below each item
           skillItem.textContent = name;
           specificListDiv.appendChild(skillItem);
         });
@@ -381,6 +385,7 @@ window.addEventListener('load', () => {
     fetchAndDisplayCards('education', 'education-container'),
     fetchAndDisplayCards('projects', 'projects-container'),
     fetchAndDisplayCards('technical_skills', 'skills-container'),
+    fetchAndDisplayCards('areas_of_interest', 'areas-of-interest-container'),
   ]).then(() => {
     // This code runs after all promises in Promise.all have resolved
     loaderContainer.classList.remove('visible');
@@ -436,22 +441,22 @@ window.addEventListener('load', () => {
 
     ScrollTrigger.create({
       trigger: "main",      // The element that triggers the action
-      start: "top 36%",     // When the top of 'main' hits 10% from viewport top
+      start: "top 31%",     // When the top of 'main' hits 10% from viewport top
       scroller: "body",     // Explicitly use the body as the scroller
       markers: true,        // Uncomment for visual debugging
       onEnter: () => {
         // When scrolling down and the trigger is met, smoothly animate to the LEFT (34vw)
-        gsap.to("#name-display", { x: "-30vw", paddingTop: "2%", paddingBottom: "2%", duration: 1, ease: "sine.in" });
+        gsap.to("#name-display", { x: "-30vw", paddingTop: "1%", paddingBottom: "1%", duration: 1, ease: "sine.in" });
       },
       onLeaveBack: () => {
         // When scrolling up and passing the trigger point again, smoothly animate back to CENTER (x: 0)
-        gsap.to("#name-display", { x: 0, paddingTop: "2%", paddingBottom: "2%", duration: 1, ease: "sine.in" });
+        gsap.to("#name-display", { x: 0, paddingTop: "1%", paddingBottom: "1%", duration: 1, ease: "sine.in" });
       }
     });
 
     ScrollTrigger.create({
       trigger: "main",      // The element that triggers the action
-      start: "top 36%",     // When the top of 'main' hits 10% from viewport top
+      start: "top 31%",     // When the top of 'main' hits 10% from viewport top
       scroller: "body",     // Explicitly use the body as the scroller
       markers: true,        // Uncomment for visual debugging
       onEnter: () => {
