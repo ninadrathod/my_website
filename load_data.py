@@ -6,7 +6,7 @@ import datetime
 
 def get_illustration_files(base_directory=None):
     """
-    Gets a list of file names from the 'frontend/illustrations/' subdirectory.
+    Gets a list of file names from the 'backend/illustrations/' subdirectory.
 
     Args:
         base_directory (str, optional): The base directory from which to start.
@@ -20,7 +20,7 @@ def get_illustration_files(base_directory=None):
     if base_directory is None:
         base_directory = os.getcwd() # Get the current working directory
 
-    illustrations_dir = os.path.join(base_directory, "frontend", "illustrations")
+    illustrations_dir = os.path.join(base_directory, "backend", "illustrations")
 
     file_list = []
     if os.path.isdir(illustrations_dir):
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     # ---------- get list of files in illustration directory ----------------
     illustration_files = get_illustration_files()
     if illustration_files:
-        print("Files in frontend/illustrations/ directory:")
+        print("Files in backend/illustrations/ directory:")
         for filename in illustration_files:
             print(f"- {filename}")
     else:
