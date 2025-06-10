@@ -23,3 +23,5 @@ To run this project locally, ensure you have Docker Desktop installed. Then:
 | `/api/data`              | Retrieves all resume data.                                                                                                                                                                                                                                          |
 | `/api/data/{category}`   | Fetches resume data for a specific category. Replace `{category}` with one of the following: `work_exp`, `education`, `publication`, `certificates`, `projects`, `technical_skills`, `areas_of_interest`, `awards_and_recognitions`, `positions_of_responsibilities`, `extracurricular_activities`. |
 | `/api/metadata/{property}` | Retrieves a specific property from the resume metadata. Replace `{property}` with one of the following: `name`, `bio`, `summary`, `email_id`, `linkedin`, `github`.                                                                                                  |
+### Command to access mongodb data from terminal window: 
+mongosh mongodb://admin:qwerty@localhost:27017
