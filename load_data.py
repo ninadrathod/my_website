@@ -138,13 +138,13 @@ if __name__ == "__main__":
     illustration_paths_collection_name = "illustration_paths"
     
     # ---------- get list of files in illustration directory ----------------
-    illustration_files = get_illustration_files()
-    if illustration_files:
-        print("Files in backend/illustrations/ directory:")
-        for filename in illustration_files:
-            print(f"- {filename}")
-    else:
-        print("No illustration files found or directory does not exist.")
+    # illustration_files = get_illustration_files()
+    # if illustration_files:
+    #     print("Files in backend/illustrations/ directory:")
+    #     for filename in illustration_files:
+    #         print(f"- {filename}")
+    # else:
+    #     print("No illustration files found or directory does not exist.")
     
     # -----------------------------------------------------------------------
 
@@ -158,7 +158,7 @@ if __name__ == "__main__":
         print(metadata)
         insert_data_to_mongodb(metadata, connection_string, database_name, collection2_name)
 
-    manage_illustration_paths_collection(
-        illustration_files,
-        connection_string,
-        database_name)
+    # manage_illustration_paths_collection(
+    #     illustration_files,
+    #     connection_string,
+    #     database_name)

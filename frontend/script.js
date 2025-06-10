@@ -562,3 +562,10 @@ tabs.forEach((tab, index) => {
     tabs[index].classList.add('is-active');
   });
 });
+
+let inputFile = document.getElementById('input-file');
+let profilePic= document.getElementById('profile-pic');
+
+inputFile.onchange = function(){
+ //rofilePic.src = URL.createObjectURL(this.files[0]);
+}

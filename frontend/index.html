@@ -57,7 +57,7 @@
     <main class="mb-10">
       <div class="tabs">
 
-        <div class="tabs__head flex my-[2%] mx-[30%] border-1 rounded-3xl ">
+        <div class="tabs__head flex my-[2%] mx-[30%] border-1 rounded-3xl transition-all duration-300 ease-in-out">
           <span class="tabs__toggle flex-1 montserrat-regular text-center py-2 px-4 rounded-s-3xl is-active">My Info</span>
           <span class="tabs__toggle flex-1 montserrat-regular text-center py-2 px-4 rounded-e-3xl">Illustration Gallery</span>
         </div>
@@ -129,7 +129,15 @@
             </div>
             
             <div class="tabs__content">
-                <h1>Second tab</h1>
+                
+              <div id="upload_card" class="w-full flex justify-around">
+                   <div class="upload px-[5%] py-[1%] border-2 rounded-3xl bg-orange-500 hover:bg-orange-700 transition-all duration-300 ease-in-out cursor-pointer text-white montserrat-regular">
+                    <form action="/upload" method="POST" enctype="multipart/form-data">
+                     <label for="input-file">Upload Illustration</label>
+                     <input type="file" accept="image/jpeg, image/png, image/jpg" id="input-file" class="hidden"></input>
+                    </form>
+                    </div>
+              </div>
 
             </div>
         </div>
