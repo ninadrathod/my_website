@@ -546,12 +546,19 @@ window.addEventListener('load', () => {
 
 const header = document.querySelector('#top-box');
 
-//window.addEventListener('scroll', () => {
-//  const scrollPosition = window.scrollY;
+let tabs = document.querySelectorAll('.tabs__toggle'),
+    contents = document.querySelectorAll('.tabs__content');
 
-//}
+tabs.forEach((tab, index) => {
+  tab.addEventListener('click', () => {
+    contents.forEach((content) => {
+      content.classList.remove('is-active');
+    });
+    tabs.forEach((tab) => {
+      tab.classList.remove('is-active');
+    });
 
-/*
-Color palettes:
-https://colorhunt.co/palette/3d8d7ab3d8a8fbffe4a3d1c6
-*/
+    contents[index].classList.add('is-active');
+    tabs[index].classList.add('is-active');
+  });
+});

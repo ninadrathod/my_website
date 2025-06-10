@@ -1,5 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+html {
+  overflow-y: scroll;
+}
+
+.tabs__toggle{
+  cursor: pointer;
+}
+
+.tabs__toggle.is-active{
+  background: #e5d2f5;
+}
+
+.tabs__content{
+  display: none;
+}
+
+.tabs__content.is-active{
+  display: block;
+}
+
 @keyframes circle {
   50% {
     transform: scale(1.4);
