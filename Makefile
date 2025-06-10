@@ -19,6 +19,7 @@ build:
 	@echo "Building and starting Docker Compose application..."
 	docker-compose up -d --build
 	docker exec -d -it frontend npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch
+	python3 load_data.py
 	@echo "Docker Compose application is running."
 
 initial_build: backend_install frontend_install build
