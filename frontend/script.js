@@ -532,7 +532,50 @@ async function initializeMyInfoContent() {
 // It is now simplified to reflect the minimal content of illustrations_tab_content.html
 function initializeIllustrationFormAndGallery() {
   console.log("Initializing Illustration Gallery tab content (simplified).");
-  // No need to select or attach listeners to form/file inputs/gallery containers
-  // as they are no longer present in illustrations_tab_content.html.
-  // If you re-add complex logic later, ensure to re-add element selections and event listeners.
+  const uploadForm = document.getElementById('uploadForm');
+  const uploadResponseDiv = document.getElementById('uploadResponse');
+  const imageUploadInput = document.getElementById('imageUpload');
+
+  uploadForm.addEventListener('submit', async (event) => {
+      event.preventDefault(); // Prevent the default form submission (page reload)
+
+      // Clear previous response message
+      uploadResponseDiv.textContent = '';
+      uploadResponseDiv.style.color = 'black'; // Reset color
+
+      // Check if a file is selected
+      if (imageUploadInput.files.length === 0) {
+          uploadResponseDiv.style.color = 'red';
+          uploadResponseDiv.textContent = 'Please select an image to upload.';
+          return;
+      }
+
+      const formData = new FormData();
+      formData.append('myImage', imageUploadInput.files[0]); // 'myImage' must match the name in multer.single()
+
+      try {
+          // Make the POST request to the backend's upload endpoint
+          const response = await fetch('http://localhost:3002/upload', {
+              method: 'POST',
+              body: formData // No Content-Type header needed for FormData; fetch sets it automatically
+          });
+
+          const message = await response.text(); // Get the response text (success or error message)
+
+          if (response.ok) {
+              uploadResponseDiv.style.color = 'green';
+              uploadResponseDiv.textContent = 'Upload successful: ' + message;
+              // Optional: Clear the file input after successful upload
+              imageUploadInput.value = '';
+          } else {
+              uploadResponseDiv.style.color = 'red';
+              uploadResponseDiv.textContent = 'Upload failed: ' + message;
+          }
+      } catch (error) {
+          console.error('Network error during upload:', error);
+          uploadResponseDiv.style.color = 'red';
+          uploadResponseDiv.textContent = 'Network error: Could not reach the backend.';
+      }
+  });
 }
+

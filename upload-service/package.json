@@ -1,0 +1,21 @@
+{
+  "name": "upload-service",
+  "version": "1.0.0",
+  "description": "Dedicated service for handling image uploads and illustration data.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "latest",
+    "express": "latest",
+    "multer": "latest"
+  },
+  "devDependencies": {
+    "cors": "latest",
+    "express": "latest",
+    "multer": "^2.0.1",
+    "nodemon": "latest"
+  }
+}

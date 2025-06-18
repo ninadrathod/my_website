@@ -1,12 +1,24 @@
 # Define project paths
 BACKEND_DIR := backend
 FRONTEND_DIR := frontend
+UPLOAD_SERVICE_DIR := upload-service
+
+setup-images-dir:
+	@echo "Ensuring upload-service/images directory exists and has write permission..."
+	mkdir -p $(UPLOAD_SERVICE_DIR)/images
+	chmod 777 $(UPLOAD_SERVICE_DIR)/images 
 
 # Target to install backend dependencies
 backend_install:
 	@echo "Installing backend dependencies..."
 	cd $(BACKEND_DIR) && npm install
 	@echo "Backend dependencies installed."
+
+# Target to install backend dependencies
+upload_service_install:
+	@echo "Installing upload service dependencies..."
+	npm install --prefix ./$(UPLOAD_SERVICE_DIR)
+	@echo "Upload service dependencies installed."
 
 # Target to install frontend dependencies
 frontend_install:
@@ -22,7 +34,8 @@ build:
 	python3 load_data.py
 	@echo "Docker Compose application is running."
 
-initial_build: backend_install frontend_install build
+
+initial_build: setup-images-dir backend_install upload_service_install frontend_install build
 
 up:
 	@echo "Building and starting Docker Compose application..."
@@ -40,20 +53,14 @@ down:
 rebuild: down build
 
 destroy_project:
-	@echo "Destroying all containers"
-	docker-compose down
-	docker image prune
-	docker volume prune
-	docker network prune
-	docker system prune -a --volumes
-	docker system prune -a
-	@echo "All project containers destroyed"
-	@echo "Deleting node modules and other residual files"
-	cd $(BACKEND_DIR) && rm -rf node_modules
-	cd $(BACKEND_DIR) && rm package-lock.json
-	cd $(FRONTEND_DIR) && rm -rf node_modules
-	cd $(FRONTEND_DIR) && rm package-lock.json
-	cd $(FRONTEND_DIR) && rm src/output.css
-	@echo "Deleted"
+	@echo "Destroying all containers, images, volumes, and networks..."
+	docker-compose down --volumes --rmi all # Stop and remove containers, volumes, and images
+	docker system prune -a --volumes -f # Aggressively prune everything
+	@echo "All Docker resources related to project destroyed."
+	@echo "Deleting node modules and other residual files from host directories..."
+	rm -rf $(BACKEND_DIR)/node_modules $(BACKEND_DIR)/package-lock.json
+	rm -rf $(FRONTEND_DIR)/node_modules $(FRONTEND_DIR)/package-lock.json $(FRONTEND_DIR)/src/output.css
+	rm -rf $(UPLOAD_SERVICE_DIR)/node_modules $(UPLOAD_SERVICE_DIR)/package-lock.json $(UPLOAD_SERVICE_DIR)/images/*
+	@echo "Clean-up complete."
 
-.PHONY: backend_install frontend_install initial_build build down rebuild destroy_project
+.PHONY: backend_install upload_service_install frontend_install initial_build build up down rebuild destroy_project

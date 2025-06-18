@@ -45,6 +45,27 @@ services:
       timeout: 5s
       retries: 5
     restart: always
+  upload-service:
+    image: ninadrathod/my-website-upload-service
+    build:
+      context: ./upload-service
+      dockerfile: Dockerfile
+    container_name: upload-service
+    networks:
+      - my-website-network
+    ports:
+      - 3002:3002 # Host port 3002 maps to container's internal port 3002
+    volumes:
+      # OPTIONAL: Map a local 'uploads' directory to persist images outside the container
+      - ./upload-service:/app 
+    environment:
+      - PORT=3002
+    healthcheck:
+      test: wget -qO- http://localhost:3002/health | grep -q 'OK'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always  
   frontend:
     image: ninadrathod/my-website-frontend
     build:
@@ -60,6 +81,7 @@ services:
     working_dir: /app
     depends_on:
       - backend
+      - upload-service
     restart: always
   
 networks:
