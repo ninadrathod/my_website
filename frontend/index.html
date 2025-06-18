@@ -58,92 +58,20 @@
       <div class="tabs">
 
         <div class="tabs__head flex my-[2%] mx-[30%] border-1 rounded-3xl transition-all duration-300 ease-in-out">
-          <span class="tabs__toggle flex-1 montserrat-regular text-center py-2 px-4 rounded-s-3xl is-active">My Info</span>
-          <span class="tabs__toggle flex-1 montserrat-regular text-center py-2 px-4 rounded-e-3xl">Illustration Gallery</span>
+          <!-- Added data-tab-target attributes to link to content files -->
+          <span class="tabs__toggle flex-1 montserrat-regular text-center py-2 px-4 rounded-s-3xl is-active" data-tab-target="my_info_tab_content.html">My Info</span>
+          <span class="tabs__toggle flex-1 montserrat-regular text-center py-2 px-4 rounded-e-3xl" data-tab-target="illustrations_tab_content.html">Illustration Gallery</span>
         </div>
 
         <div class="tabs__body">
-            <div class="tabs__content is-active">
-                <!-- Work experience -->
-                <div id="work-exp-outer-container" class="flex justify-center flex-col relative mt-[5%]">
-                  <div class="montserrat-regular text-xl text-center tracking-widest">WORK EXPERIENCE</div>
-                  <div id="work-experience-container" class="mt-[2%] text-center flex flex-col lg:flex-row items-center lg:items-stretch justify-center">Loading Work Experience...</div>
-                </div>
-
-                <!-- areas of interest and education -->
-                <div id="interest-areas-and-education" class="flex flex-col lg:flex-row my-[3%] items-center justify-center shadow-2xl bg-gradient-to-r from-fuchsia-900 via-purple-900 to-indigo-900">
-                    <!-- areas of interest -->
-                    <div id="areas-of-interest-box" class="h-[10%] w-[40%] lg:w-[22%] my-[2%] p-[2%] backdrop-blur-md bg-white/10 border border-white/20 rounded-xl shadow-lg ">
-                      <div class="montserrat-regular text-xl text-left tracking-widest mb-10 text-seashell">AREAS OF INTEREST</div>
-                      <div id="areas-of-interest-container">Loading Areas of Interest...</div>
-                    </div>
-                    <!-- education -->
-                    <div id="education-box" class="flex flex-col ml-[6%] w-[50%] my-[1%] py-[2%] lg:translate-x-[15%]">
-                      <div class="montserrat-regular text-xl text-center tracking-widest mb-10 text-seashell">EDUCATION</div>
-                      <div id="education-container">Loading Education...</div>
-                    </div>
-                </div>
-
-                <!-- project on left and skills on right -->
-                <div id="projects-and-skills" class="flex flex-col lg:flex-row items-center justify-center">
-                  <!-- Projects -->
-                  <div id="projects" class="w-[60%] py-[1%]">
-                    <div class="montserrat-regular text-xl text-center tracking-widest mb-[2%]">PROJECTS</div>
-                    <div id="projects-container">Loading Projects...</div>
-                  </div>
-                  
-                  <!-- Skills -->         
-                  <div id="skills" class="w-[60%] pr-[2%] lg:w-[20%] lg:ml-[5%] pl-[2%] py-[1%] mb-[2%]
-                    backdrop-blur-md bg-gray-300/50 border border-gray-400/50 rounded-xl shadow-lg
-                    hover:scale-105 hover:rotate-6 transition-all duration-300 ease-in-out">
-                    <div class="absolute right-[5%] h-7 w-7 rounded-full bg-palette-body-bg border-1 border-gray-400 inset-shadow-sm z-50"></div>
-                    <div class="montserrat-regular text-xl tracking-widest mb-[2%]">SKILLS</div>
-                    <div id="skills-container">Loading Skills...</div>
-                  </div>
-                </div>
-
-                <!-- publication -->
-                <div id="publication-block" class="flex flex-col p-[3%] items-center justify-center shadow-2xl
-                    gradient-teal-dusk">
-                    <div class="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl shadow-lg pt-[2%]"> 
-                      <div class="montserrat-regular text-xl text-center tracking-widest text-seashell mb-[2%] ">PUBLICATION</div>
-                      <div id="publication-container">Loading Publication...</div>
-                    </div>
-                </div>
-
-                <!-- extracurricular and pors -->
-                <div id="extracurricular-and-pors" class="flex flex-col lg:flex-row items-center justify-center lg:items-start mt-[2%]">
-                    <!-- extracurricular activities -->
-                  <div id="extracurricular-block" class="w-[45%] py-[1%] px-[2%]">
-                    <div class="montserrat-regular text-xl text-center tracking-widest mb-[5%]">EXTRACURRICULAR ACTIVITIES</div>
-                    <div id="extracurricular-container">Loading Extracurricular Activities...</div>
-                  </div>
-                  
-                  <!-- PORs -->         
-                  <div id="por-block" class="w-[45%] py-[1%] px-[2%]">
-                    <div class="montserrat-regular text-xl text-center tracking-widest mb-[5%]">POSITIONS OF RESPONSIBILITY</div>
-                    <div id="por-container">Loading PORs...</div>
-                  </div>
-
-                </div>
-            </div>
-            
-            <div class="tabs__content">
-                
-              <div id="upload_card" class="w-full flex justify-around">
-                   <div class="upload px-[5%] py-[1%] border-2 rounded-3xl bg-orange-500 hover:bg-orange-700 transition-all duration-300 ease-in-out cursor-pointer text-white montserrat-regular">
-                    <form action="/upload" method="POST" enctype="multipart/form-data">
-                     <label for="input-file">Upload Illustration</label>
-                     <input type="file" accept="image/jpeg, image/png, image/jpg" id="input-file" class="hidden"></input>
-                    </form>
-                    </div>
-              </div>
-
+            <!-- This div will now act as the single container for all tab content -->
+            <div id="tabs-content-container" class="tabs__content is-active">
+                Loading tab content...
+                <!-- Content will be dynamically loaded here by script.js -->
             </div>
         </div>
       
       </div>
-
     </main>
 
     <footer>
@@ -155,7 +83,7 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
   <script src="https://unpkg.com/lenis@1.3.3/dist/lenis.min.js"></script> 
-  
   <script src="script.js"></script>
+
 </body>
 </html>

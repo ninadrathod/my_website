@@ -1,5 +1,4 @@
 // scrolling transitions
-
 // Initialize a new Lenis instance for smooth scrolling
 const lenis = new Lenis({
   damping: 0.5,
@@ -19,103 +18,156 @@ gsap.ticker.lagSmoothing(0);
 
 //---------------
 
-/*gsap.from("#page-content #top-box #top-box-text #name-display",{
-  transform: translateX(-100),
-  duration: 2,
-  scrollTrigger:{
-    trigger: "#page-content #top-box #top-box-text #name-display",
-    scroller: "body",
-    markers: true
-  }
-})
-*/
-//---------------------------------------------------
+// Global elements that are *always* present in index.html (not inside dynamic tabs)
+const loaderContainer = document.querySelector('#loader-container');
+const pageContent = document.querySelector('#page-content');
+const topBox = document.querySelector('#top-box'); // Header element
+const mainContent = document.querySelector('main'); // Main content area
 
-async function fetchAndDisplayProperty(property, displayPropertyId) {
+// IMPORTANT: Main container for dynamically loaded tab content
+const tabsContentContainer = document.getElementById('tabs-content-container');
+const tabToggles = document.querySelectorAll('.tabs__toggle');
+
+// Base URL for your main backend service (resume data)
+const MAIN_BACKEND_API_URL = 'http://localhost:3001';
+// Base URL for your upload service backend (even though it's simplified for now, keep the constant)
+const UPLOAD_SERVICE_API_URL = 'http://localhost:3002';
+
+// Mapping of tab data-target to their respective HTML file paths
+const tabContentFileMap = {
+  'my_info_tab_content.html': 'my_info_tab_content.html',
+  'illustrations_tab_content.html': 'illustrations_tab_content.html'
+};
+
+// --- Core Function to Load Tab Content ---
+async function loadTabContent(filePath) {
+  if (!tabsContentContainer) {
+    console.error("Tabs content container not found! Cannot load tab content.");
+    return;
+  }
+
+  tabsContentContainer.innerHTML = 'Loading content...'; // Display loading message
+
   try {
-    const apiUrl = `http://localhost:3001/api/metadata/${property}`;
-    const response = await fetch(apiUrl);
+    const response = await fetch(filePath);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`Failed to load ${filePath}: ${response.statusText}`);
     }
-    const data = await response.json();
-    document.getElementById(displayPropertyId).textContent = data.data;
+    const htmlContent = await response.text();
+
+    tabsContentContainer.innerHTML = htmlContent; // Insert the fetched HTML
+
+    // After new HTML is loaded, initialize JavaScript specific to that tab's content
+    if (filePath === tabContentFileMap['my_info_tab_content.html']) {
+      await initializeMyInfoContent(); // Use await as it fetches data
+    } else if (filePath === tabContentFileMap['illustrations_tab_content.html']) {
+      // No await needed here as the function is now synchronous and doesn't fetch data
+      initializeIllustrationFormAndGallery();
+    }
+
+    // Hide loader and show page content after the *first* tab's content is fully loaded
+    // This part ensures the initial page loader disappears once the first tab's content is ready.
+    if (loaderContainer.classList.contains('visible')) {
+      loaderContainer.classList.remove('visible');
+      loaderContainer.classList.add('invisible');
+      pageContent.classList.remove('invisible');
+      pageContent.classList.add('visible');
+    }
+
   } catch (error) {
-    console.error(`Error fetching ${property}`, error);
-    document.getElementById(displayPropertyId).textContent = 'Failed to load name.';
+    console.error('Error loading tab content:', error);
+    tabsContentContainer.innerHTML = `<p class="text-red-500">Failed to load content: ${error.message}</p>`;
+
+    // Hide loader even on error, so user can see error message
+    if (loaderContainer.classList.contains('visible')) {
+      loaderContainer.classList.remove('visible');
+      loaderContainer.classList.add('invisible');
+      pageContent.classList.remove('invisible');
+      pageContent.classList.add('visible');
+    }
   }
 }
 
-async function fetchAndReturnLink(property, linkId) {
+// --- Helper Functions for Data Fetching (Reusable for My Info tab) ---
+async function fetchAndDisplayProperty(property, displayPropertyId) {
+  const element = document.getElementById(displayPropertyId);
+  if (!element) {
+    console.warn(`Element with ID '${displayPropertyId}' not found for property '${property}'.`);
+    return; // Don't throw error if element isn't found, just skip
+  }
   try {
-    const apiUrl = `http://localhost:3001/api/metadata/${property}`;
+    const apiUrl = `${MAIN_BACKEND_API_URL}/api/metadata/${property}`;
     const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    const linkElement = document.getElementById(linkId);
-    if (linkElement) 
-    {
+    element.textContent = data.data;
+  } catch (error) {
+    console.error(`Error fetching ${property}:`, error);
+    element.textContent = `Failed to load ${property}.`;
+  }
+}
+
+async function fetchAndReturnLink(property, linkElementId) {
+  const linkElement = document.getElementById(linkElementId);
+  if (!linkElement) {
+    console.warn(`Link element with ID '${linkElementId}' not found for property '${property}'.`);
+    return;
+  }
+  try {
+    const apiUrl = `${MAIN_BACKEND_API_URL}/api/metadata/${property}`;
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.data) {
       if (property === 'email_id') {
         linkElement.href = `mailto:${data.data}`;
       } else {
         linkElement.href = data.data;
       }
-    } 
-    else 
-    {
-      console.error(`Link element with ID '${linkId}' not found.`);
+    } else {
+        linkElement.href = '#'; // Set a default or empty link if no data
+        console.warn(`No data received for link property: ${property}`);
     }
   } catch (error) {
-    console.error(`Error fetching ${property}:`, error);
-    const linkElement = document.getElementById(linkId);
-    if (linkElement) {
-      linkElement.href = '#'; // Set a default or error link
-    }
+    console.error(`Error fetching ${property} link:`, error);
+    linkElement.href = '#'; // Set a default or error link
   }
 }
 
-async function fetchAndDisplayCards(category, containerId) {
+async function fetchAndDisplayCards(category, containerId, displayFunction) {
+  const container = document.getElementById(containerId);
+  if (!container) {
+    console.warn(`Container with ID '${containerId}' not found for category '${category}'.`);
+    return;
+  }
+  container.innerHTML = `Loading ${category} data...`; // Loading message
   try {
-    apiUrl = `http://localhost:3001/api/data/${category}`
+    const apiUrl = `${MAIN_BACKEND_API_URL}/api/data/${category}`;
     const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    if(category === 'work_exp')          { displayWorkExperience(data.data, containerId); } 
-    else if(category === 'education')    { displayEducation(data.data, containerId); }
-    else if(category === 'publication')  { displayPublication(data.data, containerId); }
-    else if(category === 'projects')     { displayProjects(data.data, containerId); }
-    else if(category === 'technical_skills')     { displaySkills(data.data, containerId); }
-    else if(category === 'areas_of_interest')     { displayInterestAreas(data.data, containerId); }
-    else if(category === 'extracurricular_activities') {displayExtracurricularActivities(data.data, containerId);}
-    else if(category === 'positions_of_responsibilities') {displayPOR(data.data, containerId);}
+    if (data.data && data.data.length > 0) {
+      displayFunction(data.data, containerId); // Call specific display function
+    } else {
+      container.textContent = `No ${category} data available.`;
+    }
   } catch (error) {
     console.error(`Error fetching ${category}:`, error);
-    if(category === 'work_exp')
-    { document.getElementById(containerId).textContent = 'Failed to load work experience.'; }
-    else if(category === 'education')
-    { document.getElementById(containerId).textContent = 'Failed to load education.'; }
-    else if(category === 'publication')
-    { document.getElementById(containerId).textContent = 'Failed to load publication.'; }
-    else if(category === 'projects')
-      { document.getElementById(containerId).textContent = 'Failed to load projects.'; }
-    else if(category === 'technical_skills')
-      { document.getElementById(containerId).textContent = 'Failed to load skills.'; }
-    else if(category === 'areas_of_interest')
-      { document.getElementById(containerId).textContent = 'Failed to load areas of interest.'; }
-    else if(category === 'extracurricular_activities')
-      { document.getElementById(containerId).textContent = 'Failed to load extracurricular activities.'; }
-    else if(category === 'positions_of_responsibilities')
-      { document.getElementById(containerId).textContent = 'Failed to load positions of responsibilities.'; }
+    container.textContent = `Failed to load ${category}.`;
   }
 }
 
+// --- Display/Formatting Functions for Resume Data (These were already in your script) ---
 function displayWorkExperience(workExperienceData, containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = ''; // Clear any existing content
+  const container = document.getElementById(containerId); // Re-select inside here
+  if (!container) return; // Guard against element not found (though it should be if called correctly)
+  container.innerHTML = '';
   
   if (workExperienceData && workExperienceData.length > 0) {
     workExperienceData.forEach(experience => {
@@ -123,44 +175,36 @@ function displayWorkExperience(workExperienceData, containerId) {
       experienceDiv.classList.add('card','mb-[2.5%]','lg:mb-[0%]');
 
       const headingPara = document.createElement('p');
-
           const companyHeading = document.createElement('span');
           companyHeading.classList.add('montserrat-regular');
           companyHeading.textContent = experience.Company;
-
           const companyLocation = document.createElement('span');
           companyLocation.classList.add('montserrat-light');
           companyLocation.textContent = `, ${experience.Location}`;
-
           headingPara.appendChild(companyHeading);
           headingPara.appendChild(companyLocation);
        
       const rolePara = document.createElement('p');
           rolePara.classList.add('mt-3');
-
           const role =document.createElement('span');
           role.classList.add('montserrat-regular','text-sm');
           role.textContent = 'Designation: ';
-          
           const roleDesc = document.createElement('span');
           roleDesc.classList.add('montserrat-light', 'text-sm');
           roleDesc.textContent = experience.Role;
-
           rolePara.appendChild(role);
           rolePara.appendChild(roleDesc);
 
       const durationPara = document.createElement('p');
       durationPara.classList.add('montserrat-extralight', 'text-sm', 'mt-3');
-      to_month_year = experience.to_month_year ? ' to ' + experience.to_month_year : ' to Present'
+      const to_month_year = experience.to_month_year ? ' to ' + experience.to_month_year : ' to Present'
       durationPara.textContent = `${experience.from_month_year}${to_month_year}`;
 
       const responsibilitiesPara = document.createElement('p');
         responsibilitiesPara.classList.add('mt-3');
-
         const responsibilitiesParagraph = document.createElement('span');
         responsibilitiesParagraph.classList.add('montserrat-light','text-sm');
         responsibilitiesParagraph.innerHTML = `${experience.responsibilities}`;
-
         responsibilitiesPara.appendChild(responsibilitiesParagraph);
 
       experienceDiv.appendChild(headingPara);
@@ -176,14 +220,12 @@ function displayWorkExperience(workExperienceData, containerId) {
 }
 
 function displayEducation(educationData, containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = ''; // Clear any existing content
-  //container.classList.add('w-full','text-center','flex border-2');
+  const container = document.getElementById(containerId); // Re-select inside here
+  if (!container) return;
+  container.innerHTML = '';
   
   if (educationData && educationData.length > 0) {
-     
     educationData.forEach(education => {
-      
       const educationDiv = document.createElement('div');
       educationDiv.classList.add('w-full','text-center','flex','mb-10','px-[10%]');
       
@@ -209,10 +251,9 @@ function displayEducation(educationData, containerId) {
 
           const durationPara = document.createElement('p');
           durationPara.classList.add('montserrat-extralight','text-lg');
-          to_month_year = education.to_month_year ? ' to ' + education.to_month_year : ' to Present'
+          const to_month_year = education.to_month_year ? ' to ' + education.to_month_year : ' to Present'
           durationPara.textContent = `${education.from_month_year}${to_month_year}`;
 
-      
       collegeDiv.appendChild(headingPara);
       collegeDiv.appendChild(degreePara);
       collegeDiv.appendChild(scorePara);
@@ -224,8 +265,6 @@ function displayEducation(educationData, containerId) {
         educationDiv.appendChild(yearsDiv);
       
       container.appendChild(educationDiv);
-      
-   
     });
   } else {
     container.textContent = 'No education data available.';
@@ -233,8 +272,9 @@ function displayEducation(educationData, containerId) {
 }
 
 function displayProjects(projectsData, containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = ''; // Clear any existing content
+  const container = document.getElementById(containerId); // Re-select inside here
+  if (!container) return;
+  container.innerHTML = '';
 
   if (projectsData && projectsData.length > 0) {
     projectsData.forEach(project => {
@@ -270,8 +310,9 @@ function displayProjects(projectsData, containerId) {
 }
 
 function displayInterestAreas(interestAreasData, containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = ''; // Clear any existing content
+  const container = document.getElementById(containerId); // Re-select inside here
+  if (!container) return;
+  container.innerHTML = '';
 
   if (interestAreasData && interestAreasData.length > 0) {
     interestAreasData.forEach(interest => {
@@ -286,12 +327,13 @@ function displayInterestAreas(interestAreasData, containerId) {
 }
 
 function displayExtracurricularActivities(extracurricularActivitiesData, containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = ''; // Clear any existing content
+  const container = document.getElementById(containerId); // Re-select inside here
+  if (!container) return;
+  container.innerHTML = '';
   container.classList.add('text-center','text-gray-800');
 
-  var cntr = 0;
-  dataLen = extracurricularActivitiesData.length;
+  let cntr = 0;
+  const dataLen = extracurricularActivitiesData.length;
   if (extracurricularActivitiesData && extracurricularActivitiesData.length > 0) {
     extracurricularActivitiesData.forEach(activityItem => {
       const activity_li = document.createElement('div');
@@ -312,12 +354,13 @@ function displayExtracurricularActivities(extracurricularActivitiesData, contain
 }
 
 function displayPOR(porData, containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = ''; // Clear any existing content
+  const container = document.getElementById(containerId); // Re-select inside here
+  if (!container) return;
+  container.innerHTML = '';
   container.classList.add('text-center','text-gray-800');
 
-  var cntr = 0;
-  portDataLen = porData.length;
+  let cntr = 0;
+  const portDataLen = porData.length;
   if (porData && porData.length > 0) {
     porData.forEach(porItem => {
       const por_li = document.createElement('div');
@@ -343,18 +386,16 @@ function displayPOR(porData, containerId) {
       if(cntr < portDataLen-1) { por_li.appendChild(bottomSeparator); }
       cntr++;
       container.appendChild(por_li);
-
-
     });
-
   } else {
     container.textContent = 'No POR data available.';
   }
 }
 
 function displaySkills(skillsData, containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = ''; // Clear any existing content
+  const container = document.getElementById(containerId); // Re-select inside here
+  if (!container) return;
+  container.innerHTML = '';
 
   if (skillsData && skillsData.length > 0) {
     skillsData.forEach(skill => {
@@ -372,7 +413,6 @@ function displaySkills(skillsData, containerId) {
       if (skill.specific_list && skill.specific_list.length > 0) {
         skill.specific_list.forEach(name => {
           const skillItem = document.createElement('p');
-          //skillItem.classList.add('mb-[1%]'); // Small margin below each item
           skillItem.textContent = name;
           specificListDiv.appendChild(skillItem);
         });
@@ -393,13 +433,12 @@ function displaySkills(skillsData, containerId) {
 }
 
 function displayPublication(publicationData, containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = ''; // Clear any existing content
-  //container.classList.add('mt-10','flex','flex-col','text-center','justify-center')
+  const container = document.getElementById(containerId); // Re-select inside here
+  if (!container) return;
+  container.innerHTML = '';
 
   if (publicationData && publicationData.length > 0) {
     publicationData.forEach(publication => {
-      
       const publicationDiv = document.createElement('div');
       publicationDiv.classList.add('text-seashell','rounded-md','text-center','items-center','p-[3%]');
 
@@ -430,142 +469,70 @@ function displayPublication(publicationData, containerId) {
   }
 }
 
-const loaderContainer = document.querySelector('#loader-container');
-const pageContent = document.querySelector('#page-content');
-const workExpOuterContainer = document.querySelector('#work-exp-outer-container');
-const topBoxText = document.querySelector('#top-box-text');
 
-window.addEventListener('load', () => {
-  //  Fetch and display data:
-  Promise.all([
+// --- DOMContentLoaded Listener ---
+document.addEventListener('DOMContentLoaded', () => {
+  // Add event listeners to tab toggles
+  tabToggles.forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      // Remove active classes from all toggles
+      tabToggles.forEach(t => t.classList.remove('is-active', 'bg-amber-200'));
+      // Add active classes to the clicked toggle
+      toggle.classList.add('is-active', 'bg-amber-200');
+
+      const targetHtmlFile = toggle.dataset.tabTarget; // Get the target HTML file path from data-tab-target
+      loadTabContent(targetHtmlFile); // Load the content for the clicked tab
+    });
+  });
+
+  // Initial load: Simulate a click on the default active tab ('My Info') on page load.
+  // This will trigger loadTabContent and subsequently initializeMyInfoContent.
+  const defaultTab = document.querySelector('.tabs__toggle.is-active');
+  if (defaultTab) {
+    defaultTab.click();
+  }
+});
+
+// --- Specific Initialization Functions for Each Tab ---
+
+// This function contains all JavaScript logic for the "My Info" tab content
+async function initializeMyInfoContent() {
+  console.log("Initializing My Info tab content...");
+  // Re-select elements inside the newly loaded 'my_info_tab_content.html'
+  // These elements are part of the dynamically loaded content, so they must be selected here.
+  const nameDisplay = document.getElementById('name-display');
+  const summaryDisplay = document.getElementById('summary-display');
+  const emailLink = document.getElementById('email_id-link');
+  const linkedinLink = document.getElementById('linkedin-link');
+  const githubLink = document.getElementById('github-link');
+
+  // Fetch and display properties/links
+  await Promise.all([
     fetchAndDisplayProperty('name', 'name-display'),
     fetchAndDisplayProperty('summary', 'summary-display'),
-    fetchAndDisplayCards('work_exp', 'work-experience-container'),
-    fetchAndDisplayCards('education', 'education-container'),
-    fetchAndDisplayCards('projects', 'projects-container'),
-    fetchAndDisplayCards('technical_skills', 'skills-container'),
-    fetchAndDisplayCards('areas_of_interest', 'areas-of-interest-container'),
-    fetchAndDisplayCards('publication', 'publication-container'),
-    fetchAndDisplayCards('extracurricular_activities', 'extracurricular-container'),
-    fetchAndDisplayCards('positions_of_responsibilities', 'por-container'),
     fetchAndReturnLink('email_id', 'email_id-link'),
     fetchAndReturnLink('linkedin', 'linkedin-link'),
     fetchAndReturnLink('github', 'github-link'),
+  ]);
 
-  ]).then(() => {
-    // This code runs after all promises in Promise.all have resolved
-    loaderContainer.classList.remove('visible');
-    loaderContainer.classList.add('invisible');
-    pageContent.classList.remove('invisible');
-    pageContent.classList.add('visible');
-    //topBoxText.classList.add('animate-text-appear-from-right');
-    //workExpOuterContainer.classList.add('animate-text-appear-from-left');
+  // Fetch and display card categories
+  await Promise.all([
+    fetchAndDisplayCards('work_exp', 'work-experience-container', displayWorkExperience),
+    fetchAndDisplayCards('education', 'education-container', displayEducation),
+    fetchAndDisplayCards('projects', 'projects-container', displayProjects),
+    fetchAndDisplayCards('technical_skills', 'skills-container', displaySkills),
+    fetchAndDisplayCards('areas_of_interest', 'areas-of-interest-container', displayInterestAreas),
+    fetchAndDisplayCards('publication', 'publication-container', displayPublication),
+    fetchAndDisplayCards('extracurricular_activities', 'extracurricular-container', displayExtracurricularActivities),
+    fetchAndDisplayCards('positions_of_responsibilities', 'por-container', displayPOR)
+  ]);
+}
 
-    /*gsap.from("#page-content #top-box #name-display",{
-      x: "34vw",
-      paddingTop: "2%",
-      duration: 2,
-      paddingBottom: "2%",
-      scrollTrigger:{
-        trigger: "main",
-        scroller: "body",
-        markers: true,
-        start:"top 10%",
-        scrub: 2
-      }
-    })*/
-   /* gsap.to("#page-content #top-box #summary-display",{
-      height:"10%",
-      opacity: 1,
-      duration: 2,
-      paddingBlock: "1%",
-      scrollTrigger:{
-        trigger: "main",
-        scroller: "body",
-        markers: true,
-        start:"top 10%",
-        scrub: true
-      }
-    });*/
-
-    /*gsap.to("#summary-display", {
-      height: 0,          // Animate height to 0
-      paddingTop: 0,      // Animate top padding to 0
-      paddingBottom: 0,   // Animate bottom padding to 0
-      opacity: 0,         // Animate opacity to 0
-      duration: 1.5,      // Duration of the animation (will be stretched by scrub)
-      ease: "power2.out", // Easing function
-      scrollTrigger: {
-        trigger: "main",      // The element that triggers the animation
-        start: "top 30%",     // Animation starts when the top of 'main' hits 10% from viewport top
-        end: "top -50%",      // Animation ends when the top of 'main' goes 50% *above* viewport top (adjust as needed)
-        scroller: "body",     // Explicitly use the body as the scroller
-        markers: true,        // Uncomment for visual debugging
-        scrub: true           // Links the animation progress directly to the scroll position
-      }
-    });*/
-    /*
-    ScrollTrigger.create({
-      trigger: "main",      // The element that triggers the action
-      start: "top 31%",     // When the top of 'main' hits 10% from viewport top
-      scroller: "body",     // Explicitly use the body as the scroller
-      markers: true,        // Uncomment for visual debugging
-      onEnter: () => {
-        // When scrolling down and the trigger is met, smoothly animate to the LEFT (34vw)
-        gsap.to("#name-display", { x: "-30vw", paddingTop: "1%", paddingBottom: "1%", duration: 1, ease: "sine.in" });
-      },
-      onLeaveBack: () => {
-        // When scrolling up and passing the trigger point again, smoothly animate back to CENTER (x: 0)
-        gsap.to("#name-display", { x: 0, paddingTop: "1%", paddingBottom: "1%", duration: 1, ease: "sine.in" });
-      }
-    });
-    */
-    /*
-    ScrollTrigger.create({
-      trigger: "main",      // The element that triggers the action
-      start: "top 31%",     // When the top of 'main' hits 10% from viewport top
-      scroller: "body",     // Explicitly use the body as the scroller
-      markers: true,        // Uncomment for visual debugging
-      onEnter: () => {
-        // When scrolling down and the trigger is met, smoothly animate to hidden state
-        gsap.to("#summary-display", { height: 0, paddingTop: 0, paddingBottom: 0, opacity: 0, duration: 1, marginBottom: 10, ease: "sine.in" });
-      },
-      onLeaveBack: () => {
-        // When scrolling up and passing the trigger point again, smoothly animate to visible state
-        gsap.to("#summary-display", { height: "auto", paddingTop: "1%", paddingBottom: "1%", opacity: 1, duration: 1, ease: "sine.in" });
-      }
-      // No scrub, no duration on the ScrollTrigger itself for instant changes
-    });*/
-  }).catch(error => {
-    console.error("Failed to load data:", error);
-    //  Handle the error appropriately, e.g., display an error message to the user
-    loaderContainer.classList.remove('invisible'); // Optionally keep loader
-    pageContent.classList.add('invisible');
-  });
-});
-
-const header = document.querySelector('#top-box');
-
-let tabs = document.querySelectorAll('.tabs__toggle'),
-    contents = document.querySelectorAll('.tabs__content');
-
-tabs.forEach((tab, index) => {
-  tab.addEventListener('click', () => {
-    contents.forEach((content) => {
-      content.classList.remove('is-active');
-    });
-    tabs.forEach((tab) => {
-      tab.classList.remove('is-active');
-    });
-
-    contents[index].classList.add('is-active');
-    tabs[index].classList.add('is-active');
-  });
-});
-
-let inputFile = document.getElementById('input-file');
-let profilePic= document.getElementById('profile-pic');
-
-inputFile.onchange = function(){
- //rofilePic.src = URL.createObjectURL(this.files[0]);
+// This function contains all JavaScript logic for the "Illustration Gallery" tab content
+// It is now simplified to reflect the minimal content of illustrations_tab_content.html
+function initializeIllustrationFormAndGallery() {
+  console.log("Initializing Illustration Gallery tab content (simplified).");
+  // No need to select or attach listeners to form/file inputs/gallery containers
+  // as they are no longer present in illustrations_tab_content.html.
+  // If you re-add complex logic later, ensure to re-add element selections and event listeners.
 }
