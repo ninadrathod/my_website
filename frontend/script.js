@@ -537,6 +537,16 @@ async function initializeIllustrationFormAndGallery() {
   const uploadForm = document.getElementById('uploadForm');
   const uploadResponseDiv = document.getElementById('uploadResponse');
   const imageUploadInput = document.getElementById('imageUpload');
+  const fileNameDisplay = document.getElementById('fileNameDisplay');
+
+  // Update file name display when a file is chosen
+  imageUploadInput.addEventListener('change', (event) => {
+    if (event.target.files.length > 0) {
+        fileNameDisplay.textContent = event.target.files[0].name;
+    } else {
+        fileNameDisplay.textContent = 'No file chosen';
+    }
+  });
 
   uploadForm.addEventListener('submit', async (event) => {
       event.preventDefault(); // Prevent the default form submission (page reload)
@@ -547,6 +557,7 @@ async function initializeIllustrationFormAndGallery() {
 
       // Check if a file is selected
       if (imageUploadInput.files.length === 0) {
+          console.log('Please select an image to upload.');
           uploadResponseDiv.style.color = 'red';
           uploadResponseDiv.textContent = 'Please select an image to upload.';
           return;
@@ -567,8 +578,9 @@ async function initializeIllustrationFormAndGallery() {
           if (response.ok) {
               uploadResponseDiv.style.color = 'green';
               uploadResponseDiv.textContent = 'Upload successful: ' + message;
-              // Optional: Clear the file input after successful upload
               imageUploadInput.value = '';
+              uploadForm.reset(); // Clear form
+              fileNameDisplay.textContent = 'No file chosen';
           } else {
               uploadResponseDiv.style.color = 'red';
               uploadResponseDiv.textContent = 'Upload failed: ' + message;
@@ -581,6 +593,15 @@ async function initializeIllustrationFormAndGallery() {
   });
   // ------------------ end of upload image form and its operations ---------------------------
   
+  // ------------------ log out button and its actions -------------------------------------
+  const logoutButton = document.getElementById('logoutButton'); 
+
+  logoutButton.addEventListener('click', () => {
+    console.log("Log Out button clicked!");
+    // Add your logout operations here (e.g., clear session, redirect, API call)
+    // Example: window.location.href = '/logout';
+    // Example: fetch('/api/logout', { method: 'POST' });
+  });
   // ------------------ display uploaded images --------------------------
   const apiURL = 'http://localhost:3002/getFileNames';
   const imageBaseURL = 'http://localhost:3002/images/';
@@ -631,8 +652,8 @@ async function initializeIllustrationFormAndGallery() {
         // ------------- Create the delete button (an 'x' icon)
         const deleteButton = document.createElement('button');
         deleteButton.classList.add('absolute', 'top-1', 'left-1', 'z-10',
-        'bg-red-500', 'text-white', 'rounded-full', 'w-6', 'h-6', 'flex', 'items-center', 'justify-center', 'text-sm', 'font-bold',
-        'opacity-0', 'group-hover:opacity-100', 'transition-opacity', 'duration-200',
+        'bg-red-500', 'text-white', 'rounded-full', 'w-7', 'h-7', 'flex', 'items-center', 'justify-center', 'text-sm', 'font-bold',
+        'opacity-0', 'shadow-md', 'group-hover:opacity-80', 'transition-opacity', 'duration-200',
         'cursor-pointer', 'hover:bg-red-700');
         deleteButton.textContent = "x"; // The 'x' text
         
