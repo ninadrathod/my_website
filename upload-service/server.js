@@ -85,6 +85,44 @@ app.post('/upload', (req, res) => {
 });
 // --- End Image Upload Route ---
 
+// --- Routine to read image list from 'images' directory ---
+app.get('/getFileNames', function (req, res) {
+  const directoryPath = path.join(__dirname, 'images');
+  fs.readdir(directoryPath, function (err, files) {
+    if (err) {
+      return console.log('Unable to scan directory: ' + err);
+    }
+    res.send(JSON.stringify(files));
+    res.end();
+  });
+})
+// --- End Routine ---
+
+// --- API Endpoint: /deleteImage/:image_name ---
+app.delete('/deleteImage/:image_name', (req, res) => {
+  const imageName = req.params.image_name;
+  const imagePath = path.join(__dirname, 'images', imageName); // Construct the full path
+
+  // Check if the file exists before attempting to delete
+  fs.access(imagePath, fs.constants.F_OK, (err) => {
+      if (err) {
+          console.error(`[${new Date().toLocaleTimeString()}] File not found or inaccessible: ${imagePath}`);
+          return res.status(404).json({ success: false, message: 'Image not found.' });
+      }
+
+      // Attempt to delete the file
+      fs.unlink(imagePath, (err) => {
+          if (err) {
+              console.error(`[${new Date().toLocaleTimeString()}] Error deleting image '${imageName}':`, err);
+              return res.status(500).json({ success: false, message: 'Failed to delete image.' });
+          }
+          console.log(`[${new Date().toLocaleTimeString()}] Image deleted successfully: ${imageName}`);
+          res.status(200).json({ success: true, message: `Image '${imageName}' deleted successfully.` });
+      });
+  });
+});
+// ------ End of delete image api ---------------
+
 app.listen(port, () => {
   console.log(`Backend server listening at http://localhost:${port}`);
 });

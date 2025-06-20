@@ -530,7 +530,9 @@ async function initializeMyInfoContent() {
 
 // This function contains all JavaScript logic for the "Illustration Gallery" tab content
 // It is now simplified to reflect the minimal content of illustrations_tab_content.html
-function initializeIllustrationFormAndGallery() {
+async function initializeIllustrationFormAndGallery() {
+  
+  // ------------------- upload image form and its operations ---------------------------------
   console.log("Initializing Illustration Gallery tab content (simplified).");
   const uploadForm = document.getElementById('uploadForm');
   const uploadResponseDiv = document.getElementById('uploadResponse');
@@ -577,5 +579,100 @@ function initializeIllustrationFormAndGallery() {
           uploadResponseDiv.textContent = 'Network error: Could not reach the backend.';
       }
   });
+  // ------------------ end of upload image form and its operations ---------------------------
+  
+  // ------------------ display uploaded images --------------------------
+  const apiURL = 'http://localhost:3002/getFileNames';
+  const imageBaseURL = 'http://localhost:3002/images/';
+  const imageContainer = document.getElementById('image-gallery'); // We'll put images in this container
+
+    // Ensure the container exists
+    if (!imageContainer) {
+        console.error("Error: An HTML element with ID 'image-gallery' was not found. Please add it to your index.html.");
+        return;
+    }
+
+    try {
+    // 1. Read the list of images from the API
+    const response = await fetch(apiURL);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const imageFileNames = await response.json(); // This will be your array of image names
+    if (imageFileNames.length === 0) {
+        imageContainer.innerHTML = '<p>No images found on the server.</p>';
+        return;
+    }
+    console.log('Image file names:', imageFileNames);
+
+    // 2. Loop over the obtained list and display the images in fixed small sized cards
+    imageFileNames.forEach(fileName => {
+        // Create a div for the card
+        const card = document.createElement('div');
+        //card.className = 'image-card'; // Add a class for styling
+        //card.classList.add('card','mb-[2.5%]','lg:mb-[0%]');
+        card.classList.add('illustration-card','group','relative');
+        
+        // ------------- Create the image element
+        const img = document.createElement('img');
+        img.src = imageBaseURL + fileName;
+        img.alt = `Image: ${fileName}`; // Good for accessibility
+        img.loading = 'lazy'; // Improve performance by lazy-loading images
+        img.classList.add(
+          'w-full', 'h-full', 'object-cover','transition-all',
+          'duration-300', 'ease-in-out', 'group-hover:scale-110', 'cursor-pointer');
+        //Add onclick event listener to the image
+        img.onclick = () => {
+          // Open the image in a new tab
+          window.open(img.src, '_blank');
+          };
+
+        // ------------- Create the delete button (an 'x' icon)
+        const deleteButton = document.createElement('button');
+        deleteButton.classList.add('absolute', 'top-1', 'left-1', 'z-10',
+        'bg-red-500', 'text-white', 'rounded-full', 'w-6', 'h-6', 'flex', 'items-center', 'justify-center', 'text-sm', 'font-bold',
+        'opacity-0', 'group-hover:opacity-100', 'transition-opacity', 'duration-200',
+        'cursor-pointer', 'hover:bg-red-700');
+        deleteButton.textContent = "x"; // The 'x' text
+        
+        // Add click event listener to the delete button
+        deleteButton.onclick = async () => {
+          console.log(`Attempting to delete image: ${fileName}`);
+          try {
+              const deleteApiUrl = `${UPLOAD_SERVICE_API_URL}/deleteImage/${fileName}`;
+              console.log('DELETE request to:', deleteApiUrl);
+
+              const response = await fetch(deleteApiUrl, {
+                  method: 'DELETE',
+              });
+
+              if (response.ok) {
+                  const result = await response.text(); // Assuming backend sends text response
+                  console.log(`Successfully deleted ${fileName}:`, result);
+                  card.remove(); // Remove the card from the DOM immediately upon successful deletion
+              } else {
+                  const errorText = await response.text();
+                  throw new Error(`Failed to delete ${fileName}: ${response.status} - ${errorText}`);
+              }
+          } catch (error) {
+              console.error('Error deleting image:', error);
+          }
+      };
+
+        // Append image and text to the card
+        card.appendChild(img);
+        card.appendChild(deleteButton);
+
+        // Append the card to the main container
+        imageContainer.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Failed to fetch image names or display images:', error);
+        imageContainer.innerHTML = `<p>Error loading images: ${error.message}</p>`;
+    }
+    // ---- end of display uploaded images part ------
+  
 }
 
