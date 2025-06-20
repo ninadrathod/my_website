@@ -182,7 +182,7 @@ html.lenis body {
 @layer components {
     
     .illustration-card {
-      @apply border-gray-500 bg-gray-100 border-1 overflow-hidden m-[1%] w-[22%] rounded-lg shadow-md;
+      @apply border-gray-500 bg-gray-100 border-1 overflow-hidden m-[1%] w-[50%] lg:w-[22%] rounded-lg shadow-md;
     }
 
     .card {
