@@ -3,6 +3,7 @@ const cors = require('cors'); // Import cors
 const path = require('path');      // Import path for multer
 const multer = require('multer');  // Import multer
 const fs = require('fs');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const port = 3002;
@@ -23,6 +24,8 @@ app.use(cors());
 app.use('/images', express.static(imagesDir));
 // --- End Static Serving ---
 
+let storedOtp = null;
+let storedOtpEmail = null;
 
 // --- Multer Configuration for Image Upload ---
 // Set storage engine
@@ -122,6 +125,124 @@ app.delete('/deleteImage/:image_name', (req, res) => {
   });
 });
 // ------ End of delete image api ---------------
+
+// ------ Routine to send email -----------------
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'ninadrathod267@gmail.com',
+    pass: 'wrloayayrmvfldof'
+  }
+});
+
+/**
+ * API Endpoint: /sendOTP/:variableEmailID
+ *
+ * This API generates a random 5-digit OTP, sends it to the specified email ID
+ * using Nodemailer, and returns the generated OTP in the response.
+ */
+app.get('/sendOTP/:variableEmailID', async (req, res) => {
+    // 1. Extract the email ID from the URL parameters
+    const recipientEmail = req.params.variableEmailID;
+
+    // 2. Generate a random 5-digit number (OTP)
+    const otp = Math.floor(10000 + Math.random() * 90000);
+    console.log(`Generated OTP: ${otp} for email: ${recipientEmail}`);
+    storedOtp = otp;
+    storedOtpEmail = recipientEmail;
+
+    try {
+        // 3. Use the transporter to send that random number to {variableEmailID}
+        await transporter.sendMail({
+            from: 'ninadrathod267@gmail.com', // Sender address (your email)
+            to: recipientEmail,             // Recipient email from URL parameter
+            subject: 'Your One-Time Password (OTP)', // Email subject
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                    <h2>Hello!</h2>
+                    <p>Your One-Time Password (OTP) for your recent request is:</p>
+                    <h1 style="color: #007bff; font-size: 2em; margin: 15px 0;">${otp}</h1>
+                    <p>This OTP is valid for a short period. Please do not share it with anyone.</p>
+                    <p>If you did not request this, please ignore this email.</p>
+                    <p>Regards,<br>No One</p>
+                </div>
+            ` // HTML body of the email
+        });
+
+        console.log('Email sent successfully!');
+        // 4. Return the same number (OTP) to the calling script
+        res.status(200).json({
+            message: 'OTP sent successfully!',
+            otp: otp, // Return the generated OTP
+            email: recipientEmail
+        });
+
+    } catch (error) {
+        console.error('Error sending email:', error);
+        storedOtp = null;
+        storedOtpEmail = null;
+        res.status(500).json({
+            message: 'Failed to send OTP.',
+            error: error.message
+        });
+    }
+});
+
+// --- End of email send routine ---
+
+/**
+ * API Endpoint: /isAdminEmail/:enteredEmail
+ *
+ * This API checks if the provided email matches the hardcoded admin email.
+ * Returns { success: true } if it's the admin email, else { success: false }.
+ */
+// Define the Admin Email
+const ADMIN_EMAIL = 'ninadrathod267@gmail.com'; // Place this near your global variables or other constants
+
+app.get('/isAdminEmail/:enteredEmail', (req, res) => {
+    const enteredEmail = req.params.enteredEmail.toLowerCase(); // Convert to lowercase for case-insensitive comparison
+    console.log(`[${new Date().toLocaleTimeString()}] Checking if '${enteredEmail}' is admin email.`);
+
+    if (enteredEmail === ADMIN_EMAIL.toLowerCase()) {
+        res.status(200).json({ success: true, message: 'Email is an admin email.' });
+    } else {
+        res.status(200).json({ success: false, message: 'Email is not an admin email.' });
+    }
+});
+
+/**
+ * API Endpoint: /OTPverify/:passedOTP
+ *
+ * Verifies the passed OTP against the locally stored OTP.
+ * Returns success/fail and invalidates the stored OTP (regardless of match, as per request).
+ *
+ * !!! WARNING: This is for demonstration purposes ONLY. Not suitable for production.
+ */
+app.get('/OTPverify/:passedOTP', (req, res) => {
+    const passedOtp = parseInt(req.params.passedOTP, 10); // Convert URL parameter to an integer
+
+    console.log(`[${new Date().toLocaleTimeString()}] Verification attempt: Passed OTP = ${passedOtp}, Stored OTP = ${storedOtp}`);
+
+    // Check if an OTP was actually stored and if it matches the passed one
+    if (storedOtp !== null && passedOtp === storedOtp) {
+        console.log(`[${new Date().toLocaleTimeString()}] OTP verification successful for ${storedOtpEmail}!`);
+        // Invalidate the stored OTP after successful verification
+        storedOtp = null;
+        storedOtpEmail = null; // Clear associated email too
+        res.status(200).json({ success: true, message: 'OTP verified successfully!' });
+    } else {
+        // OTP does not match, or no OTP was currently stored/active
+        console.log(`[${new Date().toLocaleTimeString()}] OTP verification failed!`);
+        // Invalidate the OTP on failure as per your request, to prevent further attempts with the same OTP.
+        // In a real system, you might allow a few failed attempts or let it expire naturally.
+        storedOtp = null;
+        storedOtpEmail = null;
+        res.status(401).json({ success: false, message: 'Invalid OTP or not an active OTP.' });
+    }
+});
 
 app.listen(port, () => {
   console.log(`Backend server listening at http://localhost:${port}`);

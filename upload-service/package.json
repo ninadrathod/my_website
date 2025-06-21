@@ -10,12 +10,14 @@
   "dependencies": {
     "cors": "latest",
     "express": "latest",
-    "multer": "latest"
+    "multer": "latest",
+    "nodemailer": "latest"
   },
   "devDependencies": {
     "cors": "latest",
     "express": "latest",
     "multer": "^2.0.1",
-    "nodemon": "latest"
+    "nodemon": "latest",
+    "nodemailer": "latest"
   }
 }

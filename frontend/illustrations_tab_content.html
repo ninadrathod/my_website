@@ -2,52 +2,29 @@
 
 <!-- Original content from your tabs__content div for the illustration tab -->
 
-<div id ="upload-image-container" class="flex flex-col p-[3%] items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-md w-[50%] bg-gradient-to-br from-gray-50 to-blue-50">
-            <h1 class="montserrat-regular text-xl text-center tracking-widest mb-[5%]">UPLOAD ILLUSTRATION</h1>
+<div id ="upload-image-container" class="flex flex-col items-center justify-center my-[5%]">
+    <button id="openLoginButton" class="py-2 px-4 rounded-md text-base font-medium text-seashell
+    bg-gradient-to-br from-red-500 to-orange-500 
+    hover:from-red-600 hover:to-orange-600 hover:shadow-lg
+    cursor-pointer montserrat-regular">Open Login</button>
 
-            <form id="uploadForm" enctype="multipart/form-data">
-            <!-- Hidden file input -->
-            <input type="file" name="myImage" id="imageUpload" class="sr-only" required>
+    <div id="loginPanel" class="hidden fixed top-1/2 left-1/2 
+        transform -translate-x-1/2 -translate-y-1/2
+        w-[350px] h-auto max-h-[90vh] bg-gray-100 border border-gray-300
+        shadow-md z-50 font-sans box-border overflow-auto rounded-lg">
+        
+        <div class="flex justify-between items-center px-4 py-3
+            bg-gray-200 border-b border-gray-300 mb-4">
 
-            <!-- Container for the custom "Choose File" button and file name display -->
-            <div class="flex items-center space-x-3">
-                <!-- Custom styled label acting as the "Choose File" button -->
-                <label for="imageUpload" class="inline-flex items-center justify-center
-                    px-4 py-2 rounded-md montserrat-regular text-sm
-                    text-seashell bg-gradient-to-br from-orange-400 to-orange-600 
-                    hover:shadow-lg hover:scale-105                                 
-                    transform transition-all duration-200 ease-in-out
-                    cursor-pointer
-                ">
-                    Choose File
-                </label>
-                <!-- Span to display the selected file name -->
-                <span id="fileNameDisplay" class="montserrat-light-i text-sm truncate">No file chosen</span>
-            </div>
-
-            <!-- The Submit Button -->
-            <button type="submit" class="
-            w-full py-2 px-4 rounded-md
-            text-base font-medium text-seashell
-            bg-gradient-to-br from-red-500 to-orange-500 
-            hover:from-red-600 hover:to-orange-600 hover:shadow-lg
-            cursor-pointer montserrat-regular
-            mt-[5%]">    Upload   </button>
+            <h3 id="panelTitle" class="m-0 text-lg text-gray-800">Login</h3>
             
-            </form>
+            <button id="closePanelButton" class=" bg-transparent border-none text-2xl
+                cursor-pointer leading-none text-gray-600 p-0">&times;</button>
+        </div>
 
-            <div id="uploadResponse" class="montserrat-light-i text-sm my-[5%]"></div>
-
-            <hr>
-            <!-- NEW: Log Out Button -->
-
-            <button id="logoutButton" class="
-            w-full py-2 px-4 rounded-md
-            text-base font-medium text-white
-            bg-gray-500 hover:bg-gray-600 hover:shadow-md /* Simple gray shades for logout */
-            cursor-pointer montserrat-regular mt-[5%]">
-            Log Out        </button>
+        <div id="panelContent" class="px-5 pb-5"></div>
+        
+        <p id="messageArea" class="text-red-600 my-2 mx-5 mb-5 text-sm"></p>
     </div>
 </div>
 

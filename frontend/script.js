@@ -36,8 +36,17 @@ const UPLOAD_SERVICE_API_URL = 'http://localhost:3002';
 // Mapping of tab data-target to their respective HTML file paths
 const tabContentFileMap = {
   'my_info_tab_content.html': 'my_info_tab_content.html',
-  'illustrations_tab_content.html': 'illustrations_tab_content.html'
+  'illustrations_tab_content.html': 'illustrations_tab_content.html',
+  'illustrations_tab_content_for_admin.html': 'illustrations_tab_content_for_admin.html'
 };
+
+const openLoginButton = document.getElementById('openLoginButton');
+const loginPanel = document.getElementById('loginPanel');
+const panelContent = document.getElementById('panelContent');
+const messageArea = document.getElementById('messageArea');
+const panelTitle = document.getElementById('panelTitle');
+const closePanelButton = document.getElementById('closePanelButton'); // Get the close button
+let adminEmail = ''; // To store the email ID entered in the first step
 
 // --- Core Function to Load Tab Content ---
 async function loadTabContent(filePath) {
@@ -61,8 +70,7 @@ async function loadTabContent(filePath) {
     if (filePath === tabContentFileMap['my_info_tab_content.html']) {
       await initializeMyInfoContent(); // Use await as it fetches data
     } else if (filePath === tabContentFileMap['illustrations_tab_content.html']) {
-      // No await needed here as the function is now synchronous and doesn't fetch data
-      initializeIllustrationFormAndGallery();
+      await initializeIllustrationGallery();
     }
 
     // Hide loader and show page content after the *first* tab's content is fully loaded
@@ -73,7 +81,6 @@ async function loadTabContent(filePath) {
       pageContent.classList.remove('invisible');
       pageContent.classList.add('visible');
     }
-
   } catch (error) {
     console.error('Error loading tab content:', error);
     tabsContentContainer.innerHTML = `<p class="text-red-500">Failed to load content: ${error.message}</p>`;
@@ -163,7 +170,6 @@ async function fetchAndDisplayCards(category, containerId, displayFunction) {
   }
 }
 
-// --- Display/Formatting Functions for Resume Data (These were already in your script) ---
 function displayWorkExperience(workExperienceData, containerId) {
   const container = document.getElementById(containerId); // Re-select inside here
   if (!container) return; // Guard against element not found (though it should be if called correctly)
@@ -468,7 +474,396 @@ function displayPublication(publicationData, containerId) {
     container.textContent = 'No publication data available.';
   }
 }
+// ------------ End of helper functions for my data --------------------------
 
+// ------------ Helper functions for Illustration Gallery --------------------
+
+/**
+ * Asynchronously fetches image filenames from the upload service API
+ * and displays them in a specified HTML container as interactive cards.
+ * Each card includes the image, an option to open the image in a new tab,
+ * and a delete button to remove the image.
+ *
+ * string parameter [containerId='image-gallery'] - The ID of the HTML element
+ * where the image cards should be appended. Defaults to 'image-gallery'.
+ */
+async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
+  const apiURL = 'http://localhost:3002/getFileNames'; // API to get list of filenames
+  const imageBaseURL = 'http://localhost:3002/images/'; // Base URL for accessing the images themselves
+
+  const imageContainer = document.getElementById(containerId);
+
+  // Ensure the container element exists in the DOM
+  if (!imageContainer) {
+      console.error(`Error: An HTML element with ID '${containerId}' was not found. Please add it to your page.`);
+      return;
+  }
+
+  // Clear any existing content in the image container and show a loading message
+  imageContainer.innerHTML = '<p class="text-gray-500 montserrat-light-i text-center">Loading images...</p>';
+
+  try {
+    // 1. Fetch the list of image filenames from the backend API
+    const response = await fetch(apiURL);
+    if (!response.ok) {
+        // If the HTTP response status is not 2xx, throw an error
+        throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
+    }
+
+    const imageFileNames = await response.json(); // Parse the JSON response into an array of filenames
+
+    // Clear the loading message after successful fetch
+    imageContainer.innerHTML = '';
+
+    // Check if the array of filenames is empty
+    if (!imageFileNames || imageFileNames.length === 0) {
+        imageContainer.innerHTML = '<p class="text-gray-500 montserrat-light-i text-center">No images found on the server.</p>';
+        return; // Exit if no images are found
+    }
+
+    console.log('Image file names fetched:', imageFileNames);
+
+    // 2. Loop over the obtained list and dynamically create/display each image card
+    imageFileNames.forEach(fileName => {
+      // Create a div for the card
+      const card = document.createElement('div');
+      //card.className = 'image-card'; // Add a class for styling
+      //card.classList.add('card','mb-[2.5%]','lg:mb-[0%]');
+      card.classList.add('illustration-card','group','relative');
+      
+      // ------------- Create the image element
+      const img = document.createElement('img');
+      img.src = imageBaseURL + fileName;
+      img.alt = `Image: ${fileName}`; // Good for accessibility
+      img.loading = 'lazy'; // Improve performance by lazy-loading images
+      img.classList.add(
+        'w-full', 'h-full', 'object-cover','transition-all',
+        'duration-300', 'ease-in-out', 'group-hover:scale-110', 'cursor-pointer');
+      //Add onclick event listener to the image
+      img.onclick = () => {
+        // Open the image in a new tab
+        window.open(img.src, '_blank');
+        };
+
+      // ------------- Create the delete button (an 'x' icon)
+      const deleteButton = document.createElement('button');
+      deleteButton.classList.add('absolute', 'top-1', 'left-1', 'z-10',
+      'bg-red-500', 'text-white', 'rounded-full', 'w-7', 'h-7', 'flex', 'items-center', 'justify-center', 'text-sm', 'font-bold',
+      'opacity-0', 'shadow-md', 'group-hover:opacity-80', 'transition-opacity', 'duration-200',
+      'cursor-pointer', 'hover:bg-red-700');
+      deleteButton.textContent = "x"; // The 'x' text
+      
+      // Add click event listener to the delete button
+      deleteButton.onclick = async () => {
+        console.log(`Attempting to delete image: ${fileName}`);
+        try {
+            const deleteApiUrl = `${UPLOAD_SERVICE_API_URL}/deleteImage/${fileName}`;
+            console.log('DELETE request to:', deleteApiUrl);
+
+            const response = await fetch(deleteApiUrl, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                const result = await response.text(); // Assuming backend sends text response
+                console.log(`Successfully deleted ${fileName}:`, result);
+                card.remove(); // Remove the card from the DOM immediately upon successful deletion
+            } else {
+                const errorText = await response.text();
+                throw new Error(`Failed to delete ${fileName}: ${response.status} - ${errorText}`);
+            }
+        } catch (error) {
+            console.error('Error deleting image:', error);
+        }
+    };
+
+      // Append image and text to the card
+      card.appendChild(img);
+      card.appendChild(deleteButton);
+
+      // Append the card to the main container
+      imageContainer.appendChild(card);
+      });
+
+  } catch (error) {
+      // Catch and log any errors that occurred during the fetch or processing
+      console.error('Failed to fetch image names or display images:', error);
+      imageContainer.innerHTML = `<p class="text-red-500 montserrat-light-i text-center">Error loading images: ${error.message}</p>`;
+  }
+}
+
+/**
+ * Asynchronously fetches image filenames from the upload service API
+ * and displays them in a specified HTML container as interactive cards.
+ * Each card includes the image, an option to open the image in a new tab.
+ *
+ * string parameter [containerId='image-gallery'] - The ID of the HTML element
+ * where the image cards should be appended. Defaults to 'image-gallery'.
+ */
+async function displayUploadedImages(containerId = 'image-gallery') {
+  const apiURL = 'http://localhost:3002/getFileNames'; // API to get list of filenames
+  const imageBaseURL = 'http://localhost:3002/images/'; // Base URL for accessing the images themselves
+
+  const imageContainer = document.getElementById(containerId);
+
+  // Ensure the container element exists in the DOM
+  if (!imageContainer) {
+      console.error(`Error: An HTML element with ID '${containerId}' was not found. Please add it to your page.`);
+      return;
+  }
+
+  // Clear any existing content in the image container and show a loading message
+  imageContainer.innerHTML = '<p class="text-gray-500 montserrat-light-i text-center">Loading images...</p>';
+
+  try {
+    // 1. Fetch the list of image filenames from the backend API
+    const response = await fetch(apiURL);
+    if (!response.ok) {
+        // If the HTTP response status is not 2xx, throw an error
+        throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
+    }
+
+    const imageFileNames = await response.json(); // Parse the JSON response into an array of filenames
+
+    // Clear the loading message after successful fetch
+    imageContainer.innerHTML = '';
+
+    // Check if the array of filenames is empty
+    if (!imageFileNames || imageFileNames.length === 0) {
+        imageContainer.innerHTML = '<p class="text-gray-500 montserrat-light-i text-center">No images found on the server.</p>';
+        return; // Exit if no images are found
+    }
+
+    console.log('Image file names fetched:', imageFileNames);
+
+    // 2. Loop over the obtained list and dynamically create/display each image card
+    imageFileNames.forEach(fileName => {
+      // Create a div for the card
+      const card = document.createElement('div');
+      //card.className = 'image-card'; // Add a class for styling
+      //card.classList.add('card','mb-[2.5%]','lg:mb-[0%]');
+      card.classList.add('illustration-card','group','relative');
+      
+      // ------------- Create the image element
+      const img = document.createElement('img');
+      img.src = imageBaseURL + fileName;
+      img.alt = `Image: ${fileName}`; // Good for accessibility
+      img.loading = 'lazy'; // Improve performance by lazy-loading images
+      img.classList.add(
+        'w-full', 'h-full', 'object-cover','transition-all',
+        'duration-300', 'ease-in-out', 'group-hover:scale-110', 'cursor-pointer');
+      //Add onclick event listener to the image
+      img.onclick = () => {
+        // Open the image in a new tab
+        window.open(img.src, '_blank');
+        };
+
+      // Append image and text to the card
+      card.appendChild(img);
+     
+      // Append the card to the main container
+      imageContainer.appendChild(card);
+      });
+
+  } catch (error) {
+      // Catch and log any errors that occurred during the fetch or processing
+      console.error('Failed to fetch image names or display images:', error);
+      imageContainer.innerHTML = `<p class="text-red-500 montserrat-light-i text-center">Error loading images: ${error.message}</p>`;
+  }
+}
+
+// ------------ End of helper functions for Illustration Gallery -------------
+
+// ------------ Helper functions for login operations ------------------------
+
+/**
+ * Updates the title and content of the login panel.
+ * param {string} title - The title to display in the panel header.
+ * param {string} htmlContent - The HTML string to set as the panel's main content.
+ */
+function setPanelContent(title, htmlContent) {
+  const panelTitle = document.getElementById('panelTitle');
+  const panelContent = document.getElementById('panelContent');
+  const messageArea = document.getElementById('messageArea');
+
+  panelTitle.textContent = title;
+  panelContent.innerHTML = htmlContent;
+  messageArea.textContent = ''; // Clear message area whenever content changes
+  messageArea.classList.remove('text-red-600', 'text-green-600', 'text-blue-600');
+  messageArea.style.color = ''; // Clear direct style color
+}
+
+/**
+ * Displays a message in the messageArea with appropriate styling.
+ * param {'success' | 'error' | 'info' | 'loading'} type - The type of message.
+ * param {string} message - The message text.
+ */
+function displayPanelMessage(type, message) {
+  const messageArea = document.getElementById('messageArea');
+
+  messageArea.textContent = message;
+  messageArea.classList.remove('text-red-600', 'text-green-600', 'text-blue-600'); // Clear all previous colors
+  messageArea.style.color = ''; // Clear any direct style color
+
+  switch (type) {
+      case 'success':
+          messageArea.classList.add('text-green-400'); // Light green
+          messageArea.style.color = '#4ade80'; // Fallback for direct style if needed
+          break;
+      case 'error':
+          messageArea.classList.add('text-red-600');
+          break;
+      case 'info':
+          messageArea.classList.add('text-gray-600'); // Or text-blue-500
+          break;
+      case 'loading':
+          messageArea.classList.add('text-blue-600');
+          break;
+      default:
+          messageArea.classList.add('text-gray-600');
+  }
+}
+
+/**
+ * Sets the disabled state of a button.
+ * param {HTMLButtonElement} buttonElement - The button element to modify.
+ * param {boolean} isDisabled - True to disable, false to enable.
+ */
+function setButtonState(buttonElement, isDisabled) {
+  if (buttonElement) {
+      buttonElement.disabled = isDisabled;
+      if (isDisabled) {
+          buttonElement.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+          buttonElement.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+  }
+}
+
+// Function to display the first window (Email input)
+function showEmailWindow() {
+  console.log('at line 740');
+  setPanelContent(
+      'Enter Admin Email',
+      `
+      <input type="email" id="adminEmailInput" placeholder="admin@example.com" class="w-full p-2 mb-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+      <button id="submitEmailButton" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md cursor-pointer hover:bg-blue-700 transition-colors">Submit Email</button>
+      `
+  );
+  document.getElementById('adminEmailInput').focus();
+
+  document.getElementById('submitEmailButton').addEventListener('click', async () => {
+      const emailInput = document.getElementById('adminEmailInput');
+      adminEmail = emailInput.value.trim();
+
+      if (adminEmail === '') {
+          displayPanelMessage('error', 'Please enter an email address.');
+          return;
+      }
+
+      displayPanelMessage('loading', 'Verifying email...');
+      const submitButton = document.getElementById('submitEmailButton');
+      setButtonState(submitButton, true);
+
+      try {
+          // --- STEP 1: Verify if it's an admin email ---
+          // NOTE: This URL (localhost:3000) seems incorrect for a backend service
+          // It should likely be MAIN_BACKEND_API_URL or similar. Adjust as needed.
+          const isAdminApiUrl = `http://localhost:3002/isAdminEmail/${adminEmail}`;
+          const isAdminResponse = await fetch(isAdminApiUrl);
+          const isAdminData = await isAdminResponse.json();
+
+          if (!isAdminResponse.ok || !isAdminData.success) {
+              displayPanelMessage('error', 'Invalid email ID.');
+              console.error('Admin email check failed:', isAdminData.message || 'Unknown error');
+              return;
+          }
+          
+          // --- STEP 2: If email is admin, proceed to send OTP ---
+          displayPanelMessage('success', 'Email verified. Sending OTP...');
+          const apiUrl = `http://localhost:3002/sendOTP/${adminEmail}`; // Again, check this URL
+          const response = await fetch(apiUrl);
+          const data = await response.json();
+
+          if (response.ok) {
+              console.log('OTP API Response:', data);
+              displayPanelMessage('success', `OTP sent to ${adminEmail}.`);
+              showOtpWindow(); // Move to the OTP window
+          } else {
+              displayPanelMessage('error', `Error: ${data.message || 'Failed to send OTP'}`);
+              console.error('API Error:', data);
+          }
+      } catch (error) {
+          displayPanelMessage('error', `Network error: ${error.message}. Is backend server running?`);
+          console.error('Fetch Error:', error);
+      } finally {
+          setButtonState(submitButton, false);
+      }
+  });
+}
+
+
+// Function to display the second window (OTP input)
+function showOtpWindow() {
+  setPanelContent(
+      'Enter OTP',
+      `
+      <p class="text-sm text-gray-600 mb-3">An OTP has been sent to <strong>${adminEmail}</strong></p>
+      <input type="text" id="otpInput" placeholder="Enter 5-digit OTP" maxlength="5" class="w-full p-2 mb-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400">
+      <button id="verifyOtpButton" class="w-full px-4 py-2 bg-green-600 text-white rounded-md cursor-pointer hover:bg-green-700 transition-colors">Verify OTP</button>
+      `
+  );
+  document.getElementById('otpInput').focus();
+
+  document.getElementById('verifyOtpButton').addEventListener('click', async () => {
+      const otpInput = document.getElementById('otpInput');
+      const otpValue = otpInput.value.trim();
+      const verifyButton = document.getElementById('verifyOtpButton');
+      
+      if (otpValue.length !== 5 || isNaN(otpValue)) {
+          displayPanelMessage('error', 'Please enter a valid 5-digit OTP.');
+          return;
+      }
+
+      displayPanelMessage('loading', 'Verifying OTP...');
+      setButtonState(verifyButton, true);
+
+      try {
+          // --- Call the /OTPverify API ---
+          const verifyApiUrl = `http://localhost:3002/OTPverify/${otpValue}`; // Again, check this URL
+          const response = await fetch(verifyApiUrl);
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+              displayPanelMessage('success', `OTP verified successfully! Welcome.`);
+              console.log('Server-side verification SUCCESS!');
+              setTimeout(closePanel, 2000);
+          } else {
+              displayPanelMessage('error', `${data.message || 'Please try again.'}. Please close the login window and retry`);
+              console.error('Server-side verification FAILED:', data.message || 'No message');
+              otpInput.value = '';
+          }
+      } catch (error) {
+          displayPanelMessage('error', `Network error during verification: ${error.message}. Is backend server running?`);
+          console.error('Fetch Error:', error);
+      } finally {
+          setButtonState(verifyButton, false);
+      }
+  });
+}
+
+// Function to close the panel
+function closePanel() {
+  const loginPanel = document.getElementById('loginPanel');
+
+  if (loginPanel) { // Ensure panel exists before attempting to hide
+      loginPanel.classList.add('hidden');
+  }
+  setPanelContent('Login', ''); // Reset title and clear content
+  adminEmail = ''; // Reset email
+}
+
+// ------------ End of helper functions for login ops ------------------------
 
 // --- DOMContentLoaded Listener ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -529,16 +924,16 @@ async function initializeMyInfoContent() {
 }
 
 // This function contains all JavaScript logic for the "Illustration Gallery" tab content
-// It is now simplified to reflect the minimal content of illustrations_tab_content.html
+// It is now simplified to reflect the minimal content of illustrations_tab_content_for_admin.html
 async function initializeIllustrationFormAndGallery() {
   
   // ------------------- upload image form and its operations ---------------------------------
-  console.log("Initializing Illustration Gallery tab content (simplified).");
+  console.log("Initializing Illustration Gallery tab content for admin.");
   const uploadForm = document.getElementById('uploadForm');
   const uploadResponseDiv = document.getElementById('uploadResponse');
   const imageUploadInput = document.getElementById('imageUpload');
   const fileNameDisplay = document.getElementById('fileNameDisplay');
-
+  
   // Update file name display when a file is chosen
   imageUploadInput.addEventListener('change', (event) => {
     if (event.target.files.length > 0) {
@@ -603,97 +998,37 @@ async function initializeIllustrationFormAndGallery() {
     // Example: fetch('/api/logout', { method: 'POST' });
   });
   // ------------------ display uploaded images --------------------------
-  const apiURL = 'http://localhost:3002/getFileNames';
-  const imageBaseURL = 'http://localhost:3002/images/';
-  const imageContainer = document.getElementById('image-gallery'); // We'll put images in this container
-
-    // Ensure the container exists
-    if (!imageContainer) {
-        console.error("Error: An HTML element with ID 'image-gallery' was not found. Please add it to your index.html.");
-        return;
-    }
-
-    try {
-    // 1. Read the list of images from the API
-    const response = await fetch(apiURL);
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const imageFileNames = await response.json(); // This will be your array of image names
-    if (imageFileNames.length === 0) {
-        imageContainer.innerHTML = '<p>No images found on the server.</p>';
-        return;
-    }
-    console.log('Image file names:', imageFileNames);
-
-    // 2. Loop over the obtained list and display the images in fixed small sized cards
-    imageFileNames.forEach(fileName => {
-        // Create a div for the card
-        const card = document.createElement('div');
-        //card.className = 'image-card'; // Add a class for styling
-        //card.classList.add('card','mb-[2.5%]','lg:mb-[0%]');
-        card.classList.add('illustration-card','group','relative');
-        
-        // ------------- Create the image element
-        const img = document.createElement('img');
-        img.src = imageBaseURL + fileName;
-        img.alt = `Image: ${fileName}`; // Good for accessibility
-        img.loading = 'lazy'; // Improve performance by lazy-loading images
-        img.classList.add(
-          'w-full', 'h-full', 'object-cover','transition-all',
-          'duration-300', 'ease-in-out', 'group-hover:scale-110', 'cursor-pointer');
-        //Add onclick event listener to the image
-        img.onclick = () => {
-          // Open the image in a new tab
-          window.open(img.src, '_blank');
-          };
-
-        // ------------- Create the delete button (an 'x' icon)
-        const deleteButton = document.createElement('button');
-        deleteButton.classList.add('absolute', 'top-1', 'left-1', 'z-10',
-        'bg-red-500', 'text-white', 'rounded-full', 'w-7', 'h-7', 'flex', 'items-center', 'justify-center', 'text-sm', 'font-bold',
-        'opacity-0', 'shadow-md', 'group-hover:opacity-80', 'transition-opacity', 'duration-200',
-        'cursor-pointer', 'hover:bg-red-700');
-        deleteButton.textContent = "x"; // The 'x' text
-        
-        // Add click event listener to the delete button
-        deleteButton.onclick = async () => {
-          console.log(`Attempting to delete image: ${fileName}`);
-          try {
-              const deleteApiUrl = `${UPLOAD_SERVICE_API_URL}/deleteImage/${fileName}`;
-              console.log('DELETE request to:', deleteApiUrl);
-
-              const response = await fetch(deleteApiUrl, {
-                  method: 'DELETE',
-              });
-
-              if (response.ok) {
-                  const result = await response.text(); // Assuming backend sends text response
-                  console.log(`Successfully deleted ${fileName}:`, result);
-                  card.remove(); // Remove the card from the DOM immediately upon successful deletion
-              } else {
-                  const errorText = await response.text();
-                  throw new Error(`Failed to delete ${fileName}: ${response.status} - ${errorText}`);
-              }
-          } catch (error) {
-              console.error('Error deleting image:', error);
-          }
-      };
-
-        // Append image and text to the card
-        card.appendChild(img);
-        card.appendChild(deleteButton);
-
-        // Append the card to the main container
-        imageContainer.appendChild(card);
-        });
-
-    } catch (error) {
-        console.error('Failed to fetch image names or display images:', error);
-        imageContainer.innerHTML = `<p>Error loading images: ${error.message}</p>`;
-    }
-    // ---- end of display uploaded images part ------
-  
+  await displayUploadedImagesForAdmin();
 }
 
+// This function contains all JavaScript logic for the "Illustration Gallery" tab content
+// It is now simplified to reflect the minimal content of illustrations_tab_content.html
+async function initializeIllustrationGallery() {
+  
+  // ------------------- upload image form and its operations ---------------------------------
+  console.log("Initializing Illustration Gallery tab content for general user.");
+  
+  // ------------------ display uploaded images --------------------------
+  await displayUploadedImages();
+
+  // ------------------ login routine ------------------------------------
+  const openLoginButton = document.getElementById('openLoginButton');
+  const closePanelButton = document.getElementById('closePanelButton'); // Get the close button
+  const loginPanel = document.getElementById('loginPanel');
+
+  // Event listener for the initial "Open Login" button
+  if (openLoginButton) {
+    openLoginButton.addEventListener('click', () => {
+        if (loginPanel) {
+            loginPanel.classList.remove('hidden'); // Show the panel
+        }
+        showEmailWindow(); // Start with the email window
+    });
+  }
+
+  // Event listener for the close button within the panel
+  if (closePanelButton) {
+    closePanelButton.addEventListener('click', closePanel);
+  }
+
+}
