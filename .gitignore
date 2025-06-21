@@ -3,15 +3,9 @@ backend/package-lock.json
 upload-service/node_modules/
 upload-service/package-lock.json
 upload-service/images/
+upload-service/.env
 frontend/node_modules/
 frontend/package-lock.json
 frontend/src/output.css
 venv/
 roughwork.txt
-
-frontend/index_2.html
-frontend/index_initial.html
-frontend/script_2.js
-frontend/script_initial.js
-frontend/test_script.js
-frontend/test.html

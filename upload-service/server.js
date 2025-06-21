@@ -4,6 +4,7 @@ const path = require('path');      // Import path for multer
 const multer = require('multer');  // Import multer
 const fs = require('fs');
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 const app = express();
 const port = 3002;
@@ -128,13 +129,14 @@ app.delete('/deleteImage/:image_name', (req, res) => {
 
 // ------ Routine to send email -----------------
 
+// Access the environment variables and configure the transporter
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT, 10), // Convert port to a number
+  secure: process.env.SMTP_SECURE === 'true', // Convert "true" string to boolean true
   auth: {
-    user: 'ninadrathod267@gmail.com',
-    pass: 'wrloayayrmvfldof'
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
   }
 });
 

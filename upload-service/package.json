@@ -11,13 +11,15 @@
     "cors": "latest",
     "express": "latest",
     "multer": "latest",
-    "nodemailer": "latest"
+    "nodemailer": "latest",
+    "dotenv": "latest"
   },
   "devDependencies": {
     "cors": "latest",
     "express": "latest",
     "multer": "^2.0.1",
     "nodemon": "latest",
-    "nodemailer": "latest"
+    "nodemailer": "latest",
+    "dotenv": "latest"
   }
 }
