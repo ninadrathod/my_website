@@ -150,7 +150,7 @@ app.get('/sendOTP/:variableEmailID', async (req, res) => {
 
     // 2. Generate a random 5-digit number (OTP)
     const otp = Math.floor(10000 + Math.random() * 90000);
-    console.log(`Generated OTP: ${otp} for email: ${recipientEmail}`);
+    console.log(`Generated OTP for email: ${recipientEmail}`);
     storedOtp = otp;
     storedOtpEmail = recipientEmail;
 
@@ -176,7 +176,6 @@ app.get('/sendOTP/:variableEmailID', async (req, res) => {
         // 4. Return the same number (OTP) to the calling script
         res.status(200).json({
             message: 'OTP sent successfully!',
-            otp: otp, // Return the generated OTP
             email: recipientEmail
         });
 

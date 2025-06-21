@@ -48,6 +48,98 @@ const panelTitle = document.getElementById('panelTitle');
 const closePanelButton = document.getElementById('closePanelButton'); // Get the close button
 let adminEmail = ''; // To store the email ID entered in the first step
 
+// Reference to the specific tab toggle for "Illustration Gallery"
+const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content.html"]');
+
+// --- Configuration (Place these at the top of your script) ---
+const CACHE_EXPIRY_TIMESTAMP_KEY = 'adminSessionExpiryTimestamp'; // Key to store the expiration timestamp
+const SESSION_DURATION_MS = 15 * 60 * 1000;                      // 15 minutes in milliseconds
+
+// -------------- utility functions for session management ------------------
+
+/**
+ * Checks if a variable (identified by its key) exists in localStorage.
+ * param {string} key - The key of the variable to check. Defaults to MY_VARIABLE_KEY.
+ * returns {boolean} True if the variable exists, false otherwise.
+ */
+function doesVariableExistInCache(CACHE_EXPIRY_TIMESTAMP_KEY = 'adminSessionExpiryTimestamp') {
+  // localStorage.getItem() returns null if the key does not exist
+  const value = localStorage.getItem(CACHE_EXPIRY_TIMESTAMP_KEY);
+  
+  if (value === null) {
+      console.log(`Variable with key '${CACHE_EXPIRY_TIMESTAMP_KEY}' does NOT exist in cache.`);
+      return false;
+  } else {
+      console.log(`Variable with key '${CACHE_EXPIRY_TIMESTAMP_KEY}' DOES exist in cache. Value: "${value}"`);
+      return true;
+  }
+}
+
+// Function to store expiry timestamp in cache ---
+/**
+ * Stores a timestamp in browser's localStorage representing 15 minutes from the current time.
+ */
+function storeExpiryTimestamp(
+  CACHE_EXPIRY_TIMESTAMP_KEY = 'adminSessionExpiryTimestamp', SESSION_DURATION_MS = 15 * 60 * 1000
+) 
+{
+    const currentTimestamp = Date.now(); // Get current time in milliseconds
+    const expiryTimestamp = currentTimestamp + SESSION_DURATION_MS; // Calculate expiry time
+
+    localStorage.setItem(CACHE_EXPIRY_TIMESTAMP_KEY, expiryTimestamp.toString()); // Store as a string
+    
+    console.log(`Expiry timestamp stored: ${new Date(expiryTimestamp).toLocaleString()}`);
+}
+
+// --- Function to set the cache variable to 0 ---
+/**
+ * Sets the expiry timestamp in browser's localStorage to 0.
+ * This effectively makes any session immediately invalid.
+ */
+function setExpiryTimestampToZero(CACHE_EXPIRY_TIMESTAMP_KEY = 'adminSessionExpiryTimestamp') {
+  localStorage.setItem(CACHE_EXPIRY_TIMESTAMP_KEY, '0'); // Store '0' as a string
+  console.log(`Expiry timestamp in cache set to 0. Session is now invalid.`);
+}
+
+// Function to check if current_timestamp < x (cache variable) ---
+/**
+ * Checks if the current time is before the stored expiration timestamp.
+ * Returns true if valid and not expired, false otherwise.
+ */
+function isSessionValid(
+  CACHE_EXPIRY_TIMESTAMP_KEY = 'adminSessionExpiryTimestamp'
+  ) {
+    const storedExpiry = localStorage.getItem(CACHE_EXPIRY_TIMESTAMP_KEY);
+
+    // If no expiry timestamp is stored, the session is not valid
+    if (storedExpiry === null) {
+        console.log("No expiry timestamp found in cache. Session is not valid.");
+        return false;
+    }
+
+    const expiryTime = parseInt(storedExpiry, 10); // Convert stored string to integer
+    const currentTimestamp = Date.now(); // Get current time
+
+    // Check for invalid (NaN) expiry time or if the current time is past expiry
+    if (isNaN(expiryTime)) {
+        console.warn("Stored expiry timestamp is corrupted (NaN). Clearing it.");
+        localStorage.removeItem(CACHE_EXPIRY_TIMESTAMP_KEY); // Clean up corrupted data
+        return false;
+    }
+    if (currentTimestamp < expiryTime) {
+        const remainingMinutes = Math.ceil((expiryTime - currentTimestamp) / 1000 / 60);
+        console.log(`Session is valid. Expires in approx ${remainingMinutes} minutes.`);
+        return true;
+    } else {
+        console.log("Session has expired.");
+        setExpiryTimestampToZero();
+        return false;
+    }
+}
+
+
+// -------------- end of utility functions for session management ------------------
+
 // --- Core Function to Load Tab Content ---
 async function loadTabContent(filePath) {
   if (!tabsContentContainer) {
@@ -71,6 +163,8 @@ async function loadTabContent(filePath) {
       await initializeMyInfoContent(); // Use await as it fetches data
     } else if (filePath === tabContentFileMap['illustrations_tab_content.html']) {
       await initializeIllustrationGallery();
+    } else if (filePath === tabContentFileMap['illustrations_tab_content_for_admin.html']) {
+      await initializeIllustrationFormAndGallery();
     }
 
     // Hide loader and show page content after the *first* tab's content is fully loaded
@@ -555,6 +649,25 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
       
       // Add click event listener to the delete button
       deleteButton.onclick = async () => {
+
+            // ------- check if the session is still active -------------
+          if(!isSessionValid()){
+            setExpiryTimestampToZero();
+            console.log("session is expired");
+            const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content_for_admin.html"]');
+            if (illustrationGalleryTabToggle) {
+              illustrationGalleryTabToggle.dataset.tabTarget = "illustrations_tab_content.html";
+              console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
+            } else {
+              console.error("Illustration Gallery tab toggle element not found!");
+            }
+            illustrationGalleryTabToggle.click();
+            return;
+          }
+          else{
+            console.log("session is active, you may proceed to delete the image.");
+          }
+
         console.log(`Attempting to delete image: ${fileName}`);
         try {
             const deleteApiUrl = `${UPLOAD_SERVICE_API_URL}/deleteImage/${fileName}`;
@@ -837,7 +950,20 @@ function showOtpWindow() {
           if (response.ok && data.success) {
               displayPanelMessage('success', `OTP verified successfully! Welcome.`);
               console.log('Server-side verification SUCCESS!');
+              
+              storeExpiryTimestamp();
+
+              const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content.html"]');
+              if (illustrationGalleryTabToggle) {
+                illustrationGalleryTabToggle.dataset.tabTarget = "illustrations_tab_content_for_admin.html";
+                console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
+              } else {
+                console.error("Illustration Gallery tab toggle element not found!");
+              }
+              illustrationGalleryTabToggle.click();
+              
               setTimeout(closePanel, 2000);
+
           } else {
               displayPanelMessage('error', `${data.message || 'Please try again.'}. Please close the login window and retry`);
               console.error('Server-side verification FAILED:', data.message || 'No message');
@@ -859,8 +985,8 @@ function closePanel() {
   if (loginPanel) { // Ensure panel exists before attempting to hide
       loginPanel.classList.add('hidden');
   }
-  setPanelContent('Login', ''); // Reset title and clear content
-  adminEmail = ''; // Reset email
+  //setPanelContent('Login', ''); // Reset title and clear content
+  //adminEmail = ''; // Reset email
 }
 
 // ------------ End of helper functions for login ops ------------------------
@@ -885,6 +1011,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const defaultTab = document.querySelector('.tabs__toggle.is-active');
   if (defaultTab) {
     defaultTab.click();
+  }
+
+  /* check if previous session is still active */
+  if (doesVariableExistInCache()) {
+    if(isSessionValid())
+    { console.log("Session still active");
+      const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content.html"]');
+      if (illustrationGalleryTabToggle) {
+        illustrationGalleryTabToggle.dataset.tabTarget = "illustrations_tab_content_for_admin.html";
+        console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
+      } else {
+        console.error("Illustration Gallery tab toggle element not found!");
+      }
+    }
+    else
+    { setExpiryTimestampToZero();
+      console.log("Session expired");    
+    }    
+  } else {
+      console.log("No active sessions");
+      setExpiryTimestampToZero();
   }
 });
 
@@ -944,6 +1091,25 @@ async function initializeIllustrationFormAndGallery() {
   });
 
   uploadForm.addEventListener('submit', async (event) => {
+
+      // ------- check if the session is still active -------------
+      if(!isSessionValid()){
+        setExpiryTimestampToZero();
+        console.log("session is expired");
+        const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content_for_admin.html"]');
+        if (illustrationGalleryTabToggle) {
+          illustrationGalleryTabToggle.dataset.tabTarget = "illustrations_tab_content.html";
+          console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
+        } else {
+          console.error("Illustration Gallery tab toggle element not found!");
+        }
+        illustrationGalleryTabToggle.click();
+        return;
+      }
+      else{
+        console.log("session is active, you may upload the illustration");
+      }
+
       event.preventDefault(); // Prevent the default form submission (page reload)
 
       // Clear previous response message
@@ -976,6 +1142,7 @@ async function initializeIllustrationFormAndGallery() {
               imageUploadInput.value = '';
               uploadForm.reset(); // Clear form
               fileNameDisplay.textContent = 'No file chosen';
+              displayUploadedImagesForAdmin(); // Refresh the gallery
           } else {
               uploadResponseDiv.style.color = 'red';
               uploadResponseDiv.textContent = 'Upload failed: ' + message;
@@ -993,9 +1160,18 @@ async function initializeIllustrationFormAndGallery() {
 
   logoutButton.addEventListener('click', () => {
     console.log("Log Out button clicked!");
-    // Add your logout operations here (e.g., clear session, redirect, API call)
-    // Example: window.location.href = '/logout';
-    // Example: fetch('/api/logout', { method: 'POST' });
+    // ------- check if the session is still active -------------
+    setExpiryTimestampToZero();
+    console.log("Logged out");
+      const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content_for_admin.html"]');
+      if (illustrationGalleryTabToggle) {
+        illustrationGalleryTabToggle.dataset.tabTarget = "illustrations_tab_content.html";
+        console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
+      } else {
+        console.error("Illustration Gallery tab toggle element not found!");
+      }
+      illustrationGalleryTabToggle.click();
+      return;
   });
   // ------------------ display uploaded images --------------------------
   await displayUploadedImagesForAdmin();
