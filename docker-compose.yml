@@ -58,8 +58,11 @@ services:
     volumes:
       # OPTIONAL: Map a local 'uploads' directory to persist images outside the container
       - ./upload-service:/app 
+    depends_on:
+      - mongodb
     environment:
       - PORT=3002
+      - MONGODB_URI=mongodb://admin:qwerty@mongodb:27017 # Use service name as hostname
     healthcheck:
       test: wget -qO- http://localhost:3002/health | grep -q 'OK'
       interval: 10s

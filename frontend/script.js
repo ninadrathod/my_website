@@ -58,85 +58,157 @@ const SESSION_DURATION_MS = 15 * 60 * 1000;                      // 15 minutes i
 // -------------- utility functions for session management ------------------
 
 /**
- * Checks if a variable (identified by its key) exists in localStorage.
- * param {string} key - The key of the variable to check. Defaults to MY_VARIABLE_KEY.
- * returns {boolean} True if the variable exists, false otherwise.
+ * Checks if a timestamp entry exists in the server-side cache (MongoDB collection).
+ * This function now makes an API call to the backend.
+ *
+ * returns {Promise<boolean>} True if an entry exists, false otherwise.
  */
-function doesVariableExistInCache(CACHE_EXPIRY_TIMESTAMP_KEY = 'adminSessionExpiryTimestamp') {
-  // localStorage.getItem() returns null if the key does not exist
-  const value = localStorage.getItem(CACHE_EXPIRY_TIMESTAMP_KEY);
-  
-  if (value === null) {
-      console.log(`Variable with key '${CACHE_EXPIRY_TIMESTAMP_KEY}' does NOT exist in cache.`);
+async function doesVariableExistInCache() {
+    const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/doesTSexist`; 
+
+    try {
+        console.log(`Checking for timestamp existence via API: ${apiUrl}`);
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+            // Handle HTTP errors (e.g., 404, 500)
+            const errorBody = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
+        }
+
+        const data = await response.json(); // Expected: { exists: true/false }
+
+        if (data.exists === true) {
+            console.log("Timestamp entry DOES exist in server-side cache.");
+            return true;
+        } else {
+            console.log("Timestamp entry does NOT exist in server-side cache.");
+            return false;
+        }
+    } catch (error) {
+        console.error("Error checking timestamp existence via API:", error);
+        // In case of any error (network, parsing, etc.), assume it doesn't exist or is unreachable
+        return false;
+    }
+}
+
+
+/**
+ * Sends a request to the backend API to create/reset the session expiry timestamp.
+ * The timestamp is calculated and stored on the server-side.
+ * This function no longer uses localStorage.
+ *
+ * returns {Promise<boolean>} Resolves to true if the timestamp was stored successfully on the server, false otherwise.
+ */
+async function storeExpiryTimestamp() {
+  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/createTS`; // Full API endpoint
+
+  try {
+      console.log(`Sending request to create/reset timestamp via API: ${apiUrl}`);
+      const response = await fetch(apiUrl, {
+          method: 'POST', // The API is a POST endpoint
+          headers: {
+              'Content-Type': 'application/json' // Even if no body, good practice for POST
+          }
+      });
+
+      if (!response.ok) {
+          // Handle HTTP errors (e.g., 400, 500)
+          const errorBody = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
+      }
+
+      const data = await response.json(); // Expected: { success: true, message: ..., expiresAt: ... }
+
+      if (data.success) {
+          console.log(`Server-side timestamp stored successfully. Expires at: ${new Date(data.expiresAt).toLocaleString()}`);
+          return true;
+      } else {
+          console.error("Server-side timestamp storage failed:", data.message);
+          return false;
+      }
+
+  } catch (error) {
+      console.error("Error storing server-side timestamp via API:", error);
       return false;
-  } else {
-      console.log(`Variable with key '${CACHE_EXPIRY_TIMESTAMP_KEY}' DOES exist in cache. Value: "${value}"`);
-      return true;
   }
 }
 
-// Function to store expiry timestamp in cache ---
 /**
- * Stores a timestamp in browser's localStorage representing 15 minutes from the current time.
+ * Sends a request to the backend API to set the session expiry timestamp to zero.
+ * This effectively invalidates the server-side session immediately.
+ * This function no longer uses localStorage.
+ *
+ * returns {Promise<boolean>} Resolves to true if the timestamp was set to zero successfully on the server, false otherwise.
  */
-function storeExpiryTimestamp(
-  CACHE_EXPIRY_TIMESTAMP_KEY = 'adminSessionExpiryTimestamp', SESSION_DURATION_MS = 15 * 60 * 1000
-) 
-{
-    const currentTimestamp = Date.now(); // Get current time in milliseconds
-    const expiryTimestamp = currentTimestamp + SESSION_DURATION_MS; // Calculate expiry time
+async function setExpiryTimestampToZero() {
+  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/setTStoZero`; // Full API endpoint
 
-    localStorage.setItem(CACHE_EXPIRY_TIMESTAMP_KEY, expiryTimestamp.toString()); // Store as a string
-    
-    console.log(`Expiry timestamp stored: ${new Date(expiryTimestamp).toLocaleString()}`);
+  try {
+      console.log(`Sending request to set timestamp to zero via API: ${apiUrl}`);
+      const response = await fetch(apiUrl, {
+          method: 'POST', // The API is a POST endpoint
+          headers: {
+              'Content-Type': 'application/json' 
+          }
+      });
+
+      if (!response.ok) {
+          // Handle HTTP errors (e.g., 400, 500)
+          const errorBody = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
+      }
+
+      const data = await response.json(); // Expected: { success: true, message: ..., value_x: ... }
+
+      if (data.success) {
+          console.log(`Server-side timestamp successfully set to zero. Session is now invalid.`);
+          return true;
+      } else {
+          console.error("Server-side timestamp set to zero failed:", data.message);
+          return false;
+      }
+
+  } catch (error) {
+      console.error("Error setting server-side timestamp to zero via API:", error);
+      return false;
+  }
 }
 
-// --- Function to set the cache variable to 0 ---
 /**
- * Sets the expiry timestamp in browser's localStorage to 0.
- * This effectively makes any session immediately invalid.
+ * Checks if the server-side session is currently valid by calling a backend API.
+ * This function no longer relies on localStorage.
+ *
+ * returns {Promise<boolean>} Resolves to true if the session is valid, false otherwise.
  */
-function setExpiryTimestampToZero(CACHE_EXPIRY_TIMESTAMP_KEY = 'adminSessionExpiryTimestamp') {
-  localStorage.setItem(CACHE_EXPIRY_TIMESTAMP_KEY, '0'); // Store '0' as a string
-  console.log(`Expiry timestamp in cache set to 0. Session is now invalid.`);
+async function isSessionValid() {
+  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/isSessionValid`; // Full API endpoint
+
+  try {
+      console.log(`Checking session validity via API: ${apiUrl}`);
+      const response = await fetch(apiUrl);
+
+      if (!response.ok) {
+          // Handle HTTP errors (e.g., 404, 500)
+          const errorBody = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
+      }
+      console.log(response);
+      const data = await response.json(); // Expected: { isValid: true/false, reason?: string }
+      console.log(data);
+      if (data.isValid === true) {
+          console.log("Server-side session is valid.");
+          return true;
+      } else {
+          console.log(`Server-side session is NOT valid. Reason: ${data.reason || 'Unknown'}`);
+          return false;
+      }
+
+  } catch (error) {
+      console.error("Error checking server-side session validity via API:", error);
+      return false;
+  }
 }
-
-// Function to check if current_timestamp < x (cache variable) ---
-/**
- * Checks if the current time is before the stored expiration timestamp.
- * Returns true if valid and not expired, false otherwise.
- */
-function isSessionValid(
-  CACHE_EXPIRY_TIMESTAMP_KEY = 'adminSessionExpiryTimestamp'
-  ) {
-    const storedExpiry = localStorage.getItem(CACHE_EXPIRY_TIMESTAMP_KEY);
-
-    // If no expiry timestamp is stored, the session is not valid
-    if (storedExpiry === null) {
-        console.log("No expiry timestamp found in cache. Session is not valid.");
-        return false;
-    }
-
-    const expiryTime = parseInt(storedExpiry, 10); // Convert stored string to integer
-    const currentTimestamp = Date.now(); // Get current time
-
-    // Check for invalid (NaN) expiry time or if the current time is past expiry
-    if (isNaN(expiryTime)) {
-        console.warn("Stored expiry timestamp is corrupted (NaN). Clearing it.");
-        localStorage.removeItem(CACHE_EXPIRY_TIMESTAMP_KEY); // Clean up corrupted data
-        return false;
-    }
-    if (currentTimestamp < expiryTime) {
-        const remainingMinutes = Math.ceil((expiryTime - currentTimestamp) / 1000 / 60);
-        console.log(`Session is valid. Expires in approx ${remainingMinutes} minutes.`);
-        return true;
-    } else {
-        console.log("Session has expired.");
-        setExpiryTimestampToZero();
-        return false;
-    }
-}
-
 
 // -------------- end of utility functions for session management ------------------
 
@@ -651,8 +723,9 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
       deleteButton.onclick = async () => {
 
             // ------- check if the session is still active -------------
-          if(!isSessionValid()){
-            setExpiryTimestampToZero();
+          const sessionIsValidBackend = await isSessionValid(); 
+          if(!sessionIsValidBackend){
+            await setExpiryTimestampToZero();
             console.log("session is expired");
             const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content_for_admin.html"]');
             if (illustrationGalleryTabToggle) {
@@ -855,7 +928,6 @@ function setButtonState(buttonElement, isDisabled) {
 
 // Function to display the first window (Email input)
 function showEmailWindow() {
-  console.log('at line 740');
   setPanelContent(
       'Enter Admin Email',
       `
@@ -915,7 +987,6 @@ function showEmailWindow() {
   });
 }
 
-
 // Function to display the second window (OTP input)
 function showOtpWindow() {
   setPanelContent(
@@ -951,7 +1022,15 @@ function showOtpWindow() {
               displayPanelMessage('success', `OTP verified successfully! Welcome.`);
               console.log('Server-side verification SUCCESS!');
               
-              storeExpiryTimestamp();
+              // Await the asynchronous function call and capture its success
+              const timestampAdded = await storeExpiryTimestamp();
+
+              // Add a console message based on the result
+              if (timestampAdded) {
+                  console.log("Server-side timestamp successfully added/updated.");
+              } else {
+                  console.error("Failed to add/update server-side timestamp.");
+              }
 
               const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content.html"]');
               if (illustrationGalleryTabToggle) {
@@ -989,18 +1068,18 @@ function closePanel() {
   //adminEmail = ''; // Reset email
 }
 
-// ------------ End of helper functions for login ops ------------------------
+// ------------ End of helper functions for login ops ---------------------------
 
-// --- DOMContentLoaded Listener ---
-document.addEventListener('DOMContentLoaded', () => {
+// ======================= DOMContentLoaded Listener ============================
+document.addEventListener('DOMContentLoaded', async () => {
+
+  console.log('DOMContentLoaded: Page loaded, starting initialization.');
+
   // Add event listeners to tab toggles
   tabToggles.forEach(toggle => {
     toggle.addEventListener('click', () => {
-      // Remove active classes from all toggles
-      tabToggles.forEach(t => t.classList.remove('is-active', 'bg-amber-200'));
-      // Add active classes to the clicked toggle
-      toggle.classList.add('is-active', 'bg-amber-200');
-
+      tabToggles.forEach(t => t.classList.remove('is-active', 'bg-amber-200')); // Remove active classes from all toggles
+      toggle.classList.add('is-active', 'bg-amber-200'); // Add active classes to the clicked toggle
       const targetHtmlFile = toggle.dataset.tabTarget; // Get the target HTML file path from data-tab-target
       loadTabContent(targetHtmlFile); // Load the content for the clicked tab
     });
@@ -1014,8 +1093,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* check if previous session is still active */
-  if (doesVariableExistInCache()) {
-    if(isSessionValid())
+  const tsEntryExists = await doesVariableExistInCache(); // Await the async call
+  if (tsEntryExists) {
+    const sessionIsValid = await isSessionValid(); // Await the async call
+    if(sessionIsValid)
     { console.log("Session still active");
       const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content.html"]');
       if (illustrationGalleryTabToggle) {
@@ -1026,16 +1107,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     else
-    { setExpiryTimestampToZero();
+    { await setExpiryTimestampToZero(); 
       console.log("Session expired");    
     }    
   } else {
       console.log("No active sessions");
-      setExpiryTimestampToZero();
+      await setExpiryTimestampToZero(); 
   }
 });
 
-// --- Specific Initialization Functions for Each Tab ---
+// --------------- Specific Initialization Functions for Each Tab ---------------
 
 // This function contains all JavaScript logic for the "My Info" tab content
 async function initializeMyInfoContent() {
@@ -1091,10 +1172,12 @@ async function initializeIllustrationFormAndGallery() {
   });
 
   uploadForm.addEventListener('submit', async (event) => {
-
+      event.preventDefault(); // Prevent the default form submission (page reload)
+      console.log("Upload form submitted!");
       // ------- check if the session is still active -------------
-      if(!isSessionValid()){
-        setExpiryTimestampToZero();
+      const sessionIsValid = await isSessionValid(); 
+      if(!sessionIsValid){
+        await setExpiryTimestampToZero();
         console.log("session is expired");
         const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content_for_admin.html"]');
         if (illustrationGalleryTabToggle) {
@@ -1109,8 +1192,6 @@ async function initializeIllustrationFormAndGallery() {
       else{
         console.log("session is active, you may upload the illustration");
       }
-
-      event.preventDefault(); // Prevent the default form submission (page reload)
 
       // Clear previous response message
       uploadResponseDiv.textContent = '';
@@ -1158,10 +1239,10 @@ async function initializeIllustrationFormAndGallery() {
   // ------------------ log out button and its actions -------------------------------------
   const logoutButton = document.getElementById('logoutButton'); 
 
-  logoutButton.addEventListener('click', () => {
+  logoutButton.addEventListener('click', async () => {
     console.log("Log Out button clicked!");
     // ------- check if the session is still active -------------
-    setExpiryTimestampToZero();
+    await setExpiryTimestampToZero();
     console.log("Logged out");
       const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content_for_admin.html"]');
       if (illustrationGalleryTabToggle) {

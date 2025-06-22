@@ -12,7 +12,8 @@
     "express": "latest",
     "multer": "latest",
     "nodemailer": "latest",
-    "dotenv": "latest"
+    "dotenv": "latest",
+    "mongodb": "latest"
   },
   "devDependencies": {
     "cors": "latest",
