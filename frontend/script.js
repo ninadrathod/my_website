@@ -1328,6 +1328,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   console.log('DOMContentLoaded: Page loaded, starting initialization.');
 
+  await Promise.all([
+    fetchAndDisplayProperty('name', 'name-display'),
+    fetchAndDisplayProperty('summary', 'summary-display'),
+    fetchAndReturnLink('email_id', 'email_id-link'),
+    fetchAndReturnLink('linkedin', 'linkedin-link'),
+    fetchAndReturnLink('github', 'github-link'),
+    fetchAndReturnLink('resume', 'resume-link'),
+  ]);
+  
   // Add event listeners to tab toggles
   tabToggles.forEach(toggle => {
     toggle.addEventListener('click', () => {
@@ -1373,23 +1382,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // This function contains all JavaScript logic for the "My Info" tab content
 async function initializeMyInfoContent() {
   console.log("Initializing My Info tab content...");
-  // Re-select elements inside the newly loaded 'my_info_tab_content.html'
-  // These elements are part of the dynamically loaded content, so they must be selected here.
-  const nameDisplay = document.getElementById('name-display');
-  const summaryDisplay = document.getElementById('summary-display');
-  const emailLink = document.getElementById('email_id-link');
-  const linkedinLink = document.getElementById('linkedin-link');
-  const githubLink = document.getElementById('github-link');
-
-  // Fetch and display properties/links
-  await Promise.all([
-    fetchAndDisplayProperty('name', 'name-display'),
-    fetchAndDisplayProperty('summary', 'summary-display'),
-    fetchAndReturnLink('email_id', 'email_id-link'),
-    fetchAndReturnLink('linkedin', 'linkedin-link'),
-    fetchAndReturnLink('github', 'github-link'),
-  ]);
-
+  
   // Fetch and display card categories
   await Promise.all([
     fetchAndDisplayCards('work_exp', 'work-experience-container', displayWorkExperience),

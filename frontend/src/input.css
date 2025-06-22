@@ -179,6 +179,13 @@ html.lenis body {
     font-style: normal;
   }  
 
+  .montserrat-heading {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+  }  
+
 @layer components {
     
     .illustration-card {
