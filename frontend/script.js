@@ -51,11 +51,72 @@ let adminEmail = ''; // To store the email ID entered in the first step
 // Reference to the specific tab toggle for "Illustration Gallery"
 const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content.html"]');
 
-// --- Configuration (Place these at the top of your script) ---
-const CACHE_EXPIRY_TIMESTAMP_KEY = 'adminSessionExpiryTimestamp'; // Key to store the expiration timestamp
-const SESSION_DURATION_MS = 15 * 60 * 1000;                      // 15 minutes in milliseconds
+
 
 // -------------- utility functions for session management ------------------
+
+/**
+ * Helper function: Generates a Universally Unique Identifier (UUID v4).
+ * returns {string} A new UUID string.
+ */
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+// --- Function to check if "CurrentSessionID" key exists in local cache ---
+/**
+ * Checks if the 'CurrentSessionID' key exists in localStorage.
+ * returns {boolean} True if the key exists, false otherwise.
+ */
+function checkIfSessionIdExists() {
+  const SESSION_ID_KEY = 'CurrentSessionID';
+  const value = localStorage.getItem(SESSION_ID_KEY);
+  const exists = value !== null;
+  console.log(`'${SESSION_ID_KEY}' exists in cache: ${exists}`);
+  return exists;
+}
+
+// --- Function to read the value of "CurrentSessionID" from cache ---
+/**
+ * Reads the value of 'CurrentSessionID' from localStorage.
+ * returns {string | null} The session ID string if found, null otherwise.
+ */
+function readSessionId() {
+  const SESSION_ID_KEY = 'CurrentSessionID';
+  const sessionId = localStorage.getItem(SESSION_ID_KEY);
+  if (sessionId) {
+    console.log(`Read '${SESSION_ID_KEY}' from cache: ${sessionId}`);
+  } else {
+    console.log(`'${SESSION_ID_KEY}' not found in cache.`);
+  }
+  return sessionId;
+}
+
+// --- Function to create/retrieve the "CurrentSessionID" key and store it in local cache ---
+/**
+ * Retrieves the 'CurrentSessionID' from localStorage.
+ * If the key does not exist, it generates a new UUID, stores it, and returns it.
+ * This ensures an ID is always present and avoids overwriting an existing one.
+ * returns {string} The existing or newly created session ID.
+ */
+function createSessionId() { // Renamed from createSessionId to better reflect its combined purpose if you want
+  const SESSION_ID_KEY = 'CurrentSessionID';
+  let sessionId = localStorage.getItem(SESSION_ID_KEY); // Try to read existing ID
+
+  if (!sessionId) {
+    // If no ID is found, generate a new one
+    sessionId = generateUUID(); // Assuming generateUUID() is defined elsewhere
+    localStorage.setItem(SESSION_ID_KEY, sessionId); // Store the new ID
+    console.log(`No existing '${SESSION_ID_KEY}' found. Created and stored new ID: ${sessionId}`);
+  } else {
+    console.log(`Existing '${SESSION_ID_KEY}' found: ${sessionId}`);
+  }
+  return sessionId;
+}
 
 /**
  * Checks if a timestamp entry exists in the server-side cache (MongoDB collection).
@@ -63,7 +124,7 @@ const SESSION_DURATION_MS = 15 * 60 * 1000;                      // 15 minutes i
  *
  * returns {Promise<boolean>} True if an entry exists, false otherwise.
  */
-async function doesVariableExistInCache() {
+/*async function doesVariableExistInCache() {
     const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/doesTSexist`; 
 
     try {
@@ -90,8 +151,52 @@ async function doesVariableExistInCache() {
         // In case of any error (network, parsing, etc.), assume it doesn't exist or is unreachable
         return false;
     }
-}
+}*/
 
+/**
+ * Checks if a timestamp entry exists in the server-side cache (MongoDB collection)
+ * for the current browser's session ID.
+ * This function now ensures a session ID exists and makes an API call to the backend.
+ *
+ * returns {Promise<boolean>} True if an entry exists for the session ID, false otherwise.
+ */
+async function doesVariableExistInCache() {
+  // 1. Ensure a session ID exists for the current browser instance
+  const currentSessionId = createSessionId(); // This will create if not exists, or return existing
+
+  if (!currentSessionId) {
+      console.error("Cannot check timestamp existence: No valid session ID available.");
+      return false;
+  }
+
+  // 2. Construct the API URL with the sessionId as a query parameter
+  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/doesTSexist?sessionId=${encodeURIComponent(currentSessionId)}`;
+
+  try {
+      console.log(`Checking for timestamp existence via API: ${apiUrl}`);
+      const response = await fetch(apiUrl);
+
+      if (!response.ok) {
+          // Handle HTTP errors (e.g., 404, 500)
+          const errorBody = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
+      }
+
+      const data = await response.json(); // Expected: { exists: true/false }
+
+      if (data.exists === true) {
+          console.log(`Timestamp entry DOES exist for session ID '${currentSessionId}' in server-side cache.`);
+          return true;
+      } else {
+          console.log(`Timestamp entry does NOT exist for session ID '${currentSessionId}' in server-side cache.`);
+          return false;
+      }
+  } catch (error) {
+      console.error(`Error checking timestamp existence via API for session ID '${currentSessionId}':`, error);
+      // In case of any error (network, parsing, etc.), assume it doesn't exist or is unreachable
+      return false;
+  }
+}
 
 /**
  * Sends a request to the backend API to create/reset the session expiry timestamp.
@@ -100,7 +205,7 @@ async function doesVariableExistInCache() {
  *
  * returns {Promise<boolean>} Resolves to true if the timestamp was stored successfully on the server, false otherwise.
  */
-async function storeExpiryTimestamp() {
+/*async function storeExpiryTimestamp() {
   const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/createTS`; // Full API endpoint
 
   try {
@@ -132,6 +237,57 @@ async function storeExpiryTimestamp() {
       console.error("Error storing server-side timestamp via API:", error);
       return false;
   }
+}*/
+
+/**
+ * Sends a request to the backend API to create/reset the session expiry timestamp
+ * for the current browser's session ID.
+ * The timestamp is calculated and stored on the server-side.
+ * This function no longer uses localStorage for the timestamp itself.
+ *
+ * returns {Promise<boolean>} Resolves to true if the timestamp was stored successfully on the server, false otherwise.
+ */
+async function storeExpiryTimestamp() {
+  // 1. Ensure a session ID exists for the current browser instance
+  const currentSessionId = createSessionId(); // This will create if not exists, or return existing
+
+  if (!currentSessionId) {
+      console.error("Cannot store timestamp: No valid session ID available.");
+      return false;
+  }
+
+  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/createTS`; // Full API endpoint
+
+  try {
+      console.log(`Sending request to create/reset timestamp for Session ID '${currentSessionId}' via API: ${apiUrl}`);
+      const response = await fetch(apiUrl, {
+          method: 'POST', // The API is a POST endpoint
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ sessionId: currentSessionId }) // Send the session ID in the request body
+      });
+
+      if (!response.ok) {
+          // Handle HTTP errors (e.g., 400, 500)
+          const errorBody = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
+      }
+
+      const data = await response.json(); // Expected: { success: true, message: ..., expiresAt: ... }
+
+      if (data.success) {
+          console.log(`Server-side timestamp stored successfully for session '${currentSessionId}'. Expires at: ${new Date(data.expiresAt).toLocaleString()}`);
+          return true;
+      } else {
+          console.error("Server-side timestamp storage failed:", data.message);
+          return false;
+      }
+
+  } catch (error) {
+      console.error(`Error storing server-side timestamp for session '${currentSessionId}' via API:`, error);
+      return false;
+  }
 }
 
 /**
@@ -141,7 +297,7 @@ async function storeExpiryTimestamp() {
  *
  * returns {Promise<boolean>} Resolves to true if the timestamp was set to zero successfully on the server, false otherwise.
  */
-async function setExpiryTimestampToZero() {
+/*async function setExpiryTimestampToZero() {
   const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/setTStoZero`; // Full API endpoint
 
   try {
@@ -173,6 +329,57 @@ async function setExpiryTimestampToZero() {
       console.error("Error setting server-side timestamp to zero via API:", error);
       return false;
   }
+}*/
+
+/**
+ * Sends a request to the backend API to set the session expiry timestamp to zero
+ * for the current browser's session ID.
+ * This effectively invalidates the server-side session immediately.
+ * This function no longer uses localStorage for the timestamp itself.
+ *
+ * returns {Promise<boolean>} Resolves to true if the timestamp was set to zero successfully on the server, false otherwise.
+ */
+async function setExpiryTimestampToZero() {
+  // 1. Ensure a session ID exists for the current browser instance
+  const currentSessionId = createSessionId(); // This will create if not exists, or return existing
+
+  if (!currentSessionId) {
+      console.error("Cannot set timestamp to zero: No valid session ID available.");
+      return false;
+  }
+
+  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/setTStoZero`; // Full API endpoint
+
+  try {
+      console.log(`Sending request to set timestamp to zero for Session ID '${currentSessionId}' via API: ${apiUrl}`);
+      const response = await fetch(apiUrl, {
+          method: 'POST', // The API is a POST endpoint
+          headers: {
+              'Content-Type': 'application/json' 
+          },
+          body: JSON.stringify({ sessionId: currentSessionId }) // Send the session ID in the request body
+      });
+
+      if (!response.ok) {
+          // Handle HTTP errors (e.g., 400, 500)
+          const errorBody = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
+      }
+
+      const data = await response.json(); // Expected: { success: true, message: ..., value_x: ..., sessionId: ... }
+
+      if (data.success) {
+          console.log(`Server-side timestamp successfully set to zero for session '${currentSessionId}'. Session is now invalid.`);
+          return true;
+      } else {
+          console.error("Server-side timestamp set to zero failed:", data.message);
+          return false;
+      }
+
+  } catch (error) {
+      console.error(`Error setting server-side timestamp to zero for session '${currentSessionId}' via API:`, error);
+      return false;
+  }
 }
 
 /**
@@ -181,7 +388,7 @@ async function setExpiryTimestampToZero() {
  *
  * returns {Promise<boolean>} Resolves to true if the session is valid, false otherwise.
  */
-async function isSessionValid() {
+/*async function isSessionValid() {
   const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/isSessionValid`; // Full API endpoint
 
   try {
@@ -208,7 +415,53 @@ async function isSessionValid() {
       console.error("Error checking server-side session validity via API:", error);
       return false;
   }
+}*/
+
+/**
+ * Checks if the server-side session for the current browser's session ID is currently valid
+ * by calling a backend API.
+ * This function no longer relies on localStorage for session validity itself.
+ *
+ * returns {Promise<boolean>} Resolves to true if the session is valid, false otherwise.
+ */
+async function isSessionValid() {
+  // 1. Ensure a session ID exists for the current browser instance
+  const currentSessionId = createSessionId(); // This will create if not exists, or return existing
+
+  if (!currentSessionId) {
+      console.error("Cannot check session validity: No valid session ID available.");
+      return false;
+  }
+
+  // 2. Construct the API URL with the sessionId as a query parameter
+  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/isSessionValid?sessionId=${encodeURIComponent(currentSessionId)}`;
+
+  try {
+      console.log(`Checking session validity for Session ID '${currentSessionId}' via API: ${apiUrl}`);
+      const response = await fetch(apiUrl);
+
+      if (!response.ok) {
+          // Handle HTTP errors (e.g., 404, 500)
+          const errorBody = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
+      }
+      
+      const data = await response.json(); // Expected: { isValid: true/false, reason?: string }
+      
+      if (data.isValid === true) {
+          console.log(`Server-side session for Session ID '${currentSessionId}' is valid.`);
+          return true;
+      } else {
+          console.log(`Server-side session for Session ID '${currentSessionId}' is NOT valid. Reason: ${data.reason || 'Unknown'}`);
+          return false;
+      }
+
+  } catch (error) {
+      console.error(`Error checking server-side session validity for Session ID '${currentSessionId}' via API:`, error);
+      return false;
+  }
 }
+
 
 // -------------- end of utility functions for session management ------------------
 
@@ -1092,7 +1345,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     defaultTab.click();
   }
 
-  /* check if previous session is still active */
   const tsEntryExists = await doesVariableExistInCache(); // Await the async call
   if (tsEntryExists) {
     const sessionIsValid = await isSessionValid(); // Await the async call
