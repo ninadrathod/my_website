@@ -27,7 +27,7 @@ To run this project locally, ensure you have Docker Desktop installed. Then:
 mongosh mongodb://admin:qwerty@localhost:27017
 
 ### Before publishing, make following changes:
-frontend/script.js: update value of "const PUBLIC_IP"
-upload-service/.env: update values of MONGODB_URI and PUBLIC_IP
-backend/.env: update values of MONGODB_URI and PUBLIC_IP
-docker-compose.yml: update the healthcheck APIs
+* frontend/script.js: update value of "const PUBLIC_IP"
+* upload-service/.env: update values of MONGODB_URI and PUBLIC_IP
+* backend/.env: update values of MONGODB_URI and PUBLIC_IP
+* docker-compose.yml: update the healthcheck APIs
