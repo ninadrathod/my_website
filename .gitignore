@@ -1,5 +1,6 @@
 backend/node_modules/
 backend/package-lock.json
+backend/.env
 upload-service/node_modules/
 upload-service/package-lock.json
 upload-service/images/

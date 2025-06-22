@@ -29,9 +29,13 @@ const tabsContentContainer = document.getElementById('tabs-content-container');
 const tabToggles = document.querySelectorAll('.tabs__toggle');
 
 // Base URL for your main backend service (resume data)
-const MAIN_BACKEND_API_URL = 'http://localhost:3001';
-// Base URL for your upload service backend (even though it's simplified for now, keep the constant)
-const UPLOAD_SERVICE_API_URL = 'http://localhost:3002';
+
+const PUBLIC_IP = 'localhost';
+const BACKEND_PORT = 3001;
+const UPLOAD_SERVICE_PORT = 3002;
+
+const MAIN_BACKEND_API_URL = `http://${PUBLIC_IP}:${BACKEND_PORT}`; //'http://localhost:3001';
+const UPLOAD_SERVICE_API_URL = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}`; //'http://localhost:3002';
 
 // Mapping of tab data-target to their respective HTML file paths
 const tabContentFileMap = {
@@ -119,41 +123,6 @@ function createSessionId() { // Renamed from createSessionId to better reflect i
 }
 
 /**
- * Checks if a timestamp entry exists in the server-side cache (MongoDB collection).
- * This function now makes an API call to the backend.
- *
- * returns {Promise<boolean>} True if an entry exists, false otherwise.
- */
-/*async function doesVariableExistInCache() {
-    const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/doesTSexist`; 
-
-    try {
-        console.log(`Checking for timestamp existence via API: ${apiUrl}`);
-        const response = await fetch(apiUrl);
-
-        if (!response.ok) {
-            // Handle HTTP errors (e.g., 404, 500)
-            const errorBody = await response.text();
-            throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
-        }
-
-        const data = await response.json(); // Expected: { exists: true/false }
-
-        if (data.exists === true) {
-            console.log("Timestamp entry DOES exist in server-side cache.");
-            return true;
-        } else {
-            console.log("Timestamp entry does NOT exist in server-side cache.");
-            return false;
-        }
-    } catch (error) {
-        console.error("Error checking timestamp existence via API:", error);
-        // In case of any error (network, parsing, etc.), assume it doesn't exist or is unreachable
-        return false;
-    }
-}*/
-
-/**
  * Checks if a timestamp entry exists in the server-side cache (MongoDB collection)
  * for the current browser's session ID.
  * This function now ensures a session ID exists and makes an API call to the backend.
@@ -197,47 +166,6 @@ async function doesVariableExistInCache() {
       return false;
   }
 }
-
-/**
- * Sends a request to the backend API to create/reset the session expiry timestamp.
- * The timestamp is calculated and stored on the server-side.
- * This function no longer uses localStorage.
- *
- * returns {Promise<boolean>} Resolves to true if the timestamp was stored successfully on the server, false otherwise.
- */
-/*async function storeExpiryTimestamp() {
-  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/createTS`; // Full API endpoint
-
-  try {
-      console.log(`Sending request to create/reset timestamp via API: ${apiUrl}`);
-      const response = await fetch(apiUrl, {
-          method: 'POST', // The API is a POST endpoint
-          headers: {
-              'Content-Type': 'application/json' // Even if no body, good practice for POST
-          }
-      });
-
-      if (!response.ok) {
-          // Handle HTTP errors (e.g., 400, 500)
-          const errorBody = await response.text();
-          throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
-      }
-
-      const data = await response.json(); // Expected: { success: true, message: ..., expiresAt: ... }
-
-      if (data.success) {
-          console.log(`Server-side timestamp stored successfully. Expires at: ${new Date(data.expiresAt).toLocaleString()}`);
-          return true;
-      } else {
-          console.error("Server-side timestamp storage failed:", data.message);
-          return false;
-      }
-
-  } catch (error) {
-      console.error("Error storing server-side timestamp via API:", error);
-      return false;
-  }
-}*/
 
 /**
  * Sends a request to the backend API to create/reset the session expiry timestamp
@@ -290,46 +218,6 @@ async function storeExpiryTimestamp() {
   }
 }
 
-/**
- * Sends a request to the backend API to set the session expiry timestamp to zero.
- * This effectively invalidates the server-side session immediately.
- * This function no longer uses localStorage.
- *
- * returns {Promise<boolean>} Resolves to true if the timestamp was set to zero successfully on the server, false otherwise.
- */
-/*async function setExpiryTimestampToZero() {
-  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/setTStoZero`; // Full API endpoint
-
-  try {
-      console.log(`Sending request to set timestamp to zero via API: ${apiUrl}`);
-      const response = await fetch(apiUrl, {
-          method: 'POST', // The API is a POST endpoint
-          headers: {
-              'Content-Type': 'application/json' 
-          }
-      });
-
-      if (!response.ok) {
-          // Handle HTTP errors (e.g., 400, 500)
-          const errorBody = await response.text();
-          throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
-      }
-
-      const data = await response.json(); // Expected: { success: true, message: ..., value_x: ... }
-
-      if (data.success) {
-          console.log(`Server-side timestamp successfully set to zero. Session is now invalid.`);
-          return true;
-      } else {
-          console.error("Server-side timestamp set to zero failed:", data.message);
-          return false;
-      }
-
-  } catch (error) {
-      console.error("Error setting server-side timestamp to zero via API:", error);
-      return false;
-  }
-}*/
 
 /**
  * Sends a request to the backend API to set the session expiry timestamp to zero
@@ -381,41 +269,6 @@ async function setExpiryTimestampToZero() {
       return false;
   }
 }
-
-/**
- * Checks if the server-side session is currently valid by calling a backend API.
- * This function no longer relies on localStorage.
- *
- * returns {Promise<boolean>} Resolves to true if the session is valid, false otherwise.
- */
-/*async function isSessionValid() {
-  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/isSessionValid`; // Full API endpoint
-
-  try {
-      console.log(`Checking session validity via API: ${apiUrl}`);
-      const response = await fetch(apiUrl);
-
-      if (!response.ok) {
-          // Handle HTTP errors (e.g., 404, 500)
-          const errorBody = await response.text();
-          throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
-      }
-      console.log(response);
-      const data = await response.json(); // Expected: { isValid: true/false, reason?: string }
-      console.log(data);
-      if (data.isValid === true) {
-          console.log("Server-side session is valid.");
-          return true;
-      } else {
-          console.log(`Server-side session is NOT valid. Reason: ${data.reason || 'Unknown'}`);
-          return false;
-      }
-
-  } catch (error) {
-      console.error("Error checking server-side session validity via API:", error);
-      return false;
-  }
-}*/
 
 /**
  * Checks if the server-side session for the current browser's session ID is currently valid
@@ -907,8 +760,10 @@ function displayPublication(publicationData, containerId) {
  * where the image cards should be appended. Defaults to 'image-gallery'.
  */
 async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
-  const apiURL = 'http://localhost:3002/getFileNames'; // API to get list of filenames
-  const imageBaseURL = 'http://localhost:3002/images/'; // Base URL for accessing the images themselves
+  //const apiURL = 'http://localhost:3002/getFileNames'; // API to get list of filenames
+  const apiURL = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/getFileNames`; // API to get list of filenames
+  // const imageBaseURL = 'http://localhost:3002/images/'; // Base URL for accessing the images themselves
+  const imageBaseURL = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
 
   const imageContainer = document.getElementById(containerId);
 
@@ -1040,8 +895,8 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
  * where the image cards should be appended. Defaults to 'image-gallery'.
  */
 async function displayUploadedImages(containerId = 'image-gallery') {
-  const apiURL = 'http://localhost:3002/getFileNames'; // API to get list of filenames
-  const imageBaseURL = 'http://localhost:3002/images/'; // Base URL for accessing the images themselves
+  const apiURL = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/getFileNames`; // API to get list of filenames
+  const imageBaseURL = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
 
   const imageContainer = document.getElementById(containerId);
 
@@ -1207,7 +1062,7 @@ function showEmailWindow() {
           // --- STEP 1: Verify if it's an admin email ---
           // NOTE: This URL (localhost:3000) seems incorrect for a backend service
           // It should likely be MAIN_BACKEND_API_URL or similar. Adjust as needed.
-          const isAdminApiUrl = `http://localhost:3002/isAdminEmail/${adminEmail}`;
+          const isAdminApiUrl = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/isAdminEmail/${adminEmail}`; //`http://localhost:3002/isAdminEmail/${adminEmail}`;
           const isAdminResponse = await fetch(isAdminApiUrl);
           const isAdminData = await isAdminResponse.json();
 
@@ -1219,7 +1074,7 @@ function showEmailWindow() {
           
           // --- STEP 2: If email is admin, proceed to send OTP ---
           displayPanelMessage('success', 'Email verified. Sending OTP...');
-          const apiUrl = `http://localhost:3002/sendOTP/${adminEmail}`; // Again, check this URL
+          const apiUrl = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/sendOTP/${adminEmail}`; //`http://localhost:3002/sendOTP/${adminEmail}`; // Again, check this URL
           const response = await fetch(apiUrl);
           const data = await response.json();
 
@@ -1267,7 +1122,7 @@ function showOtpWindow() {
 
       try {
           // --- Call the /OTPverify API ---
-          const verifyApiUrl = `http://localhost:3002/OTPverify/${otpValue}`; // Again, check this URL
+          const verifyApiUrl = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/OTPverify/${otpValue}`; //`http://localhost:3002/OTPverify/${otpValue}`; // Again, check this URL
           const response = await fetch(verifyApiUrl);
           const data = await response.json();
 
@@ -1455,7 +1310,8 @@ async function initializeIllustrationFormAndGallery() {
 
       try {
           // Make the POST request to the backend's upload endpoint
-          const response = await fetch('http://localhost:3002/upload', {
+          const apiUrl = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload`; 
+          const response = await fetch(apiUrl, {
               method: 'POST',
               body: formData // No Content-Type header needed for FormData; fetch sets it automatically
           });

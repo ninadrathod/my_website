@@ -15,7 +15,8 @@ const port = 3002;
 app.use(cors());
 app.use(express.json());
 
-const baseMongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const public_ip = process.env.PUBLIC_IP;
+const baseMongoUri = process.env.MONGODB_URI;// || 'mongodb://localhost:27017';
 const databaseName = 'resume_database';
 const mongoUri = `${baseMongoUri}/${databaseName}?authSource=admin`;
 const TIMESTAMP_COLLECTION_NAME = 'timestamp'; // New collection name for storing timestamps
@@ -44,40 +45,6 @@ async function connectMongo()
 connectMongo();
 
 // ---------------- routines to manage timestamps for login sessions -----------------------
-
-/* ----------------------------------------------------------------------------
-    API to check if an entry exists in the "timestamp" collection:
-    GET /api/doesTSexist
-    - Returns true if at least one document is found in the "timestamp" collection.
-    - Returns false otherwise.
-   ---------------------------------------------------------------------------- */
-  /* app.get('/api/doesTSexist', async (req, res) => {
-    console.log('Request received at /api/doesTSexist.');
-  
-    try {
-      // 1. Check if the database connection is established
-      if (!db) {
-        console.error('Database connection is not established.');
-        return res.status(500).json({ error: 'Database connection not established.' });
-      }
-  
-      const timestampCollection = db.collection(TIMESTAMP_COLLECTION_NAME);
-  
-      // 2. Count the number of documents in the collection
-      // Using countDocuments({}) without any filter will count all documents.
-      const count = await timestampCollection.countDocuments({});
-  
-      // 3. Determine if an entry exists based on the count
-      const exists = count > 0;
-      console.log(`Check for timestamp entry: ${exists ? 'Present' : 'Not Present'} (Count: ${count})`);
-  
-      return res.status(200).json({ exists: exists });
-  
-    } catch (error) {
-      console.error('Error in /api/doesTSexist:', error);
-      return res.status(500).json({ error: 'Failed to check timestamp existence.' });
-    }
-  });*/
 
 /* ----------------------------------------------------------------------------
     API to check if an entry exists for a specific session in the "timestamp" collection:
@@ -120,90 +87,6 @@ app.get('/api/doesTSexist', async (req, res) => {
   }
 });
 
-/*
-  How to utilize this API from script.js:
-
-  // Assume 'sessionId' holds the current browser instance's session ID (e.g., from getBrowserInstanceId())
-  const currentBrowserSessionId = readSessionId(); // Or getBrowserInstanceId() if you want to create it if it doesn't exist
-
-  if (currentBrowserSessionId) {
-      async function doesTimestampExistForSession(sessionId) {
-          const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/doesTSexist?sessionId=${encodeURIComponent(sessionId)}`;
-
-          try {
-              const response = await fetch(apiUrl);
-              if (!response.ok) {
-                  const errorBody = await response.text();
-                  throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
-              }
-              const data = await response.json();
-              console.log(`Timestamp entry for session '${sessionId}' exists: ${data.exists}`);
-              return data.exists;
-          } catch (error) {
-              console.error(`Error checking timestamp existence for session '${sessionId}':`, error);
-              return false;
-          }
-      }
-
-      // Example usage:
-      // const tsExists = await doesTimestampExistForSession(currentBrowserSessionId);
-      // if (tsExists) {
-      //     console.log(`Timestamp exists for current session ID: ${currentBrowserSessionId}`);
-      // } else {
-      //     console.log(`No timestamp found for current session ID: ${currentBrowserSessionId}`);
-      // }
-  } else {
-      console.log("No current browser session ID available to check timestamp existence.");
-  }
-*/
-
-/* ----------------------------------------------------------------------------
-    API to create/update a single timestamp in the "timestamp" collection:
-    POST /api/createTS
-    - Calculates expiry timestamp (current time + 15 minutes).
-    - Clears all existing documents from the "timestamp" collection.
-    - Stores the new expiry timestamp in a new document.
-   ---------------------------------------------------------------------------- */
-   /*app.post('/api/createTS', async (req, res) => {
-    console.log('Request received at /api/createTS.');
-  
-    try {
-      // 1. Check if the database connection is established
-      if (!db) {
-        console.error('Database connection is not established.');
-        return res.status(500).json({ error: 'Database connection not established.' });
-      }
-  
-      const timestampCollection = db.collection(TIMESTAMP_COLLECTION_NAME);
-  
-      // 2. Calculate x = current timestamp + 15 minutes
-      const currentTimestamp = Date.now(); // Get current time in milliseconds
-      const expiryTimestamp = currentTimestamp + SESSION_DURATION_MS; // Calculate expiry time
-      const expiryDate = new Date(expiryTimestamp); // Convert to Date object for MongoDB storage
-  
-      console.log(`Calculated expiry timestamp (x): ${expiryDate.toLocaleString()}`);
-  
-      // 3. Delete all existing documents from the "timestamp" collection
-      console.log(`Deleting all existing documents from '${TIMESTAMP_COLLECTION_NAME}' collection...`);
-      const deleteResult = await timestampCollection.deleteMany({});
-      console.log(`Deleted ${deleteResult.deletedCount} documents from '${TIMESTAMP_COLLECTION_NAME}'.`);
-  
-      // 4. Store the value of "x" in a new row (document) in "timestamp" collection
-      const insertResult = await timestampCollection.insertOne({
-        value_x: expiryDate, // Store the Date object directly
-      });
-  
-      return res.status(200).json({
-        success: true,
-        message: `Timestamp (x) set successfully to ${expiryDate.toLocaleString()}`,
-        expiresAt: expiryDate.toISOString() // Return ISO string for frontend
-      });
-  
-    } catch (error) {
-      console.error('Error in /api/createTS:', error);
-      return res.status(500).json({ error: 'Failed to create timestamp in database.' });
-    }
-  });*/
 
   /* ----------------------------------------------------------------------------
     API to create/update a timestamp for a specific session in the "timestamp" collection:
@@ -278,88 +161,6 @@ app.post('/api/createTS', async (req, res) => {
   }
 });
 
-/*
-  How to utilize this API from script.js:
-
-  // First, ensure you have the session ID for the current browser instance:
-  const currentBrowserInstanceSessionId = getBrowserInstanceId(); // Assuming you have this function from previous steps
-
-  // Then, call the API, passing the session ID in the request body:
-  async function storeExpiryTimestampForSession(sessionId) {
-      const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/createTS`; // Ensure UPLOAD_SERVICE_API_URL is defined
-
-      try {
-          const response = await fetch(apiUrl, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ sessionId: sessionId }) // Send the session ID in the body
-          });
-
-          if (!response.ok) {
-              const errorBody = await response.text();
-              throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
-          }
-
-          const data = await response.json();
-          console.log('API response:', data.message);
-          return data.success;
-
-      } catch (error) {
-          console.error("Error calling /api/createTS:", error);
-          return false;
-      }
-  }
-
-  // Example usage within your script.js (e.g., after successful login):
-  // await storeExpiryTimestampForSession(currentBrowserInstanceSessionId);
-*/
-
-/* ----------------------------------------------------------------------------
-    API to set the timestamp in the "timestamp" collection to 0 (epoch):
-    POST /api/setTStoZero
-    - Deletes all existing documents from the "timestamp" collection.
-    - Stores a new document with value_x set to epoch 0.
-   ---------------------------------------------------------------------------- */
-  /* app.post('/api/setTStoZero', async (req, res) => {
-    console.log('Request received at /api/setTStoZero.');
-  
-    try {
-      // 1. Check if the database connection is established
-      if (!db) {
-        console.error('Database connection is not established.');
-        return res.status(500).json({ error: 'Database connection not established.' });
-      }
-  
-      const timestampCollection = db.collection(TIMESTAMP_COLLECTION_NAME);
-  
-      // 2. Delete all existing documents from the "timestamp" collection
-      console.log(`Deleting all existing documents from '${TIMESTAMP_COLLECTION_NAME}' collection...`);
-      const deleteResult = await timestampCollection.deleteMany({});
-      console.log(`Deleted ${deleteResult.deletedCount} documents from '${TIMESTAMP_COLLECTION_NAME}'.`);
-  
-      // 3. Store the value_x: 0 in a new document
-      const zeroTimestamp = new Date(0); // Represents January 1, 1970, 00:00:00 UTC (epoch)
-  
-      const insertResult = await timestampCollection.insertOne({
-        value_x: zeroTimestamp, // Store the epoch Date object
-        setAt: new Date()      // Optional: timestamp of when it was set to zero
-      });
-  
-      console.log(`Timestamp set to 0. New document _id: ${insertResult.insertedId}`);
-      return res.status(200).json({
-        success: true,
-        message: `Timestamp successfully set to 0.`,
-        value_x: zeroTimestamp.toISOString() // Return ISO string for frontend
-      });
-  
-    } catch (error) {
-      console.error('Error in /api/setTStoZero:', error);
-      return res.status(500).json({ error: 'Failed to set timestamp to zero.' });
-    }
-  });*/
-
 /* ----------------------------------------------------------------------------
     API to invalidate a specific session's timestamp in the "timestamp" collection:
     POST /api/setTStoZero
@@ -426,100 +227,6 @@ app.post('/api/createTS', async (req, res) => {
     }
   });
   
-  /*
-    How to utilize this API from script.js:
-  
-    // Assume 'sessionId' holds the current browser instance's session ID (e.g., from readSessionId() or getBrowserInstanceId())
-    const currentBrowserSessionId = readSessionId(); // Or whatever method you use to get the active ID
-  
-    if (currentBrowserSessionId) {
-        async function setTimestampToZeroForSession(sessionId) {
-            const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/setTStoZero`; // Ensure UPLOAD_SERVICE_API_URL is defined
-  
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ sessionId: sessionId }) // Send the session ID in the body
-                });
-  
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
-                }
-  
-                const data = await response.json();
-                console.log('API response:', data.message);
-                return data.success;
-  
-            } catch (error) {
-                console.error("Error calling /api/setTStoZero:", error);
-                return false;
-            }
-        }
-  
-        // Example usage (e.g., on user logout):
-        // const success = await setTimestampToZeroForSession(currentBrowserSessionId);
-        // if (success) {
-        //     console.log(`Session ${currentBrowserSessionId} successfully invalidated on server.`);
-        // } else {
-        //     console.log(`Failed to invalidate session ${currentBrowserSessionId} on server.`);
-        // }
-    } else {
-        console.log("No current browser session ID available to invalidate.");
-    }
-  */
-
-/* ----------------------------------------------------------------------------
-    API to check if the session (based on timestamp) is currently valid:
-    GET /api/isSessionValid
-    - Reads the expiry timestamp (value_x) from the "timestamp" collection.
-    - Compares it with the current timestamp.
-    - Returns true if current_timestamp < value_x, false otherwise.
-   ---------------------------------------------------------------------------- */
- /*  app.get('/api/isSessionValid', async (req, res) => {
-    console.log('Request received at /api/isSessionValid.');
-  
-    try {
-      // 1. Check if the database connection is established
-      if (!db) {
-        console.error('Database connection is not established.');
-        return res.status(500).json({ error: 'Database connection not established.' });
-      }
-  
-      const timestampCollection = db.collection(TIMESTAMP_COLLECTION_NAME);
-  
-      // 2. Read the value of "value_x" (expiry timestamp) from the "timestamp" collection.
-      // Use findOne to get the single document.
-      const timestampDocument = await timestampCollection.findOne({});
-  
-      // 3. Find the value of current timestamp and store it in "cur" variable.
-      const cur = Date.now(); // Current timestamp in milliseconds
-  
-      if (!timestampDocument || !timestampDocument.value_x) {
-        console.log('No timestamp entry found in collection. Session is not valid.');
-        return res.status(200).json({ isValid: false, reason: "No timestamp found" });
-      }
-  
-      const set_x = timestampDocument.value_x.getTime(); // Get expiry timestamp in milliseconds from BSON Date
-  
-      // 4. Compare the two timestamps: if cur > set_x return false, else return true
-      const isValid = cur < set_x;
-      
-      console.log(`Current Time (cur): ${new Date(cur).toLocaleString()}`);
-      console.log(`Expiry Time (set_x): ${new Date(set_x).toLocaleString()}`);
-      console.log(`Session Valid: ${isValid}`);
-  
-      return res.status(200).json({ isValid: isValid });
-  
-    } catch (error) {
-      console.error('Error in /api/isSessionValid:', error);
-      return res.status(500).json({ error: 'Failed to check session validity.' });
-    }
-  });*/
-
 /* ----------------------------------------------------------------------------
     API to check if a specific session is currently valid:
     GET /api/isSessionValid
@@ -582,45 +289,7 @@ app.post('/api/createTS', async (req, res) => {
     }
   });
   
-  /*
-    How to utilize this API from script.js:
   
-    // Assume 'sessionId' holds the current browser instance's session ID (e.g., from readSessionId())
-    const currentBrowserSessionId = readSessionId(); // Or getBrowserInstanceId() if you want to create it if it doesn't exist
-  
-    if (currentBrowserSessionId) {
-        async function checkSessionValidityForSession(sessionId) {
-            // IMPORTANT: Encode the sessionId for URL safety
-            const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/isSessionValid?sessionId=${encodeURIComponent(sessionId)}`;
-  
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorBody}`);
-                }
-                const data = await response.json(); // Expected: { isValid: true/false, reason?: string }
-                console.log(`Session '${sessionId}' is valid: ${data.isValid}, Reason: ${data.reason || 'N/A'}`);
-                return data.isValid;
-            } catch (error) {
-                console.error(`Error checking session validity for '${sessionId}':`, error);
-                return false;
-            }
-        }
-  
-        // Example usage (e.g., before allowing access to admin-only content):
-        // const isValid = await checkSessionValidityForSession(currentBrowserSessionId);
-        // if (isValid) {
-        //     console.log(`Current session ${currentBrowserSessionId} is valid.`);
-        // } else {
-        //     console.log(`Current session ${currentBrowserSessionId} is NOT valid.`);
-        //     // Potentially redirect to login or show an error
-        // }
-    } else {
-        console.log("No current browser session ID available to check validity.");
-    }
-  */
-
 // ---------------- End of routines to manage timestamps for login sessions ----------------
 
 // Ensure the images directory exists on server startup
@@ -859,5 +528,5 @@ app.get('/OTPverify/:passedOTP', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Backend server listening at http://localhost:${port}`);
+  console.log(`Backend server listening at ${public_ip}:${port}`);
 });

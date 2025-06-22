@@ -1,3 +1,4 @@
+
 'use strict';
 
 const express = require('express');
@@ -7,16 +8,14 @@ require('dotenv').config();
 
 const DEFAULT_PORT_FILE = 3001;
 const port = process.env.PORT || DEFAULT_PORT_FILE; // Default to File 1's port if not set
-const host = '0.0.0.0';
+const host = process.env.PUBLIC_IP;
 
-const baseMongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const baseMongoUri = process.env.MONGODB_URI; //|| 'mongodb://localhost:27017';
 const databaseName = 'resume_database';
 const mongoUri = `${baseMongoUri}/${databaseName}?authSource=admin`;
 
 // App Initialization
 const app = express();
-
-
 
 // Middleware
 app.use(cors());
