@@ -16,9 +16,6 @@
         "mongodb": "latest"
     },
     "devDependencies": {
-        "cors": "latest",
-        "dotenv": "latest",
-        "express": "latest",
         "nodemon": "latest"
     }
 }

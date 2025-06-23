@@ -30,9 +30,6 @@ services:
       - my-website-network
     ports:
       - 3001:3001
-    volumes:
-      - ./backend:/app # Mount the ./backend directory to /app (matching WORKDIR)
-      - node-modules:/app/node_modules # Mount node_modules to /app/node_modules
     working_dir: /app
     depends_on:
       - mongodb
@@ -107,4 +104,3 @@ networks:
 
 volumes:
   mongodb_data:
-  node-modules:

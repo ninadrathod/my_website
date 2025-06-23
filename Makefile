@@ -9,12 +9,6 @@ setup-images-dir:
 	chmod 777 $(UPLOAD_SERVICE_DIR)/images 
 
 # Target to install backend dependencies
-backend_install:
-	@echo "Installing backend dependencies..."
-	cd $(BACKEND_DIR) && npm install
-	@echo "Backend dependencies installed."
-
-# Target to install backend dependencies
 upload_service_install:
 	@echo "Installing upload service dependencies..."
 	npm install --prefix ./$(UPLOAD_SERVICE_DIR)
@@ -35,7 +29,7 @@ build:
 	@echo "Docker Compose application is running."
 
 
-initial_build: setup-images-dir backend_install upload_service_install frontend_install build
+initial_build: setup-images-dir upload_service_install frontend_install build
 
 up:
 	@echo "Building and starting Docker Compose application..."
@@ -58,7 +52,6 @@ destroy_project:
 	docker system prune -a --volumes -f # Aggressively prune everything
 	@echo "All Docker resources related to project destroyed."
 	@echo "Deleting node modules and other residual files from host directories..."
-	rm -rf $(BACKEND_DIR)/node_modules $(BACKEND_DIR)/package-lock.json
 	rm -rf $(FRONTEND_DIR)/node_modules $(FRONTEND_DIR)/package-lock.json $(FRONTEND_DIR)/src/output.css
 	rm -rf $(UPLOAD_SERVICE_DIR)/node_modules $(UPLOAD_SERVICE_DIR)/package-lock.json $(UPLOAD_SERVICE_DIR)/images/*
 	@echo "Clean-up complete."
