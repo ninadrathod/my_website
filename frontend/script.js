@@ -30,12 +30,12 @@ const tabToggles = document.querySelectorAll('.tabs__toggle');
 
 // Base URL for your main backend service (resume data)
 
-const PUBLIC_IP = 'localhost';
+const PUBLIC_IP = 'http://localhost';
 const BACKEND_PORT = 3001;
 const UPLOAD_SERVICE_PORT = 3002;
 
-const MAIN_BACKEND_API_URL = `http://${PUBLIC_IP}:${BACKEND_PORT}`; //'http://localhost:3001';
-const UPLOAD_SERVICE_API_URL = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}`; //'http://localhost:3002';
+const MAIN_BACKEND_API_URL = `${PUBLIC_IP}:${BACKEND_PORT}`; 
+const UPLOAD_SERVICE_API_URL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}`;
 
 // Mapping of tab data-target to their respective HTML file paths
 const tabContentFileMap = {
@@ -760,10 +760,8 @@ function displayPublication(publicationData, containerId) {
  * where the image cards should be appended. Defaults to 'image-gallery'.
  */
 async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
-  //const apiURL = 'http://localhost:3002/getFileNames'; // API to get list of filenames
-  const apiURL = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/getFileNames`; // API to get list of filenames
-  // const imageBaseURL = 'http://localhost:3002/images/'; // Base URL for accessing the images themselves
-  const imageBaseURL = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
+  const apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/getFileNames`; // API to get list of filenames
+  const imageBaseURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
 
   const imageContainer = document.getElementById(containerId);
 
@@ -895,8 +893,8 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
  * where the image cards should be appended. Defaults to 'image-gallery'.
  */
 async function displayUploadedImages(containerId = 'image-gallery') {
-  const apiURL = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/getFileNames`; // API to get list of filenames
-  const imageBaseURL = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
+  const apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/getFileNames`; // API to get list of filenames
+  const imageBaseURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
 
   const imageContainer = document.getElementById(containerId);
 
@@ -1062,7 +1060,7 @@ function showEmailWindow() {
           // --- STEP 1: Verify if it's an admin email ---
           // NOTE: This URL (localhost:3000) seems incorrect for a backend service
           // It should likely be MAIN_BACKEND_API_URL or similar. Adjust as needed.
-          const isAdminApiUrl = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/isAdminEmail/${adminEmail}`; //`http://localhost:3002/isAdminEmail/${adminEmail}`;
+          const isAdminApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/isAdminEmail/${adminEmail}`;
           const isAdminResponse = await fetch(isAdminApiUrl);
           const isAdminData = await isAdminResponse.json();
 
@@ -1074,7 +1072,7 @@ function showEmailWindow() {
           
           // --- STEP 2: If email is admin, proceed to send OTP ---
           displayPanelMessage('success', 'Email verified. Sending OTP...');
-          const apiUrl = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/sendOTP/${adminEmail}`; //`http://localhost:3002/sendOTP/${adminEmail}`; // Again, check this URL
+          const apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/sendOTP/${adminEmail}`;
           const response = await fetch(apiUrl);
           const data = await response.json();
 
@@ -1122,7 +1120,7 @@ function showOtpWindow() {
 
       try {
           // --- Call the /OTPverify API ---
-          const verifyApiUrl = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/OTPverify/${otpValue}`; //`http://localhost:3002/OTPverify/${otpValue}`; // Again, check this URL
+          const verifyApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/OTPverify/${otpValue}`;
           const response = await fetch(verifyApiUrl);
           const data = await response.json();
 
@@ -1310,7 +1308,7 @@ async function initializeIllustrationFormAndGallery() {
 
       try {
           // Make the POST request to the backend's upload endpoint
-          const apiUrl = `http://${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload`; 
+          const apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload`; 
           const response = await fetch(apiUrl, {
               method: 'POST',
               body: formData // No Content-Type header needed for FormData; fetch sets it automatically
