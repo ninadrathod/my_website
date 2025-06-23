@@ -16,11 +16,6 @@
     "mongodb": "latest"
   },
   "devDependencies": {
-    "cors": "latest",
-    "express": "latest",
-    "multer": "^2.0.1",
-    "nodemon": "latest",
-    "nodemailer": "latest",
-    "dotenv": "latest"
+    "nodemon": "latest"
   }
 }

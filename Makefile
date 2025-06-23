@@ -5,14 +5,13 @@ UPLOAD_SERVICE_DIR := upload-service
 
 setup-images-dir:
 	@echo "Ensuring upload-service/images directory exists and has write permission..."
-	mkdir -p $(UPLOAD_SERVICE_DIR)/images
-	chmod 777 $(UPLOAD_SERVICE_DIR)/images 
-
-# Target to install backend dependencies
-upload_service_install:
-	@echo "Installing upload service dependencies..."
-	npm install --prefix ./$(UPLOAD_SERVICE_DIR)
-	@echo "Upload service dependencies installed."
+	@if [ ! -d "$(UPLOAD_SERVICE_DIR)/images" ]; then \
+		mkdir -p "$(UPLOAD_SERVICE_DIR)/images"; \
+		echo "Directory $(UPLOAD_SERVICE_DIR)/images created."; \
+	else \
+		echo "Directory $(UPLOAD_SERVICE_DIR)/images already exists."; \
+	fi; \
+	chmod 777 "$(UPLOAD_SERVICE_DIR)/images"
 
 # Target to install frontend dependencies
 frontend_install:
@@ -28,8 +27,7 @@ build:
 	python3 load_data.py
 	@echo "Docker Compose application is running."
 
-
-initial_build: setup-images-dir upload_service_install frontend_install build
+initial_build: setup-images-dir frontend_install build
 
 up:
 	@echo "Building and starting Docker Compose application..."
@@ -53,7 +51,6 @@ destroy_project:
 	@echo "All Docker resources related to project destroyed."
 	@echo "Deleting node modules and other residual files from host directories..."
 	rm -rf $(FRONTEND_DIR)/node_modules $(FRONTEND_DIR)/package-lock.json $(FRONTEND_DIR)/src/output.css
-	rm -rf $(UPLOAD_SERVICE_DIR)/node_modules $(UPLOAD_SERVICE_DIR)/package-lock.json $(UPLOAD_SERVICE_DIR)/images/*
 	@echo "Clean-up complete."
 
-.PHONY: backend_install upload_service_install frontend_install initial_build build up down rebuild destroy_project
+.PHONY: frontend_install initial_build build up down rebuild destroy_project

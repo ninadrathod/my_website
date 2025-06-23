@@ -53,8 +53,7 @@ services:
     ports:
       - 3002:3002 # Host port 3002 maps to container's internal port 3002
     volumes:
-      # OPTIONAL: Map a local 'uploads' directory to persist images outside the container
-      - ./upload-service:/app 
+      - ./upload-service/images:/app/images
     depends_on:
       - mongodb
     environment:
