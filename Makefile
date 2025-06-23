@@ -1,5 +1,4 @@
 # Define project paths
-BACKEND_DIR := backend
 FRONTEND_DIR := frontend
 UPLOAD_SERVICE_DIR := upload-service
 
@@ -47,4 +46,4 @@ destroy_project:
 	rm -rf $(FRONTEND_DIR)/src/output.css
 	@echo "Clean-up complete."
 
-.PHONY: initial_build build up down rebuild destroy_project
+.PHONY: setup-images-dir initial_build build up down rebuild destroy_project
