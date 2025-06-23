@@ -139,7 +139,7 @@ async function doesVariableExistInCache() {
   }
 
   // 2. Construct the API URL with the sessionId as a query parameter
-  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/doesTSexist?sessionId=${encodeURIComponent(currentSessionId)}`;
+  const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/doesTSexist?sessionId=${encodeURIComponent(currentSessionId)}`;
 
   try {
       console.log(`Checking for timestamp existence via API: ${apiUrl}`);
@@ -184,7 +184,7 @@ async function storeExpiryTimestamp() {
       return false;
   }
 
-  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/createTS`; // Full API endpoint
+  const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/createTS`; // Full API endpoint
 
   try {
       console.log(`Sending request to create/reset timestamp for Session ID '${currentSessionId}' via API: ${apiUrl}`);
@@ -236,7 +236,7 @@ async function setExpiryTimestampToZero() {
       return false;
   }
 
-  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/setTStoZero`; // Full API endpoint
+  const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/setTStoZero`; // Full API endpoint
 
   try {
       console.log(`Sending request to set timestamp to zero for Session ID '${currentSessionId}' via API: ${apiUrl}`);
@@ -287,7 +287,7 @@ async function isSessionValid() {
   }
 
   // 2. Construct the API URL with the sessionId as a query parameter
-  const apiUrl = `${UPLOAD_SERVICE_API_URL}/api/isSessionValid?sessionId=${encodeURIComponent(currentSessionId)}`;
+  const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/isSessionValid?sessionId=${encodeURIComponent(currentSessionId)}`;
 
   try {
       console.log(`Checking session validity for Session ID '${currentSessionId}' via API: ${apiUrl}`);
@@ -760,7 +760,7 @@ function displayPublication(publicationData, containerId) {
  * where the image cards should be appended. Defaults to 'image-gallery'.
  */
 async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
-  const apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/api/getFileNames`; // API to get list of filenames
+  const apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/getFileNames`; // API to get list of filenames
   const imageBaseURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
 
   const imageContainer = document.getElementById(containerId);
@@ -849,7 +849,7 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
 
         console.log(`Attempting to delete image: ${fileName}`);
         try {
-            const deleteApiUrl = `${UPLOAD_SERVICE_API_URL}/api/deleteImage/${fileName}`;
+            const deleteApiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/deleteImage/${fileName}`;
             console.log('DELETE request to:', deleteApiUrl);
 
             const response = await fetch(deleteApiUrl, {
@@ -893,7 +893,7 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
  * where the image cards should be appended. Defaults to 'image-gallery'.
  */
 async function displayUploadedImages(containerId = 'image-gallery') {
-  const apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/api/getFileNames`; // API to get list of filenames
+  const apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/getFileNames`; // API to get list of filenames
   const imageBaseURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
 
   const imageContainer = document.getElementById(containerId);
@@ -1060,7 +1060,7 @@ function showEmailWindow() {
           // --- STEP 1: Verify if it's an admin email ---
           // NOTE: This URL (localhost:3000) seems incorrect for a backend service
           // It should likely be MAIN_BACKEND_API_URL or similar. Adjust as needed.
-          const isAdminApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/api/isAdminEmail/${adminEmail}`;
+          const isAdminApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/isAdminEmail/${adminEmail}`;
           const isAdminResponse = await fetch(isAdminApiUrl);
           const isAdminData = await isAdminResponse.json();
 
@@ -1072,7 +1072,7 @@ function showEmailWindow() {
           
           // --- STEP 2: If email is admin, proceed to send OTP ---
           displayPanelMessage('success', 'Email verified. Sending OTP...');
-          const apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/api/sendOTP/${adminEmail}`;
+          const apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/sendOTP/${adminEmail}`;
           const response = await fetch(apiUrl);
           const data = await response.json();
 
@@ -1119,8 +1119,8 @@ function showOtpWindow() {
       setButtonState(verifyButton, true);
 
       try {
-          // --- Call the /api/OTPverify API ---
-          const verifyApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/api/OTPverify/${otpValue}`;
+          // --- Call the /upload-service-api/OTPverify API ---
+          const verifyApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/OTPverify/${otpValue}`;
           const response = await fetch(verifyApiUrl);
           const data = await response.json();
 
@@ -1308,7 +1308,7 @@ async function initializeIllustrationFormAndGallery() {
 
       try {
           // Make the POST request to the backend's upload endpoint
-          const apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/api/upload`; 
+          const apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/upload`; 
           const response = await fetch(apiUrl, {
               method: 'POST',
               body: formData // No Content-Type header needed for FormData; fetch sets it automatically

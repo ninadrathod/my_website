@@ -47,15 +47,15 @@ connectMongo();
 
 /* ----------------------------------------------------------------------------
     API to check if an entry exists for a specific session in the "timestamp" collection:
-    GET /api/doesTSexist
-    - Takes 'sessionId' as a query parameter (e.g., /api/doesTSexist?sessionId=abc).
+    GET /upload-service-api/doesTSexist
+    - Takes 'sessionId' as a query parameter (e.g., /upload-service-api/doesTSexist?sessionId=abc).
     - Returns true if a document with the given 'sessionId' is found in the "timestamp" collection.
     - Returns false otherwise.
    ---------------------------------------------------------------------------- */
 // Change the route to accept sessionId as a query parameter
-app.get('/api/doesTSexist', async (req, res) => {
+app.get('/upload-service-api/doesTSexist', async (req, res) => {
   const { sessionId } = req.query; // Extract sessionId from query parameters
-  console.log(`Request received at /api/doesTSexist for Session ID: ${sessionId}`);
+  console.log(`Request received at /upload-service-api/doesTSexist for Session ID: ${sessionId}`);
 
   if (!sessionId) {
     console.error('Session ID is missing from query parameters.');
@@ -81,7 +81,7 @@ app.get('/api/doesTSexist', async (req, res) => {
     return res.status(200).json({ exists: exists });
 
   } catch (error) {
-    console.error(`Error in /api/doesTSexist for Session ID '${sessionId}':`, error);
+    console.error(`Error in /upload-service-api/doesTSexist for Session ID '${sessionId}':`, error);
     return res.status(500).json({ error: 'Failed to check timestamp existence.' });
   }
 });
@@ -89,15 +89,15 @@ app.get('/api/doesTSexist', async (req, res) => {
 
   /* ----------------------------------------------------------------------------
     API to create/update a timestamp for a specific session in the "timestamp" collection:
-    POST /api/createTS
+    POST /upload-service-api/createTS
     - Takes 'sessionId' as input from the request body.
     - Calculates expiry timestamp (current time + 15 minutes).
     - Updates the 'value_x' (expiry timestamp) and 'sessionId' for a matching document,
       or inserts a new document if the sessionId does not exist (upsert).
     - The previous delete-all behavior is removed to support multiple active sessions.
    ---------------------------------------------------------------------------- */
-app.post('/api/createTS', async (req, res) => {
-  console.log('Request received at /api/createTS.');
+app.post('/upload-service-api/createTS', async (req, res) => {
+  console.log('Request received at /upload-service-api/createTS.');
 
   try {
     // 1. Check if the database connection is established
@@ -155,21 +155,21 @@ app.post('/api/createTS', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in /api/createTS:', error);
+    console.error('Error in /upload-service-api/createTS:', error);
     return res.status(500).json({ error: 'Failed to create/update timestamp in database.' });
   }
 });
 
 /* ----------------------------------------------------------------------------
     API to invalidate a specific session's timestamp in the "timestamp" collection:
-    POST /api/setTStoZero
+    POST /upload-service-api/setTStoZero
     - Takes 'sessionId' as input from the request body.
     - Sets the 'value_x' for the document matching 'sessionId' to epoch 0.
       If no document matches, it can optionally create one with an invalid timestamp (upsert).
     - The previous delete-all behavior is removed to protect other sessions.
    ---------------------------------------------------------------------------- */
-   app.post('/api/setTStoZero', async (req, res) => {
-    console.log('Request received at /api/setTStoZero.');
+   app.post('/upload-service-api/setTStoZero', async (req, res) => {
+    console.log('Request received at /upload-service-api/setTStoZero.');
   
     try {
       // 1. Check if the database connection is established
@@ -221,22 +221,22 @@ app.post('/api/createTS', async (req, res) => {
       });
   
     } catch (error) {
-      console.error('Error in /api/setTStoZero:', error);
+      console.error('Error in /upload-service-api/setTStoZero:', error);
       return res.status(500).json({ error: 'Failed to set timestamp to zero.' });
     }
   });
   
 /* ----------------------------------------------------------------------------
     API to check if a specific session is currently valid:
-    GET /api/isSessionValid
+    GET /upload-service-api/isSessionValid
     - Takes 'sessionId' as a query parameter.
     - Reads the 'value_x' (expiry timestamp) from the document matching 'sessionId'.
     - Compares it with the current timestamp.
     - Returns true if current_timestamp < value_x for that specific sessionId, false otherwise.
    ---------------------------------------------------------------------------- */
-   app.get('/api/isSessionValid', async (req, res) => {
+   app.get('/upload-service-api/isSessionValid', async (req, res) => {
     const { sessionId } = req.query; // Extract sessionId from query parameters
-    console.log(`Request received at /api/isSessionValid for Session ID: ${sessionId}`);
+    console.log(`Request received at /upload-service-api/isSessionValid for Session ID: ${sessionId}`);
   
     if (!sessionId) {
       console.error('Session ID is missing from query parameters.');
@@ -283,7 +283,7 @@ app.post('/api/createTS', async (req, res) => {
       return res.status(200).json({ isValid: isValid });
   
     } catch (error) {
-      console.error(`Error in /api/isSessionValid for Session ID '${sessionId}':`, error);
+      console.error(`Error in /upload-service-api/isSessionValid for Session ID '${sessionId}':`, error);
       return res.status(500).json({ error: 'Failed to check session validity.' });
     }
   });
@@ -351,7 +351,7 @@ app.get('/health', (req, res) => {
 
 
 // --- Image Upload Route ---
-app.post('/api/upload', (req, res) => {
+app.post('/upload-service-api/upload', (req, res) => {
   console.log('Image upload request received.');
   upload(req, res, (err) => {
     if (err) {
@@ -370,7 +370,7 @@ app.post('/api/upload', (req, res) => {
 // --- End Image Upload Route ---
 
 // --- Routine to read image list from 'images' directory ---
-app.get('/api/getFileNames', function (req, res) {
+app.get('/upload-service-api/getFileNames', function (req, res) {
   const directoryPath = path.join(__dirname, 'images');
   fs.readdir(directoryPath, function (err, files) {
     if (err) {
@@ -383,7 +383,7 @@ app.get('/api/getFileNames', function (req, res) {
 // --- End Routine ---
 
 // --- API Endpoint: /deleteImage/:image_name ---
-app.delete('/api/deleteImage/:image_name', (req, res) => {
+app.delete('/upload-service-api/deleteImage/:image_name', (req, res) => {
   const imageName = req.params.image_name;
   const imagePath = path.join(__dirname, 'images', imageName); // Construct the full path
 
@@ -426,7 +426,7 @@ const transporter = nodemailer.createTransport({
  * This API generates a random 5-digit OTP, sends it to the specified email ID
  * using Nodemailer, and returns the generated OTP in the response.
  */
-app.get('/api/sendOTP/:variableEmailID', async (req, res) => {
+app.get('/upload-service-api/sendOTP/:variableEmailID', async (req, res) => {
     // 1. Extract the email ID from the URL parameters
     const recipientEmail = req.params.variableEmailID;
 
@@ -484,7 +484,7 @@ app.get('/api/sendOTP/:variableEmailID', async (req, res) => {
 // Define the Admin Email
 const ADMIN_EMAIL = process.env.ADMIN_EMAILID; // Place this near your global variables or other constants
 
-app.get('/api/isAdminEmail/:enteredEmail', (req, res) => {
+app.get('/upload-service-api/isAdminEmail/:enteredEmail', (req, res) => {
     const enteredEmail = req.params.enteredEmail.toLowerCase(); // Convert to lowercase for case-insensitive comparison
     console.log(`[${new Date().toLocaleTimeString()}] Checking if '${enteredEmail}' is admin email.`);
 
@@ -503,7 +503,7 @@ app.get('/api/isAdminEmail/:enteredEmail', (req, res) => {
  *
  * !!! WARNING: This is for demonstration purposes ONLY. Not suitable for production.
  */
-app.get('/api/OTPverify/:passedOTP', (req, res) => {
+app.get('/upload-service-api/OTPverify/:passedOTP', (req, res) => {
     const passedOtp = parseInt(req.params.passedOTP, 10); // Convert URL parameter to an integer
 
     console.log(`[${new Date().toLocaleTimeString()}] Verification attempt: Passed OTP = ${passedOtp}, Stored OTP = ${storedOtp}`);
