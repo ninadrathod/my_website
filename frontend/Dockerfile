@@ -1,18 +1,28 @@
-FROM node:latest
+FROM node:20-alpine
 
 # Set a working directory inside the image
 WORKDIR /app
+
+# Copy package.json and package-lock.json (if present) first.
+# This optimizes Docker's build cache: if only source code changes, npm install won't re-run.
 COPY package*.json ./
 
-ENV START_COMMAND="npm run dev"
-# Create a simple HTTP server using 'serve' package
+# Install project dependencies
 RUN npm install
 
-COPY . .
+# Install 'serve' globally. This is needed because your package.json scripts
+# directly call 'serve'. If you were using 'npm start', this wouldn't be strictly
+# necessary if 'serve' was a local dependency and called via 'npx serve'.
 RUN npm install -g serve
-RUN npm install tailwindcss @tailwindcss/cli
-# Expose the port the server will listen on
-EXPOSE 3000
 
-# Command to start the simple HTTP server
-CMD [ "sh", "-c", "$START_COMMAND" ]
+# Copy the rest of the application code into the container
+COPY . .
+
+# Define environment variables with defaults (can be overridden by docker-compose.yml)
+ENV PORT=3000
+
+# Expose the port the server will listen on
+EXPOSE $PORT
+
+# Command to start the application using the 'dev' script from package.json
+CMD [ "npm", "run", "dev" ]

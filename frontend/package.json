@@ -7,18 +7,14 @@
         "dev": "serve -p 3000 .",
         "build-css": "npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch"
     },
-    "author": "",
+    "author": "Ninad",
     "license": "ISC",
     "dependencies": {
-        "@tailwindcss/cli": "^4.1.4",
+        "@tailwindcss/cli": "latest",
         "tailwindcss": "latest",
         "cors": "latest",
         "dotenv": "latest"
     },
     "devDependencies": {
-        "cors": "latest",
-        "dotenv": "latest",
-        "@tailwindcss/cli": "latest",
-        "tailwindcss": "latest"
     }
 }

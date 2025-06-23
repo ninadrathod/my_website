@@ -13,12 +13,6 @@ setup-images-dir:
 	fi; \
 	chmod 777 "$(UPLOAD_SERVICE_DIR)/images"
 
-# Target to install frontend dependencies
-frontend_install:
-	@echo "Installing frontend dependencies..."
-	cd $(FRONTEND_DIR) && npm install
-	@echo "Frontend dependencies installed."
-
 # Target to build and start the Docker Compose application
 build: 
 	@echo "Building and starting Docker Compose application..."
@@ -27,7 +21,7 @@ build:
 	python3 load_data.py
 	@echo "Docker Compose application is running."
 
-initial_build: setup-images-dir frontend_install build
+initial_build: setup-images-dir build
 
 up:
 	@echo "Building and starting Docker Compose application..."
@@ -49,8 +43,8 @@ destroy_project:
 	docker-compose down --volumes --rmi all # Stop and remove containers, volumes, and images
 	docker system prune -a --volumes -f # Aggressively prune everything
 	@echo "All Docker resources related to project destroyed."
-	@echo "Deleting node modules and other residual files from host directories..."
-	rm -rf $(FRONTEND_DIR)/node_modules $(FRONTEND_DIR)/package-lock.json $(FRONTEND_DIR)/src/output.css
+	@echo "Deleting residual files from host directories..."
+	rm -rf $(FRONTEND_DIR)/src/output.css
 	@echo "Clean-up complete."
 
-.PHONY: frontend_install initial_build build up down rebuild destroy_project
+.PHONY: initial_build build up down rebuild destroy_project
