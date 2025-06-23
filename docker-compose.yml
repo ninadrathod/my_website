@@ -94,6 +94,7 @@ services:
       - my-website-network
     ports:
       - 80:80 # Map host's port 80 (default HTTP) to Nginx container's port 80
+      - 443:443 # Map host's port 443 (default HTTPS)
     depends_on:
       - frontend # Nginx needs the frontend to be available to proxy requests
     restart: always

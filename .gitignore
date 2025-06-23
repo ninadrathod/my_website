@@ -10,3 +10,5 @@ frontend/package-lock.json
 frontend/src/output.css
 venv/
 roughwork.txt
+nginx/certificate.crt
+nginx/private.key
