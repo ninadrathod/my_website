@@ -15,7 +15,6 @@ const port = 3002;
 app.use(cors());
 app.use(express.json());
 
-const public_ip = process.env.PUBLIC_IP;
 const baseMongoUri = process.env.MONGODB_URI;// || 'mongodb://localhost:27017';
 const databaseName = 'resume_database';
 const mongoUri = `${baseMongoUri}/${databaseName}?authSource=admin`;
@@ -528,5 +527,5 @@ app.get('/OTPverify/:passedOTP', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Backend server listening at ${public_ip}:${port}`);
+  console.log(`Upload-service server listening at ${port}`);
 });

@@ -6,11 +6,8 @@ const cors = require('cors');
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
-const DEFAULT_PORT_FILE = 3001;
-const port = process.env.PORT || DEFAULT_PORT_FILE; // Default to File 1's port if not set
-const host = process.env.PUBLIC_IP;
-
-const baseMongoUri = process.env.MONGODB_URI; //|| 'mongodb://localhost:27017';
+const port = 3001;
+const baseMongoUri = process.env.MONGODB_URI;
 const databaseName = 'resume_database';
 const mongoUri = `${baseMongoUri}/${databaseName}?authSource=admin`;
 
@@ -138,6 +135,6 @@ app.get('/api/metadata/:property', async (req, res) => {
     Start the server
    ---------------------------------------------------------------------------- */
 
-app.listen(port, host, () => {
-  console.log(`Backend server is running on http://${host}:${port}`);
+app.listen(port, () => {
+  console.log(`Backend server is running on ${port}`);
 });
