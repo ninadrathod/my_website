@@ -351,7 +351,7 @@ app.get('/health', (req, res) => {
 
 
 // --- Image Upload Route ---
-app.post('/upload', (req, res) => {
+app.post('/api/upload', (req, res) => {
   console.log('Image upload request received.');
   upload(req, res, (err) => {
     if (err) {
@@ -370,7 +370,7 @@ app.post('/upload', (req, res) => {
 // --- End Image Upload Route ---
 
 // --- Routine to read image list from 'images' directory ---
-app.get('/getFileNames', function (req, res) {
+app.get('/api/getFileNames', function (req, res) {
   const directoryPath = path.join(__dirname, 'images');
   fs.readdir(directoryPath, function (err, files) {
     if (err) {
@@ -383,7 +383,7 @@ app.get('/getFileNames', function (req, res) {
 // --- End Routine ---
 
 // --- API Endpoint: /deleteImage/:image_name ---
-app.delete('/deleteImage/:image_name', (req, res) => {
+app.delete('/api/deleteImage/:image_name', (req, res) => {
   const imageName = req.params.image_name;
   const imagePath = path.join(__dirname, 'images', imageName); // Construct the full path
 
@@ -426,7 +426,7 @@ const transporter = nodemailer.createTransport({
  * This API generates a random 5-digit OTP, sends it to the specified email ID
  * using Nodemailer, and returns the generated OTP in the response.
  */
-app.get('/sendOTP/:variableEmailID', async (req, res) => {
+app.get('/api/sendOTP/:variableEmailID', async (req, res) => {
     // 1. Extract the email ID from the URL parameters
     const recipientEmail = req.params.variableEmailID;
 
@@ -484,7 +484,7 @@ app.get('/sendOTP/:variableEmailID', async (req, res) => {
 // Define the Admin Email
 const ADMIN_EMAIL = process.env.ADMIN_EMAILID; // Place this near your global variables or other constants
 
-app.get('/isAdminEmail/:enteredEmail', (req, res) => {
+app.get('/api/isAdminEmail/:enteredEmail', (req, res) => {
     const enteredEmail = req.params.enteredEmail.toLowerCase(); // Convert to lowercase for case-insensitive comparison
     console.log(`[${new Date().toLocaleTimeString()}] Checking if '${enteredEmail}' is admin email.`);
 
@@ -503,7 +503,7 @@ app.get('/isAdminEmail/:enteredEmail', (req, res) => {
  *
  * !!! WARNING: This is for demonstration purposes ONLY. Not suitable for production.
  */
-app.get('/OTPverify/:passedOTP', (req, res) => {
+app.get('/api/OTPverify/:passedOTP', (req, res) => {
     const passedOtp = parseInt(req.params.passedOTP, 10); // Convert URL parameter to an integer
 
     console.log(`[${new Date().toLocaleTimeString()}] Verification attempt: Passed OTP = ${passedOtp}, Stored OTP = ${storedOtp}`);
