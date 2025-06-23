@@ -52,7 +52,7 @@ app.get('/health', (req, res) => {
     API to fetch complete resume data: /api/data
    ---------------------------------------------------------------------------- */
 
-app.get('/api/data', async (req, res) => {
+app.get('/backend-api/data', async (req, res) => {
   console.log('Request received at /api/data');
   try {
     if (!db) 
@@ -76,7 +76,7 @@ app.get('/api/data', async (req, res) => {
     /api/data/{category}
    ---------------------------------------------------------------------------- */
 
-app.get('/api/data/:category', async (req, res) => {
+app.get('/backend-api/data/:category', async (req, res) => {
   const category = req.params.category;
   console.log(`Request received at /api/data/${category}`);
   try {
@@ -100,7 +100,7 @@ app.get('/api/data/:category', async (req, res) => {
     /api/metadata/{property}
    ---------------------------------------------------------------------------- */
 
-app.get('/api/metadata/:property', async (req, res) => {
+app.get('/backend-api/metadata/:property', async (req, res) => {
   const property = req.params.property;
   console.log(`Request received at /api/metadata/${property}`);
   try {

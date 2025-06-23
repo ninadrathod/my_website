@@ -375,7 +375,7 @@ async function fetchAndDisplayProperty(property, displayPropertyId) {
     return; // Don't throw error if element isn't found, just skip
   }
   try {
-    const apiUrl = `${MAIN_BACKEND_API_URL}/api/metadata/${property}`;
+    const apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/metadata/${property}`;
     const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -395,7 +395,7 @@ async function fetchAndReturnLink(property, linkElementId) {
     return;
   }
   try {
-    const apiUrl = `${MAIN_BACKEND_API_URL}/api/metadata/${property}`;
+    const apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/metadata/${property}`;
     const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -425,7 +425,7 @@ async function fetchAndDisplayCards(category, containerId, displayFunction) {
   }
   container.innerHTML = `Loading ${category} data...`; // Loading message
   try {
-    const apiUrl = `${MAIN_BACKEND_API_URL}/api/data/${category}`;
+    const apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/data/${category}`;
     const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
