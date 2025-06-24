@@ -140,7 +140,7 @@ async function doesVariableExistInCache() {
   }
 
   // 2. Construct the API URL with the sessionId as a query parameter
-  const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/doesTSexist?sessionId=${encodeURIComponent(currentSessionId)}`;
+  let apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/doesTSexist?sessionId=${encodeURIComponent(currentSessionId)}`;
   if(PROD){
     apiUrl = `/upload-service-api/doesTSexist?sessionId=${encodeURIComponent(currentSessionId)}`;
   }
@@ -188,7 +188,7 @@ async function storeExpiryTimestamp() {
       return false;
   }
 
-  const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/createTS`; // Full API endpoint
+  let apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/createTS`; // Full API endpoint
   if(PROD){
     apiUrl = `/upload-service-api/createTS`;
   }
@@ -243,7 +243,7 @@ async function setExpiryTimestampToZero() {
       return false;
   }
 
-  const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/setTStoZero`; // Full API endpoint
+  let apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/setTStoZero`; // Full API endpoint
   if(PROD){
     apiUrl = `/upload-service-api/setTStoZero`;
   }
@@ -298,7 +298,7 @@ async function isSessionValid() {
   }
 
   // 2. Construct the API URL with the sessionId as a query parameter
-  const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/isSessionValid?sessionId=${encodeURIComponent(currentSessionId)}`;
+  let apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/isSessionValid?sessionId=${encodeURIComponent(currentSessionId)}`;
   if(PROD)
   {    apiUrl = `/upload-service-api/isSessionValid?sessionId=${encodeURIComponent(currentSessionId)}`;
   }
@@ -390,7 +390,7 @@ async function fetchAndDisplayProperty(property, displayPropertyId) {
   }
   try {
 
-    const apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/metadata/${property}`; 
+    let apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/metadata/${property}`; 
     if(PROD){
       apiUrl = `/backend-api/metadata/${property}`;
     }
@@ -413,7 +413,7 @@ async function fetchAndReturnLink(property, linkElementId) {
     return;
   }
   try {
-    const apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/metadata/${property}`;
+    let apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/metadata/${property}`;
     if(PROD){
       apiUrl = `/backend-api/metadata/${property}`;
     }
@@ -446,7 +446,7 @@ async function fetchAndDisplayCards(category, containerId, displayFunction) {
   }
   container.innerHTML = `Loading ${category} data...`; // Loading message
   try {
-    const apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/data/${category}`;
+    let apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/data/${category}`;
     if(PROD){
       apiUrl = `/backend-api/data/${category}`;
     }
@@ -784,8 +784,8 @@ function displayPublication(publicationData, containerId) {
  * where the image cards should be appended. Defaults to 'image-gallery'.
  */
 async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
-  const apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/getFileNames`; // API to get list of filenames
-  const imageBaseURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
+  let apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/getFileNames`; // API to get list of filenames
+  let imageBaseURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
   if(PROD){
     apiURL = `/upload-service-api/getFileNames`;
     imageBaseURL = `/images/`;
@@ -877,7 +877,7 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
 
         console.log(`Attempting to delete image: ${fileName}`);
         try {
-            const deleteApiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/deleteImage/${fileName}`;
+            let deleteApiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/deleteImage/${fileName}`;
             if(PROD){
               deleteApiUrl = `/upload-service-api/deleteImage/${fileName}`;
             }
@@ -925,8 +925,8 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
  * where the image cards should be appended. Defaults to 'image-gallery'.
  */
 async function displayUploadedImages(containerId = 'image-gallery') {
-  const apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/getFileNames`; // API to get list of filenames
-  const imageBaseURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
+  let apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/getFileNames`; // API to get list of filenames
+  let imageBaseURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
   if(PROD)
   { apiURL = `/upload-service-api/getFileNames`;
     imageBaseURL = `/images/`;
@@ -1096,7 +1096,7 @@ function showEmailWindow() {
           // --- STEP 1: Verify if it's an admin email ---
           // NOTE: This URL (localhost:3000) seems incorrect for a backend service
           // It should likely be MAIN_BACKEND_API_URL or similar. Adjust as needed.
-          const isAdminApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/isAdminEmail/${adminEmail}`;
+          let isAdminApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/isAdminEmail/${adminEmail}`;
           if(PROD){
             isAdminApiUrl = `/upload-service-api/isAdminEmail/${adminEmail}`;
           }
@@ -1112,7 +1112,7 @@ function showEmailWindow() {
           
           // --- STEP 2: If email is admin, proceed to send OTP ---
           displayPanelMessage('success', 'Email verified. Sending OTP...');
-          const apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/sendOTP/${adminEmail}`;
+          let apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/sendOTP/${adminEmail}`;
           if(PROD){
             apiUrl = `/upload-service-api/sendOTP/${adminEmail}`;
           }
@@ -1164,7 +1164,7 @@ function showOtpWindow() {
 
       try {
           // --- Call the /upload-service-api/OTPverify API ---
-          const verifyApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/OTPverify/${otpValue}`;
+          let verifyApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/OTPverify/${otpValue}`;
           if(PROD){
             verifyApiUrl = `/upload-service-api/OTPverify/${otpValue}`;
           }
@@ -1356,7 +1356,7 @@ async function initializeIllustrationFormAndGallery() {
 
       try {
           // Make the POST request to the backend's upload endpoint
-          const apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/upload`; 
+          let apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/upload`; 
           if(PROD){
             apiUrl = `/upload-service-api/upload`;
           }
