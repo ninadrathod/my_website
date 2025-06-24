@@ -27,5 +27,5 @@ To run this project locally, ensure you have Docker Desktop installed. Then:
 mongosh mongodb://admin:qwerty@localhost:27017
 
 ### Before publishing, make following changes:
-* frontend/script.js: update value of "const PUBLIC_IP"
+* frontend/script.js: update value of "const PUBLIC_IP" and set "PROD = true"
 * nginx/nginx.conf: update the value of "server_name" variable
