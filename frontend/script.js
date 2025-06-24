@@ -478,10 +478,10 @@ function displayWorkExperience(workExperienceData, containerId) {
 
       const headingPara = document.createElement('p');
           const companyHeading = document.createElement('span');
-          companyHeading.classList.add('montserrat-regular');
+          companyHeading.classList.add('montserrat-regular','text-sm','md:text-md','lg:text-lg');
           companyHeading.textContent = experience.Company;
           const companyLocation = document.createElement('span');
-          companyLocation.classList.add('montserrat-light');
+          companyLocation.classList.add('montserrat-light','text-sm','md:text-md','lg:text-lg');
           companyLocation.textContent = `, ${experience.Location}`;
           headingPara.appendChild(companyHeading);
           headingPara.appendChild(companyLocation);
@@ -489,23 +489,23 @@ function displayWorkExperience(workExperienceData, containerId) {
       const rolePara = document.createElement('p');
           rolePara.classList.add('mt-3');
           const role =document.createElement('span');
-          role.classList.add('montserrat-regular','text-sm');
+          role.classList.add('montserrat-regular','text-xs','md:text-sm','lg:text-md');
           role.textContent = 'Designation: ';
           const roleDesc = document.createElement('span');
-          roleDesc.classList.add('montserrat-light', 'text-sm');
+          roleDesc.classList.add('montserrat-light', 'text-xs','md:text-sm','lg:text-md');
           roleDesc.textContent = experience.Role;
           rolePara.appendChild(role);
           rolePara.appendChild(roleDesc);
 
       const durationPara = document.createElement('p');
-      durationPara.classList.add('montserrat-extralight', 'text-sm', 'mt-3');
+      durationPara.classList.add('montserrat-extralight', 'text-xs','md:text-sm','lg:text-md','mt-3');
       const to_month_year = experience.to_month_year ? ' to ' + experience.to_month_year : ' to Present'
       durationPara.textContent = `${experience.from_month_year}${to_month_year}`;
 
       const responsibilitiesPara = document.createElement('p');
         responsibilitiesPara.classList.add('mt-3');
         const responsibilitiesParagraph = document.createElement('span');
-        responsibilitiesParagraph.classList.add('montserrat-light','text-sm');
+        responsibilitiesParagraph.classList.add('montserrat-light','text-xs','md:text-sm','lg:text-md');
         responsibilitiesParagraph.innerHTML = `${experience.responsibilities}`;
         responsibilitiesPara.appendChild(responsibilitiesParagraph);
 
@@ -529,30 +529,30 @@ function displayEducation(educationData, containerId) {
   if (educationData && educationData.length > 0) {
     educationData.forEach(education => {
       const educationDiv = document.createElement('div');
-      educationDiv.classList.add('w-full','text-center','flex','mb-10','px-[10%]');
+      educationDiv.classList.add('w-full','text-center','flex','mb-10','px-[2%]');
       
       const collegeDiv = document.createElement('div');
       const line = document.createElement('div');
-      line.classList.add('border-r-1','border-seashell');
+      line.classList.add('border-r-1','border-seashell','mx-[2%]');
       const yearsDiv = document.createElement('div');
 
       collegeDiv.classList.add('left');
       yearsDiv.classList.add('right');        
       
           const headingPara = document.createElement('p');
-          headingPara.classList.add('monserrat-regular','text-lg','tracking-wider');
+          headingPara.classList.add('monserrat-regular','text-md','md:text-base','lg:text-lg','tracking-wider');
           headingPara.textContent = education.institution_name;
 
           const degreePara = document.createElement('p');
-          degreePara.classList.add('montserrat-light','mt-2','text-base')
+          degreePara.classList.add('montserrat-light','mt-2','text-sm','md:text-md','lg:text-base')
           degreePara.textContent = `${education.degree_program_certificate}`;
 
           const scorePara = document.createElement('p');
-          scorePara.classList.add('montserrat-light','mt-2');
+          scorePara.classList.add('montserrat-light','mt-2','text-sm','md:text-md','lg:text-base');
           scorePara.textContent = `${education.score_type}: ${education.score} / ${education.score_on_scale}`;
 
           const durationPara = document.createElement('p');
-          durationPara.classList.add('montserrat-extralight','text-lg');
+          durationPara.classList.add('montserrat-extralight','text-md','md:text-base','lg:text-lg');
           const to_month_year = education.to_month_year ? ' to ' + education.to_month_year : ' to Present'
           durationPara.textContent = `${education.from_month_year}${to_month_year}`;
 
@@ -584,19 +584,19 @@ function displayProjects(projectsData, containerId) {
       projectDiv.classList.add('project-card');
 
       const projectType = document.createElement('p');
-      projectType.classList.add('montserrat-extralight-i','text-sm');
+      projectType.classList.add('montserrat-extralight-i','text-xs','md:text-sm','lg:text-md');
       projectType.textContent = `${project.type} project`;
 
       const projectTitle = document.createElement('p');
-      projectTitle.classList.add('montserrat-regular','text-lg');
+      projectTitle.classList.add('montserrat-regular','text-sm','md:text-md','lg:text-lg');
       projectTitle.textContent = project.project_title;
       
       const domain = document.createElement('p');
-      domain.classList.add('montserrat-light','my-[0.5%]');
+      domain.classList.add('montserrat-light','my-[0.5%]','text-sm','md:text-md','lg:text-lg');
       domain.textContent = project.course_or_domain;
 
       const description = document.createElement('p');
-      description.classList.add('montserrat-extralight');
+      description.classList.add('montserrat-extralight','text-sm','md:text-md','lg:text-lg');
       description.textContent = project.project_description;
 
       projectDiv.appendChild(projectType);
@@ -619,7 +619,7 @@ function displayInterestAreas(interestAreasData, containerId) {
   if (interestAreasData && interestAreasData.length > 0) {
     interestAreasData.forEach(interest => {
       const interestsDiv = document.createElement('div');
-      interestsDiv.classList.add('my-[2.5%]','montserrat-light-i','text-seashell');
+      interestsDiv.classList.add('my-[2.5%]','montserrat-light-i','text-seashell','text-sm','md:text-md','lg:text-lg');
       interestsDiv.textContent = `> ${interest.interest_area}`;      
       container.appendChild(interestsDiv);
     });
@@ -639,7 +639,7 @@ function displayExtracurricularActivities(extracurricularActivitiesData, contain
   if (extracurricularActivitiesData && extracurricularActivitiesData.length > 0) {
     extracurricularActivitiesData.forEach(activityItem => {
       const activity_li = document.createElement('div');
-      activity_li.classList.add('montserrat-regular','text-sm');
+      activity_li.classList.add('montserrat-regular','text-sm','md:text-md','lg:text-base');
       activity_li.innerHTML = activityItem.activity;      
      
       const bottomSeparator = document.createElement('hr');
@@ -668,15 +668,15 @@ function displayPOR(porData, containerId) {
       const por_li = document.createElement('div');
       
       const por_title = document.createElement('p');
-      por_title.classList.add('montserrat-regular','text-sm');
+      por_title.classList.add('montserrat-regular','text-sm','md:text-md','lg:text-base');
       por_title.textContent = `${porItem.por} (${porItem.from_year} - ${porItem.to_year})`;
 
       const por_club = document.createElement('p');
-      por_club.classList.add('montserrat-light','text-sm');
+      por_club.classList.add('montserrat-light','text-sm','md:text-md','lg:text-base');
       por_club.textContent = porItem.club_group;
 
       const por_institution = document.createElement('p');
-      por_institution.classList.add('montserrat-light','text-sm');
+      por_institution.classList.add('montserrat-light','text-sm','md:text-md','lg:text-base');
       por_institution.textContent = porItem.institution;
       
       const bottomSeparator = document.createElement('hr');
@@ -705,12 +705,12 @@ function displaySkills(skillsData, containerId) {
       skillsDiv.classList.add('my-[7.5%]');
 
       const skillType = document.createElement('p');
-      skillType.classList.add('montserrat-regular');
+      skillType.classList.add('montserrat-regular','text-sm','md:text-md','lg:text-lg');
       skillType.textContent = skill.type;
       
       // Create a list for specific skills
       const specificListDiv = document.createElement('div');
-      specificListDiv.classList.add('montserrat-light-i','ml-[3%]','mt-[1%]'); // Indent the list
+      specificListDiv.classList.add('montserrat-light-i','ml-[3%]','mt-[1%]','text-sm','md:text-md','lg:text-lg'); // Indent the list
 
       if (skill.specific_list && skill.specific_list.length > 0) {
         skill.specific_list.forEach(name => {
@@ -748,15 +748,15 @@ function displayPublication(publicationData, containerId) {
               topSeparator.classList.add('w-[40%]','mx-auto','mb-[5%]','opacity-50');
 
               const paperTitle = document.createElement('p');
-              paperTitle.classList.add('montserrat-regular','text-lg', 'mb-[1%]');
+              paperTitle.classList.add('montserrat-regular','text-sm','md:text-md','lg:text-lg','mb-[1%]');
               paperTitle.textContent = publication.title;
 
               const paperPublication = document.createElement('p');
-              paperPublication.classList.add('montserrat-light', 'mb-[1%]');
+              paperPublication.classList.add('montserrat-light', 'mb-[1%]','text-sm','md:text-md','lg:text-lg');
               paperPublication.textContent = publication.conference_journal_name;
 
               const bookSeries = document.createElement('p');
-              bookSeries.classList.add('montserrat-extralight', 'mb-[1%]');
+              bookSeries.classList.add('montserrat-light', 'mb-[1%]','text-sm','md:text-md','lg:text-lg');
               bookSeries.textContent = `Book series: ${publication.book_series}`;
 
       publicationDiv.appendChild(topSeparator);

@@ -76,8 +76,7 @@ services:
     expose:
       - 3000
     volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/icons:/app/icons
+      - ./frontend:/app
       - /app/node_modules
     working_dir: /app
     depends_on:
