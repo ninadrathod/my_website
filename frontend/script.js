@@ -33,6 +33,7 @@ const tabToggles = document.querySelectorAll('.tabs__toggle');
 const PUBLIC_IP = 'http://localhost';
 const BACKEND_PORT = 3001;
 const UPLOAD_SERVICE_PORT = 3002;
+const PROD = false;
 
 const MAIN_BACKEND_API_URL = `${PUBLIC_IP}:${BACKEND_PORT}`; 
 const UPLOAD_SERVICE_API_URL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}`;
@@ -140,6 +141,9 @@ async function doesVariableExistInCache() {
 
   // 2. Construct the API URL with the sessionId as a query parameter
   const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/doesTSexist?sessionId=${encodeURIComponent(currentSessionId)}`;
+  if(PROD){
+    apiUrl = `/upload-service-api/doesTSexist?sessionId=${encodeURIComponent(currentSessionId)}`;
+  }
 
   try {
       console.log(`Checking for timestamp existence via API: ${apiUrl}`);
@@ -185,6 +189,9 @@ async function storeExpiryTimestamp() {
   }
 
   const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/createTS`; // Full API endpoint
+  if(PROD){
+    apiUrl = `/upload-service-api/createTS`;
+  }
 
   try {
       console.log(`Sending request to create/reset timestamp for Session ID '${currentSessionId}' via API: ${apiUrl}`);
@@ -237,6 +244,10 @@ async function setExpiryTimestampToZero() {
   }
 
   const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/setTStoZero`; // Full API endpoint
+  if(PROD){
+    apiUrl = `/upload-service-api/setTStoZero`;
+  }
+
 
   try {
       console.log(`Sending request to set timestamp to zero for Session ID '${currentSessionId}' via API: ${apiUrl}`);
@@ -288,6 +299,9 @@ async function isSessionValid() {
 
   // 2. Construct the API URL with the sessionId as a query parameter
   const apiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/isSessionValid?sessionId=${encodeURIComponent(currentSessionId)}`;
+  if(PROD)
+  {    apiUrl = `/upload-service-api/isSessionValid?sessionId=${encodeURIComponent(currentSessionId)}`;
+  }
 
   try {
       console.log(`Checking session validity for Session ID '${currentSessionId}' via API: ${apiUrl}`);
@@ -375,7 +389,11 @@ async function fetchAndDisplayProperty(property, displayPropertyId) {
     return; // Don't throw error if element isn't found, just skip
   }
   try {
-    const apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/metadata/${property}`;
+
+    const apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/metadata/${property}`; 
+    if(PROD){
+      apiUrl = `/backend-api/metadata/${property}`;
+    }
     const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -396,6 +414,9 @@ async function fetchAndReturnLink(property, linkElementId) {
   }
   try {
     const apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/metadata/${property}`;
+    if(PROD){
+      apiUrl = `/backend-api/metadata/${property}`;
+    }
     const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -426,6 +447,9 @@ async function fetchAndDisplayCards(category, containerId, displayFunction) {
   container.innerHTML = `Loading ${category} data...`; // Loading message
   try {
     const apiUrl = `${MAIN_BACKEND_API_URL}/backend-api/data/${category}`;
+    if(PROD){
+      apiUrl = `/backend-api/data/${category}`;
+    }
     const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -762,6 +786,10 @@ function displayPublication(publicationData, containerId) {
 async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
   const apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/getFileNames`; // API to get list of filenames
   const imageBaseURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
+  if(PROD){
+    apiURL = `/upload-service-api/getFileNames`;
+    imageBaseURL = `/images/`;
+  }
 
   const imageContainer = document.getElementById(containerId);
 
@@ -850,6 +878,10 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
         console.log(`Attempting to delete image: ${fileName}`);
         try {
             const deleteApiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/deleteImage/${fileName}`;
+            if(PROD){
+              deleteApiUrl = `/upload-service-api/deleteImage/${fileName}`;
+            }
+
             console.log('DELETE request to:', deleteApiUrl);
 
             const response = await fetch(deleteApiUrl, {
@@ -895,6 +927,10 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
 async function displayUploadedImages(containerId = 'image-gallery') {
   const apiURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/getFileNames`; // API to get list of filenames
   const imageBaseURL = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/images/`;  // Base URL for accessing the images themselves
+  if(PROD)
+  { apiURL = `/upload-service-api/getFileNames`;
+    imageBaseURL = `/images/`;
+  }
 
   const imageContainer = document.getElementById(containerId);
 
@@ -1061,6 +1097,10 @@ function showEmailWindow() {
           // NOTE: This URL (localhost:3000) seems incorrect for a backend service
           // It should likely be MAIN_BACKEND_API_URL or similar. Adjust as needed.
           const isAdminApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/isAdminEmail/${adminEmail}`;
+          if(PROD){
+            isAdminApiUrl = `/upload-service-api/isAdminEmail/${adminEmail}`;
+          }
+
           const isAdminResponse = await fetch(isAdminApiUrl);
           const isAdminData = await isAdminResponse.json();
 
@@ -1073,6 +1113,10 @@ function showEmailWindow() {
           // --- STEP 2: If email is admin, proceed to send OTP ---
           displayPanelMessage('success', 'Email verified. Sending OTP...');
           const apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/sendOTP/${adminEmail}`;
+          if(PROD){
+            apiUrl = `/upload-service-api/sendOTP/${adminEmail}`;
+          }
+
           const response = await fetch(apiUrl);
           const data = await response.json();
 
@@ -1121,6 +1165,10 @@ function showOtpWindow() {
       try {
           // --- Call the /upload-service-api/OTPverify API ---
           const verifyApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/OTPverify/${otpValue}`;
+          if(PROD){
+            verifyApiUrl = `/upload-service-api/OTPverify/${otpValue}`;
+          }
+
           const response = await fetch(verifyApiUrl);
           const data = await response.json();
 
@@ -1309,6 +1357,10 @@ async function initializeIllustrationFormAndGallery() {
       try {
           // Make the POST request to the backend's upload endpoint
           const apiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/upload`; 
+          if(PROD){
+            apiUrl = `/upload-service-api/upload`;
+          }
+
           const response = await fetch(apiUrl, {
               method: 'POST',
               body: formData // No Content-Type header needed for FormData; fetch sets it automatically
