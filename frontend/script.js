@@ -1094,8 +1094,6 @@ function showEmailWindow() {
 
       try {
           // --- STEP 1: Verify if it's an admin email ---
-          // NOTE: This URL (localhost:3000) seems incorrect for a backend service
-          // It should likely be MAIN_BACKEND_API_URL or similar. Adjust as needed.
           let isAdminApiUrl = `${PUBLIC_IP}:${UPLOAD_SERVICE_PORT}/upload-service-api/isAdminEmail/${adminEmail}`;
           if(PROD){
             isAdminApiUrl = `/upload-service-api/isAdminEmail/${adminEmail}`;

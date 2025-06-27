@@ -420,59 +420,192 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+/** HELPER FUNCTION
+ * Stores a given number in the "otp" collection in MongoDB.
+ *
+ * param {number} otpNumber The number (OTP) to be stored.
+ * returns {Promise<number>} A Promise that resolves with the stored number if successful,
+ * or -1 if the number could not be stored.
+ */
+async function storeOtpInDb(otpNumber) {
+  if (!db) {
+    console.error('Database connection is not established. Cannot store OTP.');
+    return -1;
+  }
+
+  if (typeof otpNumber !== 'number') {
+    console.error('Invalid input: OTP must be a number.');
+    return -1;
+  }
+
+  try {
+    const otpCollection = db.collection('otp'); // Get the 'otp' collection
+
+    // Store the OTP along with a timestamp for potential expiry management later
+    const result = await otpCollection.insertOne({
+      otp: otpNumber,
+      createdAt: new Date() // Record when the OTP was created
+    });
+
+    if (result.acknowledged && result.insertedId) {
+      console.log(`OTP '${otpNumber}' stored successfully with ID: ${result.insertedId}`);
+      return otpNumber; // Return the stored number on success
+    } else {
+      console.error(`Failed to store OTP '${otpNumber}'. Insert operation not acknowledged or no ID returned.`);
+      return -1; // Return -1 on failure
+    }
+  } catch (error) {
+    console.error(`Error storing OTP '${otpNumber}' in database:`, error);
+    return -1; // Return -1 on error
+  }
+}
+
+/** HELPER FUNCTION
+ * Reads the most recently stored OTP from the "otp" collection.
+ * This function retrieves the OTP that was last inserted into the collection,
+ * which is a common pattern for single-user or single-active-OTP scenarios.
+ *
+ * returns {Promise<number | -1>} A Promise that resolves with the most recently stored OTP number if found,
+ * or -1 if no OTPs exist in the collection, the retrieved OTP is not a number,
+ * or if there's a database connection or query error.
+ */
+async function readLatestOtpFromDb() {
+  if (!db) {
+    console.error('Database connection is not established. Cannot read OTP.');
+    return -1;
+  }
+
+  try {
+    const otpCollection = db.collection('otp');
+
+    // Find the latest OTP by sorting by 'createdAt' in descending order (most recent first)
+    // and limiting the result to one document.
+    const latestOtpDocument = await otpCollection.findOne(
+      {}, // Empty query filter to find any document
+      { sort: { createdAt: -1 } } // Sort by the 'createdAt' field in descending order
+    );
+
+    // Check if a document was found and if it contains a valid OTP number
+    if (latestOtpDocument && typeof latestOtpDocument.otp === 'number') {
+      console.log(`Successfully retrieved latest OTP: ${latestOtpDocument.otp}`);
+      return latestOtpDocument.otp;
+    } else {
+      console.log('No valid OTP found in the "otp" collection.');
+      return -1;
+    }
+  } catch (error) {
+    console.error('Error reading OTP from database:', error);
+    return -1;
+  }
+}
+
 /**
- * API Endpoint: /sendOTP/:variableEmailID
+ * Deletes all documents from the "otp" collection.
+ * This is useful for clearing out old or used OTPs.
+ *
+ * returns {Promise<0 | 1>} A Promise that resolves with 1 if the operation is successful,
+ * or 0 if there's a database connection error, a deletion error, or if the operation
+ * could not be acknowledged.
+ */
+async function deleteAllOtpsFromDb() {
+  if (!db) {
+    console.error('Database connection is not established. Cannot delete OTPs.');
+    return 0; // Return 0 if database is not connected
+  }
+
+  try {
+    const otpCollection = db.collection('otp');
+
+    // Use deleteMany with an empty filter to delete all documents in the collection
+    const result = await otpCollection.deleteMany({});
+
+    if (result.acknowledged) {
+      console.log(`Successfully deleted ${result.deletedCount} OTP entries from the "otp" collection.`);
+      return 1; // Return 1 on successful deletion (acknowledged)
+    } else {
+      console.error('Failed to delete OTP entries. Operation not acknowledged.');
+      return 0; // Return 0 if operation not acknowledged
+    }
+  } catch (error) {
+    console.error('Error deleting all OTPs from database:', error);
+    return 0; // Return 0 on any database error
+  }
+}
+
+/**
+ * API Endpoint: /upload-service-api/sendOTP/:variableEmailID
  *
  * This API generates a random 5-digit OTP, sends it to the specified email ID
- * using Nodemailer, and returns the generated OTP in the response.
+ * using Nodemailer, and stores the generated OTP in the "otp" MongoDB collection.
+ * It returns the generated OTP in the response if successful.
  */
 app.get('/upload-service-api/sendOTP/:variableEmailID', async (req, res) => {
-    // 1. Extract the email ID from the URL parameters
-    const recipientEmail = req.params.variableEmailID;
+  // 1. Extract the email ID from the URL parameters
+  const recipientEmail = req.params.variableEmailID;
 
-    // 2. Generate a random 5-digit number (OTP)
-    const otp = Math.floor(10000 + Math.random() * 90000);
-    console.log(`Generated OTP for email: ${recipientEmail}`);
-    storedOtp = otp;
-    storedOtpEmail = recipientEmail;
+  // 2. Generate a random 5-digit number (OTP)
+  const otp = Math.floor(10000 + Math.random() * 90000);
+  console.log(`Generated OTP: ${otp} for email: ${recipientEmail}`);
 
-    try {
-        // 3. Use the transporter to send that random number to {variableEmailID}
-        senderEmail = process.env.SMTP_USER;
-        await transporter.sendMail({
-            from: senderEmail, // Sender address (your email)
-            to: recipientEmail,             // Recipient email from URL parameter
-            subject: 'Your One-Time Password (OTP)', // Email subject
-            html: `
-                <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-                    <h2>Hello!</h2>
-                    <p>Your One-Time Password (OTP) for your recent request is:</p>
-                    <h1 style="color: #007bff; font-size: 2em; margin: 15px 0;">${otp}</h1>
-                    <p>This OTP is valid for a short period. Please do not share it with anyone.</p>
-                    <p>If you did not request this, please ignore this email.</p>
-                    <p>Regards,<br>No One</p>
-                </div>
-            ` // HTML body of the email
-        });
+  // REMOVED: Assignments to global variables storedOtp and storedOtpEmail.
+  // OTP will now be stored in the database.
 
-        console.log('Email sent successfully!');
-        // 4. Return the same number (OTP) to the calling script
-        res.status(200).json({
-            message: 'OTP sent successfully!',
-            email: recipientEmail
-        });
+  try {
+      // OPTIONAL BUT RECOMMENDED: Delete any existing OTPs before storing a new one
+      // This ensures only one active OTP exists at a time, preventing confusion or stale OTP usage.
+      const deleteResult = await deleteAllOtpsFromDb();
+      if (deleteResult === 0) {
+          console.warn('Could not clear old OTPs before generating a new one.');
+          // Decide if this should block the operation. For critical systems, it might.
+          // For now, it's a warning.
+      }
 
-    } catch (error) {
-        console.error('Error sending email:', error);
-        storedOtp = null;
-        storedOtpEmail = null;
-        res.status(500).json({
-            message: 'Failed to send OTP.',
-            error: error.message
-        });
-    }
+      // 3. Store the generated OTP in the MongoDB "otp" collection
+      const storeResult = await storeOtpInDb(otp);
+
+      if (storeResult === -1) {
+          console.error('Failed to store OTP in database. Aborting email send.');
+          return res.status(500).json({
+              message: 'Failed to store OTP in database.',
+              error: 'Database storage error.'
+          });
+      }
+
+      // 4. Use the transporter to send that random number to {variableEmailID}
+      const senderEmail = process.env.SMTP_USER; // Ensure SMTP_USER is set in your environment
+      await transporter.sendMail({
+          from: senderEmail, // Sender address (your email)
+          to: recipientEmail, // Recipient email from URL parameter
+          subject: 'Your One-Time Password (OTP)', // Email subject
+          html: `
+              <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                  <h2>Hello!</h2>
+                  <p>Your One-Time Password (OTP) for your recent request is:</p>
+                  <h1 style="color: #007bff; font-size: 2em; margin: 15px 0;">${otp}</h1>
+                  <p>This OTP is valid for a short period. Please do not share it with anyone.</p>
+                  <p>If you did not request this, please ignore this email.</p>
+                  <p>Regards,<br>No One</p>
+              </div>
+          ` // HTML body of the email
+      });
+
+      console.log('Email sent successfully!');
+      // 5. Return success message
+      res.status(200).json({
+          message: 'OTP sent successfully!',
+          email: recipientEmail,
+      });
+
+  } catch (error) {
+      console.error('Error sending email or storing OTP:', error);
+      // Do not clear OTP from DB here, as it might be used if email failed for non-storage reason
+      // The deleteAllOtpsFromDb() call at the beginning of the next send will handle it.
+      res.status(500).json({
+          message: 'Failed to send OTP or store it.',
+          error: error.message
+      });
+  }
 });
-
 // --- End of email send routine ---
 
 /**
@@ -496,34 +629,60 @@ app.get('/upload-service-api/isAdminEmail/:enteredEmail', (req, res) => {
 });
 
 /**
- * API Endpoint: /OTPverify/:passedOTP
+ * API Endpoint: /upload-service-api/OTPverify/:passedOTP
  *
- * Verifies the passed OTP against the locally stored OTP.
- * Returns success/fail and invalidates the stored OTP (regardless of match, as per request).
- *
- * !!! WARNING: This is for demonstration purposes ONLY. Not suitable for production.
+ * Verifies the passed OTP against the OTP stored in the "otp" MongoDB collection.
+ * If verification is successful, all OTP entries in the collection are deleted.
+ * If verification fails, all OTP entries are also deleted (as per original request behavior).
  */
-app.get('/upload-service-api/OTPverify/:passedOTP', (req, res) => {
-    const passedOtp = parseInt(req.params.passedOTP, 10); // Convert URL parameter to an integer
+app.get('/upload-service-api/OTPverify/:passedOTP', async (req, res) => { // Made async to use await
+  const passedOtp = parseInt(req.params.passedOTP, 10); // Convert URL parameter to an integer
 
-    console.log(`[${new Date().toLocaleTimeString()}] Verification attempt: Passed OTP = ${passedOtp}, Stored OTP = ${storedOtp}`);
+  console.log(`[${new Date().toLocaleTimeString()}] OTP Verification Attempt for Passed OTP: ${passedOtp}`);
 
-    // Check if an OTP was actually stored and if it matches the passed one
-    if (storedOtp !== null && passedOtp === storedOtp) {
-        console.log(`[${new Date().toLocaleTimeString()}] OTP verification successful for ${storedOtpEmail}!`);
-        // Invalidate the stored OTP after successful verification
-        storedOtp = null;
-        storedOtpEmail = null; // Clear associated email too
-        res.status(200).json({ success: true, message: 'OTP verified successfully!' });
-    } else {
-        // OTP does not match, or no OTP was currently stored/active
-        console.log(`[${new Date().toLocaleTimeString()}] OTP verification failed!`);
-        // Invalidate the OTP on failure as per your request, to prevent further attempts with the same OTP.
-        // In a real system, you might allow a few failed attempts or let it expire naturally.
-        storedOtp = null;
-        storedOtpEmail = null;
-        res.status(401).json({ success: false, message: 'Invalid OTP or not an active OTP.' });
-    }
+  let verificationSuccess = false;
+  let message = '';
+
+  try {
+      // 1. Read the most recently stored OTP from the database
+      const storedOtpInDb = await readLatestOtpFromDb();
+
+      console.log(`[${new Date().toLocaleTimeString()}] Stored OTP from DB: ${storedOtpInDb}`);
+
+      // 2. Check if an OTP was found in the DB and if it matches the passed OTP
+      if (storedOtpInDb !== -1 && passedOtp === storedOtpInDb) {
+          console.log(`[${new Date().toLocaleTimeString()}] OTP verification successful!`);
+          verificationSuccess = true;
+          message = 'OTP verified successfully!';
+      } else {
+          console.log(`[${new Date().toLocaleTimeString()}] OTP verification failed: Mismatch or no active OTP.`);
+          verificationSuccess = false;
+          message = 'Invalid OTP or no active OTP.';
+      }
+
+  } catch (error) {
+      console.error(`[${new Date().toLocaleTimeString()}] Error during OTP verification process:`, error);
+      verificationSuccess = false; // Ensure failure on error
+      message = 'An error occurred during verification.';
+  } finally {
+      // 3. Delete all OTP entries from the database, regardless of verification success or failure
+      // This invalidates the OTP after an attempt, preventing reuse.
+      const deleteResult = await deleteAllOtpsFromDb();
+      if (deleteResult === 1) {
+          console.log(`[${new Date().toLocaleTimeString()}] OTP entries cleared from database.`);
+      } else {
+          console.error(`[${new Date().toLocaleTimeString()}] Failed to clear OTP entries from database.`);
+          // Decide if you want to return a 500 here if deletion fails after a successful match.
+          // For now, it won't change the success status of verification itself.
+      }
+
+      // 4. Send the appropriate response
+      if (verificationSuccess) {
+          res.status(200).json({ success: true, message: message });
+      } else {
+          res.status(401).json({ success: false, message: message });
+      }
+  }
 });
 
 app.listen(port, () => {
