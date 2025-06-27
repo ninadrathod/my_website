@@ -1,5 +1,6 @@
-## Local Setup
+## Setting up the website
 
+### Local Setup
 To run this project locally, ensure you have Docker Desktop installed. Then:
 
 1.  Clone the repository and navigate to the `my_website` directory.
@@ -27,9 +28,6 @@ To run this project locally, ensure you have Docker Desktop installed. Then:
 * `make rebuild`: Stop, rebuild, and restart the containers.
 * `make destroy_project`: Stop and remove all containers and associated data.
                                                                                                  |
-### Command to access mongodb data from terminal window: 
-mongosh mongodb://admin:qwerty@localhost:27017
-
 ### Deploying Your Website with SSL/HTTPS
 
 To deploy your website with an SSL certificate, follow these steps:
@@ -37,6 +35,7 @@ To deploy your website with an SSL certificate, follow these steps:
 * **Acquire a Domain Name:** Obtain a registered domain name from a trusted provider.
 
 * **Frontend Configuration (`frontend/script.js`):**
+    * Get a server to deploy the website and note it's public ip address
     * Update the value of `const PUBLIC_IP`.
     * Set `PROD = true` within this file.
 
