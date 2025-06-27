@@ -3,11 +3,22 @@
 To run this project locally, ensure you have Docker Desktop installed. Then:
 
 1.  Clone the repository and navigate to the `my_website` directory.
-2.  Execute the initial build command:
+2.  SMTP server for generating OTP. I have used gmail's SMTP server for my localhost (You may go through this video for reference).
+3.  Create a .env file in ".upload-service" directory and add the following value based on your SMTP server configurations.
+    ```bash
+    # .env file for SMTP configuration
+    SMTP_HOST=smtp.gmail.com
+    SMTP_PORT=465
+    SMTP_SECURE=true
+    SMTP_USER=<your_email_id>@gmail.com
+    SMTP_PASS=<generated_smtp_password>
+    ADMIN_EMAILID=<email_id_where_you_would_receive_OTP_for_authentication>
+    ```
+4.  Execute the initial build command:
     ```bash
     make initial_build
     ```
-    This will make the backend accessible at `http://localhost:3001` and the frontend at `http://localhost:3000`.
+    Now, you should be able to access frontend through the localhost.
 
 ### Additional `make` Commands
 
