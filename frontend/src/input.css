@@ -189,11 +189,11 @@ html.lenis body {
 @layer components {
     
     .illustration-card {
-      @apply border-gray-500 bg-gray-100 border-1 overflow-hidden my-[2%] mx-[1%] w-[60%] md:w-[45%] lg:w-[22%] rounded-lg shadow-md;
+      @apply border-gray-500 bg-gray-100 border-1 overflow-hidden my-[2%] mx-[1%] w-[40%] lg:w-[22%] rounded-lg shadow-md;
     }
 
     .card {
-        @apply flex flex-col justify-center p-[3%] rounded-2xl w-[70%] lg:w-[25%] mx-5 border-1 border-gray-400 hover:bg-light-purple hover:border-palette-mid-dark-purple hover:text-dark-purple hover:shadow-2xl hover:scale-105 transition-all duration-100 ease-in-out;
+        @apply flex flex-col justify-center p-[3%] rounded-2xl w-[70%] lg:w-[30%] mx-5 border-1 border-gray-400 hover:bg-light-purple hover:border-palette-mid-dark-purple hover:text-dark-purple hover:shadow-2xl hover:scale-105 transition-all duration-100 ease-in-out;
     }
 
     .left {
