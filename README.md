@@ -32,10 +32,11 @@ To run this project locally, ensure you have Docker Desktop installed. Then:
 
 To deploy your website with an SSL certificate, follow these steps:
 
+* **Deploy your code on a server:** Also note its public IP address.
+
 * **Acquire a Domain Name:** Obtain a registered domain name from a trusted provider.
 
 * **Frontend Configuration (`frontend/script.js`):**
-    * Get a server to deploy the website and note it's public ip address
     * Update the value of `const PUBLIC_IP`.
     * Set `PROD = true` within this file.
 
