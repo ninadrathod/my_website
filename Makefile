@@ -43,7 +43,7 @@ destroy_project:
 	docker system prune -a --volumes -f # Aggressively prune everything
 	@echo "All Docker resources related to project destroyed."
 	@echo "Deleting residual files from host directories..."
-	rm -rf $(FRONTEND_DIR)/src/output.css
+	rm -rf $(FRONTEND_DIR)/src/output.css $(FRONTEND_DIR)/node_modules/
 	@echo "Clean-up complete."
 
 .PHONY: setup-images-dir initial_build build up down rebuild destroy_project

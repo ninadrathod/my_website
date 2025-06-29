@@ -810,7 +810,7 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
         throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
     }
 
-    const imageFileNames = await response.json(); // Parse the JSON response into an array of filenames
+    let imageFileNames = await response.json(); // Parse the JSON response into an array of filenames
 
     // Clear the loading message after successful fetch
     imageContainer.innerHTML = '';
@@ -822,6 +822,7 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
     }
 
     console.log('Image file names fetched:', imageFileNames);
+    imageFileNames = imageFileNames.reverse();
 
     // 2. Loop over the obtained list and dynamically create/display each image card
     imageFileNames.forEach(fileName => {
@@ -951,7 +952,7 @@ async function displayUploadedImages(containerId = 'image-gallery') {
         throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
     }
 
-    const imageFileNames = await response.json(); // Parse the JSON response into an array of filenames
+    let imageFileNames = await response.json(); // Parse the JSON response into an array of filenames
 
     // Clear the loading message after successful fetch
     imageContainer.innerHTML = '';
@@ -963,7 +964,7 @@ async function displayUploadedImages(containerId = 'image-gallery') {
     }
 
     console.log('Image file names fetched:', imageFileNames);
-
+    imageFileNames = imageFileNames.reverse();
     // 2. Loop over the obtained list and dynamically create/display each image card
     imageFileNames.forEach(fileName => {
       // Create a div for the card
