@@ -27,11 +27,11 @@ let db;
 
 async function connectMongo() 
 {
-  console.log('Attempting to connect to MongoDB with URI:', mongoUri);
+  //console.log('Attempting to connect to MongoDB with URI:', mongoUri);
   try {
     const client = await MongoClient.connect(mongoUri);
     db = client.db();
-    console.log('Connected to MongoDB');
+    //console.log('Connected to MongoDB');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
     console.error('Connection URI was:', mongoUri);
@@ -53,16 +53,16 @@ app.get('/health', (req, res) => {
    ---------------------------------------------------------------------------- */
 
 app.get('/backend-api/data', async (req, res) => {
-  console.log('Request received at /api/data');
+  //console.log('Request received at /api/data');
   try {
     if (!db) 
     {
-      console.log('Database connection is not established.');
+      //console.log('Database connection is not established.');
       return res.status(500).json({ error: 'Database connection not established.' });
     }
-    console.log('Database connection is established.');
+    //console.log('Database connection is established.');
     const resumeData = await db.collection('resume_data').find().toArray();
-    console.log('Fetched resume data:', resumeData.length);
+    //console.log('Fetched resume data:', resumeData.length);
     res.status(200).json({ "data": resumeData });
     return res;
   } catch (error) {
@@ -78,14 +78,14 @@ app.get('/backend-api/data', async (req, res) => {
 
 app.get('/backend-api/data/:category', async (req, res) => {
   const category = req.params.category;
-  console.log(`Request received at /api/data/${category}`);
+  //console.log(`Request received at /api/data/${category}`);
   try {
     if (!db) 
     {
-      console.log('Database connection is not established.');
+      //console.log('Database connection is not established.');
       return res.status(500).json({ error: 'Database connection not established.' });
     }
-    console.log('Database connection is established.');
+    //console.log('Database connection is established.');
     const resumeData = await db.collection('resume_data').find({ category: category }).toArray();
     res.status(200).json({ "data": resumeData });
     return res;
@@ -102,14 +102,14 @@ app.get('/backend-api/data/:category', async (req, res) => {
 
 app.get('/backend-api/metadata/:property', async (req, res) => {
   const property = req.params.property;
-  console.log(`Request received at /api/metadata/${property}`);
+  //console.log(`Request received at /api/metadata/${property}`);
   try {
     if (!db) 
     {
-      console.log('Database connection is not established.');
+      //console.log('Database connection is not established.');
       return res.status(500).json({ error: 'Database connection not established.' });
     }
-    console.log('Database connection is established.');
+    //console.log('Database connection is established.');
     // fetch all the data from resume_metadata collection with the exception of _id property
     const resumeMetadataArray = await db.collection('resume_metadata').find({}, { _id: 0 }).toArray(); 
     // condition: if array is returned by above find function and its length > 0 and it has the requested metadata property
@@ -136,5 +136,5 @@ app.get('/backend-api/metadata/:property', async (req, res) => {
    ---------------------------------------------------------------------------- */
 
 app.listen(port, () => {
-  console.log(`Backend server is running on ${port}`);
+  //console.log(`Backend server is running on ${port}`);
 });

@@ -30,11 +30,11 @@ let db;
 
 async function connectMongo() 
 {
-  console.log('Attempting to connect to MongoDB with URI:', mongoUri);
+  //console.log('Attempting to connect to MongoDB with URI:', mongoUri);
   try {
     const client = await MongoClient.connect(mongoUri);
     db = client.db();
-    console.log('Connected to MongoDB');
+    //console.log('Connected to MongoDB');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
     console.error('Connection URI was:', mongoUri);
@@ -55,7 +55,7 @@ connectMongo();
 // Change the route to accept sessionId as a query parameter
 app.get('/upload-service-api/doesTSexist', async (req, res) => {
   const { sessionId } = req.query; // Extract sessionId from query parameters
-  console.log(`Request received at /upload-service-api/doesTSexist for Session ID: ${sessionId}`);
+  //console.log(`Request received at /upload-service-api/doesTSexist for Session ID: ${sessionId}`);
 
   if (!sessionId) {
     console.error('Session ID is missing from query parameters.');
@@ -76,7 +76,7 @@ app.get('/upload-service-api/doesTSexist', async (req, res) => {
 
     // 3. Determine if an entry exists based on the count
     const exists = count > 0;
-    console.log(`Check for timestamp entry for Session ID '${sessionId}': ${exists ? 'Present' : 'Not Present'} (Count: ${count})`);
+    //console.log(`Check for timestamp entry for Session ID '${sessionId}': ${exists ? 'Present' : 'Not Present'} (Count: ${count})`);
 
     return res.status(200).json({ exists: exists });
 
@@ -97,7 +97,7 @@ app.get('/upload-service-api/doesTSexist', async (req, res) => {
     - The previous delete-all behavior is removed to support multiple active sessions.
    ---------------------------------------------------------------------------- */
 app.post('/upload-service-api/createTS', async (req, res) => {
-  console.log('Request received at /upload-service-api/createTS.');
+  //console.log('Request received at /upload-service-api/createTS.');
 
   try {
     // 1. Check if the database connection is established
@@ -121,7 +121,7 @@ app.post('/upload-service-api/createTS', async (req, res) => {
     const expiryTimestamp = currentTimestamp + SESSION_DURATION_MS; // Calculate expiry time
     const expiryDate = new Date(expiryTimestamp); // Convert to Date object for MongoDB storage
 
-    console.log(`Calculated expiry timestamp (value_x): ${expiryDate.toLocaleString()} for Session ID: ${sessionId}`);
+    //console.log(`Calculated expiry timestamp (value_x): ${expiryDate.toLocaleString()} for Session ID: ${sessionId}`);
 
     // Store or Update the value of "value_x" and "sessionId" in a document.
     // Use updateOne with upsert: true to create a new document if sessionId doesn't exist,
@@ -145,7 +145,7 @@ app.post('/upload-service-api/createTS', async (req, res) => {
     } else {
       message = `Timestamp for Session ID: ${sessionId} was already up-to-date.`;
     }
-    console.log(message);
+    //console.log(message);
 
     return res.status(200).json({
       success: true,
@@ -169,7 +169,7 @@ app.post('/upload-service-api/createTS', async (req, res) => {
     - The previous delete-all behavior is removed to protect other sessions.
    ---------------------------------------------------------------------------- */
    app.post('/upload-service-api/setTStoZero', async (req, res) => {
-    console.log('Request received at /upload-service-api/setTStoZero.');
+    //console.log('Request received at /upload-service-api/setTStoZero.');
   
     try {
       // 1. Check if the database connection is established
@@ -211,7 +211,7 @@ app.post('/upload-service-api/createTS', async (req, res) => {
         // This means a document for sessionId existed, but its value_x was already 0 (or equivalent)
         message = `Timestamp for Session ID '${sessionId}' was already 0 or no change needed.`;
       }
-      console.log(message);
+      //console.log(message);
   
       return res.status(200).json({
         success: true,
@@ -236,7 +236,7 @@ app.post('/upload-service-api/createTS', async (req, res) => {
    ---------------------------------------------------------------------------- */
    app.get('/upload-service-api/isSessionValid', async (req, res) => {
     const { sessionId } = req.query; // Extract sessionId from query parameters
-    console.log(`Request received at /upload-service-api/isSessionValid for Session ID: ${sessionId}`);
+    //console.log(`Request received at /upload-service-api/isSessionValid for Session ID: ${sessionId}`);
   
     if (!sessionId) {
       console.error('Session ID is missing from query parameters.');
@@ -261,7 +261,7 @@ app.post('/upload-service-api/createTS', async (req, res) => {
   
       // Check if document was found AND contains the value_x property
       if (!timestampDocument || !timestampDocument.value_x) {
-        console.log(`No valid timestamp entry found for Session ID: ${sessionId}. Session is not valid.`);
+        //console.log(`No valid timestamp entry found for Session ID: ${sessionId}. Session is not valid.`);
         return res.status(200).json({ isValid: false, reason: "No timestamp found for this session ID" });
       }
   
@@ -270,10 +270,10 @@ app.post('/upload-service-api/createTS', async (req, res) => {
       // 4. Compare the two timestamps: if cur > set_x return false, else return true
       const isValid = cur < set_x;
       
-      console.log(`For Session ID: ${sessionId}`);
-      console.log(`Current Time (cur): ${new Date(cur).toLocaleString()}`);
-      console.log(`Expiry Time (set_x): ${new Date(set_x).toLocaleString()}`);
-      console.log(`Session Valid: ${isValid}`);
+      //console.log(`For Session ID: ${sessionId}`);
+      //console.log(`Current Time (cur): ${new Date(cur).toLocaleString()}`);
+      //console.log(`Expiry Time (set_x): ${new Date(set_x).toLocaleString()}`);
+      //console.log(`Session Valid: ${isValid}`);
   
       // If session is found but expired, you might want to return an additional reason
       if (!isValid) {
@@ -295,7 +295,7 @@ app.post('/upload-service-api/createTS', async (req, res) => {
 const imagesDir = path.join(__dirname, 'images');
 if (!fs.existsSync(imagesDir)) {
     fs.mkdirSync(imagesDir, { recursive: true });
-    console.log(`Created directory: ${imagesDir}`);
+    //console.log(`Created directory: ${imagesDir}`);
 }
 
 // Serve images from the /images directory as static files ---
@@ -352,7 +352,7 @@ app.get('/health', (req, res) => {
 
 // --- Image Upload Route ---
 app.post('/upload-service-api/upload', (req, res) => {
-  console.log('Image upload request received.');
+  //console.log('Image upload request received.');
   upload(req, res, (err) => {
     if (err) {
       console.error('Upload error:', err);
@@ -361,7 +361,7 @@ app.post('/upload-service-api/upload', (req, res) => {
       if (req.file == undefined) {
         res.status(400).send('Error: No File Selected!');
       } else {
-        console.log(`File uploaded: ${req.file.filename}`);
+        //console.log(`File uploaded: ${req.file.filename}`);
         res.status(200).send(`File uploaded successfully: ${req.file.filename}`);
       }
     }
@@ -400,7 +400,7 @@ app.delete('/upload-service-api/deleteImage/:image_name', (req, res) => {
               console.error(`[${new Date().toLocaleTimeString()}] Error deleting image '${imageName}':`, err);
               return res.status(500).json({ success: false, message: 'Failed to delete image.' });
           }
-          console.log(`[${new Date().toLocaleTimeString()}] Image deleted successfully: ${imageName}`);
+          ////console.log`[${new Date().toLocaleTimeString()}] Image deleted successfully: ${imageName}`);
           res.status(200).json({ success: true, message: `Image '${imageName}' deleted successfully.` });
       });
   });
@@ -448,7 +448,7 @@ async function storeOtpInDb(otpNumber) {
     });
 
     if (result.acknowledged && result.insertedId) {
-      console.log(`OTP '${otpNumber}' stored successfully with ID: ${result.insertedId}`);
+      //console.log`OTP '${otpNumber}' stored successfully with ID: ${result.insertedId}`);
       return otpNumber; // Return the stored number on success
     } else {
       console.error(`Failed to store OTP '${otpNumber}'. Insert operation not acknowledged or no ID returned.`);
@@ -487,10 +487,10 @@ async function readLatestOtpFromDb() {
 
     // Check if a document was found and if it contains a valid OTP number
     if (latestOtpDocument && typeof latestOtpDocument.otp === 'number') {
-      console.log(`Successfully retrieved latest OTP: ${latestOtpDocument.otp}`);
+      //console.log`Successfully retrieved latest OTP: ${latestOtpDocument.otp}`);
       return latestOtpDocument.otp;
     } else {
-      console.log('No valid OTP found in the "otp" collection.');
+      //console.log'No valid OTP found in the "otp" collection.');
       return -1;
     }
   } catch (error) {
@@ -520,7 +520,7 @@ async function deleteAllOtpsFromDb() {
     const result = await otpCollection.deleteMany({});
 
     if (result.acknowledged) {
-      console.log(`Successfully deleted ${result.deletedCount} OTP entries from the "otp" collection.`);
+      //console.log`Successfully deleted ${result.deletedCount} OTP entries from the "otp" collection.`);
       return 1; // Return 1 on successful deletion (acknowledged)
     } else {
       console.error('Failed to delete OTP entries. Operation not acknowledged.');
@@ -545,7 +545,7 @@ app.get('/upload-service-api/sendOTP/:variableEmailID', async (req, res) => {
 
   // 2. Generate a random 5-digit number (OTP)
   const otp = Math.floor(10000 + Math.random() * 90000);
-  console.log(`Generated OTP: ${otp} for email: ${recipientEmail}`);
+  //console.log`Generated OTP: ${otp} for email: ${recipientEmail}`);
 
   // REMOVED: Assignments to global variables storedOtp and storedOtpEmail.
   // OTP will now be stored in the database.
@@ -589,7 +589,7 @@ app.get('/upload-service-api/sendOTP/:variableEmailID', async (req, res) => {
           ` // HTML body of the email
       });
 
-      console.log('Email sent successfully!');
+      //console.log('Email sent successfully!');
       // 5. Return success message
       res.status(200).json({
           message: 'OTP sent successfully!',
@@ -619,7 +619,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAILID; // Place this near your global va
 
 app.get('/upload-service-api/isAdminEmail/:enteredEmail', (req, res) => {
     const enteredEmail = req.params.enteredEmail.toLowerCase(); // Convert to lowercase for case-insensitive comparison
-    console.log(`[${new Date().toLocaleTimeString()}] Checking if '${enteredEmail}' is admin email.`);
+    //console.log(`[${new Date().toLocaleTimeString()}] Checking if '${enteredEmail}' is admin email.`);
 
     if (enteredEmail === ADMIN_EMAIL.toLowerCase()) {
         res.status(200).json({ success: true, message: 'Email is an admin email.' });
@@ -638,7 +638,7 @@ app.get('/upload-service-api/isAdminEmail/:enteredEmail', (req, res) => {
 app.get('/upload-service-api/OTPverify/:passedOTP', async (req, res) => { // Made async to use await
   const passedOtp = parseInt(req.params.passedOTP, 10); // Convert URL parameter to an integer
 
-  console.log(`[${new Date().toLocaleTimeString()}] OTP Verification Attempt for Passed OTP: ${passedOtp}`);
+  //console.log(`[${new Date().toLocaleTimeString()}] OTP Verification Attempt for Passed OTP: ${passedOtp}`);
 
   let verificationSuccess = false;
   let message = '';
@@ -647,15 +647,15 @@ app.get('/upload-service-api/OTPverify/:passedOTP', async (req, res) => { // Mad
       // 1. Read the most recently stored OTP from the database
       const storedOtpInDb = await readLatestOtpFromDb();
 
-      console.log(`[${new Date().toLocaleTimeString()}] Stored OTP from DB: ${storedOtpInDb}`);
+      //console.log(`[${new Date().toLocaleTimeString()}] Stored OTP from DB: ${storedOtpInDb}`);
 
       // 2. Check if an OTP was found in the DB and if it matches the passed OTP
       if (storedOtpInDb !== -1 && passedOtp === storedOtpInDb) {
-          console.log(`[${new Date().toLocaleTimeString()}] OTP verification successful!`);
+          //console.log(`[${new Date().toLocaleTimeString()}] OTP verification successful!`);
           verificationSuccess = true;
           message = 'OTP verified successfully!';
       } else {
-          console.log(`[${new Date().toLocaleTimeString()}] OTP verification failed: Mismatch or no active OTP.`);
+          //console.log(`[${new Date().toLocaleTimeString()}] OTP verification failed: Mismatch or no active OTP.`);
           verificationSuccess = false;
           message = 'Invalid OTP or no active OTP.';
       }
@@ -669,7 +669,7 @@ app.get('/upload-service-api/OTPverify/:passedOTP', async (req, res) => { // Mad
       // This invalidates the OTP after an attempt, preventing reuse.
       const deleteResult = await deleteAllOtpsFromDb();
       if (deleteResult === 1) {
-          console.log(`[${new Date().toLocaleTimeString()}] OTP entries cleared from database.`);
+          //console.log(`[${new Date().toLocaleTimeString()}] OTP entries cleared from database.`);
       } else {
           console.error(`[${new Date().toLocaleTimeString()}] Failed to clear OTP entries from database.`);
           // Decide if you want to return a 500 here if deletion fails after a successful match.
@@ -686,5 +686,5 @@ app.get('/upload-service-api/OTPverify/:passedOTP', async (req, res) => { // Mad
 });
 
 app.listen(port, () => {
-  console.log(`Upload-service server listening at ${port}`);
+  //console.log(`Upload-service server listening at ${port}`);
 });

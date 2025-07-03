@@ -81,7 +81,7 @@ function checkIfSessionIdExists() {
   const SESSION_ID_KEY = 'CurrentSessionID';
   const value = localStorage.getItem(SESSION_ID_KEY);
   const exists = value !== null;
-  console.log(`'${SESSION_ID_KEY}' exists in cache: ${exists}`);
+  //console.log(`'${SESSION_ID_KEY}' exists in cache: ${exists}`);
   return exists;
 }
 
@@ -94,9 +94,9 @@ function readSessionId() {
   const SESSION_ID_KEY = 'CurrentSessionID';
   const sessionId = localStorage.getItem(SESSION_ID_KEY);
   if (sessionId) {
-    console.log(`Read '${SESSION_ID_KEY}' from cache: ${sessionId}`);
+    //console.log(`Read '${SESSION_ID_KEY}' from cache: ${sessionId}`);
   } else {
-    console.log(`'${SESSION_ID_KEY}' not found in cache.`);
+    //console.log(`'${SESSION_ID_KEY}' not found in cache.`);
   }
   return sessionId;
 }
@@ -116,9 +116,9 @@ function createSessionId() { // Renamed from createSessionId to better reflect i
     // If no ID is found, generate a new one
     sessionId = generateUUID(); // Assuming generateUUID() is defined elsewhere
     localStorage.setItem(SESSION_ID_KEY, sessionId); // Store the new ID
-    console.log(`No existing '${SESSION_ID_KEY}' found. Created and stored new ID: ${sessionId}`);
+    //console.log(`No existing '${SESSION_ID_KEY}' found. Created and stored new ID: ${sessionId}`);
   } else {
-    console.log(`Existing '${SESSION_ID_KEY}' found: ${sessionId}`);
+    //console.log(`Existing '${SESSION_ID_KEY}' found: ${sessionId}`);
   }
   return sessionId;
 }
@@ -146,7 +146,7 @@ async function doesVariableExistInCache() {
   }
 
   try {
-      console.log(`Checking for timestamp existence via API: ${apiUrl}`);
+      //console.log(`Checking for timestamp existence via API: ${apiUrl}`);
       const response = await fetch(apiUrl);
 
       if (!response.ok) {
@@ -158,10 +158,10 @@ async function doesVariableExistInCache() {
       const data = await response.json(); // Expected: { exists: true/false }
 
       if (data.exists === true) {
-          console.log(`Timestamp entry DOES exist for session ID '${currentSessionId}' in server-side cache.`);
+          //console.log(`Timestamp entry DOES exist for session ID '${currentSessionId}' in server-side cache.`);
           return true;
       } else {
-          console.log(`Timestamp entry does NOT exist for session ID '${currentSessionId}' in server-side cache.`);
+          //console.log(`Timestamp entry does NOT exist for session ID '${currentSessionId}' in server-side cache.`);
           return false;
       }
   } catch (error) {
@@ -194,7 +194,7 @@ async function storeExpiryTimestamp() {
   }
 
   try {
-      console.log(`Sending request to create/reset timestamp for Session ID '${currentSessionId}' via API: ${apiUrl}`);
+      //console.log(`Sending request to create/reset timestamp for Session ID '${currentSessionId}' via API: ${apiUrl}`);
       const response = await fetch(apiUrl, {
           method: 'POST', // The API is a POST endpoint
           headers: {
@@ -212,7 +212,7 @@ async function storeExpiryTimestamp() {
       const data = await response.json(); // Expected: { success: true, message: ..., expiresAt: ... }
 
       if (data.success) {
-          console.log(`Server-side timestamp stored successfully for session '${currentSessionId}'. Expires at: ${new Date(data.expiresAt).toLocaleString()}`);
+          //console.log(`Server-side timestamp stored successfully for session '${currentSessionId}'. Expires at: ${new Date(data.expiresAt).toLocaleString()}`);
           return true;
       } else {
           console.error("Server-side timestamp storage failed:", data.message);
@@ -250,7 +250,7 @@ async function setExpiryTimestampToZero() {
 
 
   try {
-      console.log(`Sending request to set timestamp to zero for Session ID '${currentSessionId}' via API: ${apiUrl}`);
+      //console.log(`Sending request to set timestamp to zero for Session ID '${currentSessionId}' via API: ${apiUrl}`);
       const response = await fetch(apiUrl, {
           method: 'POST', // The API is a POST endpoint
           headers: {
@@ -268,7 +268,7 @@ async function setExpiryTimestampToZero() {
       const data = await response.json(); // Expected: { success: true, message: ..., value_x: ..., sessionId: ... }
 
       if (data.success) {
-          console.log(`Server-side timestamp successfully set to zero for session '${currentSessionId}'. Session is now invalid.`);
+          //console.log(`Server-side timestamp successfully set to zero for session '${currentSessionId}'. Session is now invalid.`);
           return true;
       } else {
           console.error("Server-side timestamp set to zero failed:", data.message);
@@ -304,7 +304,7 @@ async function isSessionValid() {
   }
 
   try {
-      console.log(`Checking session validity for Session ID '${currentSessionId}' via API: ${apiUrl}`);
+      //console.log(`Checking session validity for Session ID '${currentSessionId}' via API: ${apiUrl}`);
       const response = await fetch(apiUrl);
 
       if (!response.ok) {
@@ -316,10 +316,10 @@ async function isSessionValid() {
       const data = await response.json(); // Expected: { isValid: true/false, reason?: string }
       
       if (data.isValid === true) {
-          console.log(`Server-side session for Session ID '${currentSessionId}' is valid.`);
+          //console.log(`Server-side session for Session ID '${currentSessionId}' is valid.`);
           return true;
       } else {
-          console.log(`Server-side session for Session ID '${currentSessionId}' is NOT valid. Reason: ${data.reason || 'Unknown'}`);
+          //console.log(`Server-side session for Session ID '${currentSessionId}' is NOT valid. Reason: ${data.reason || 'Unknown'}`);
           return false;
       }
 
@@ -821,7 +821,7 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
         return; // Exit if no images are found
     }
 
-    console.log('Image file names fetched:', imageFileNames);
+    ////console.log('Image file names fetched:', imageFileNames);
     imageFileNames = imageFileNames.reverse();
 
     // 2. Loop over the obtained list and dynamically create/display each image card
@@ -861,11 +861,11 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
           const sessionIsValidBackend = await isSessionValid(); 
           if(!sessionIsValidBackend){
             await setExpiryTimestampToZero();
-            console.log("session is expired");
+            //console.log("session is expired");
             const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content_for_admin.html"]');
             if (illustrationGalleryTabToggle) {
               illustrationGalleryTabToggle.dataset.tabTarget = "illustrations_tab_content.html";
-              console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
+              //console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
             } else {
               console.error("Illustration Gallery tab toggle element not found!");
             }
@@ -873,17 +873,17 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
             return;
           }
           else{
-            console.log("session is active, you may proceed to delete the image.");
+            //console.log("session is active, you may proceed to delete the image.");
           }
 
-        console.log(`Attempting to delete image: ${fileName}`);
+        //console.log(`Attempting to delete image: ${fileName}`);
         try {
             let deleteApiUrl = `${UPLOAD_SERVICE_API_URL}/upload-service-api/deleteImage/${fileName}`;
             if(PROD){
               deleteApiUrl = `/upload-service-api/deleteImage/${fileName}`;
             }
 
-            console.log('DELETE request to:', deleteApiUrl);
+            //console.log('DELETE request to:', deleteApiUrl);
 
             const response = await fetch(deleteApiUrl, {
                 method: 'DELETE',
@@ -891,7 +891,7 @@ async function displayUploadedImagesForAdmin(containerId = 'image-gallery') {
 
             if (response.ok) {
                 const result = await response.text(); // Assuming backend sends text response
-                console.log(`Successfully deleted ${fileName}:`, result);
+                //console.log(`Successfully deleted ${fileName}:`, result);
                 card.remove(); // Remove the card from the DOM immediately upon successful deletion
             } else {
                 const errorText = await response.text();
@@ -963,7 +963,7 @@ async function displayUploadedImages(containerId = 'image-gallery') {
         return; // Exit if no images are found
     }
 
-    console.log('Image file names fetched:', imageFileNames);
+    //console.log('Image file names fetched:', imageFileNames);
     imageFileNames = imageFileNames.reverse();
     // 2. Loop over the obtained list and dynamically create/display each image card
     imageFileNames.forEach(fileName => {
@@ -1120,7 +1120,7 @@ function showEmailWindow() {
           const data = await response.json();
 
           if (response.ok) {
-              console.log('OTP API Response:', data);
+              //console.log('OTP API Response:', data);
               displayPanelMessage('success', `OTP sent to ${adminEmail}.`);
               showOtpWindow(); // Move to the OTP window
           } else {
@@ -1173,14 +1173,14 @@ function showOtpWindow() {
 
           if (response.ok && data.success) {
               displayPanelMessage('success', `OTP verified successfully! Welcome.`);
-              console.log('Server-side verification SUCCESS!');
+              //console.log('Server-side verification SUCCESS!');
               
               // Await the asynchronous function call and capture its success
               const timestampAdded = await storeExpiryTimestamp();
 
               // Add a console message based on the result
               if (timestampAdded) {
-                  console.log("Server-side timestamp successfully added/updated.");
+                  //console.log("Server-side timestamp successfully added/updated.");
               } else {
                   console.error("Failed to add/update server-side timestamp.");
               }
@@ -1188,7 +1188,7 @@ function showOtpWindow() {
               const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content.html"]');
               if (illustrationGalleryTabToggle) {
                 illustrationGalleryTabToggle.dataset.tabTarget = "illustrations_tab_content_for_admin.html";
-                console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
+                //console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
               } else {
                 console.error("Illustration Gallery tab toggle element not found!");
               }
@@ -1226,7 +1226,7 @@ function closePanel() {
 // ======================= DOMContentLoaded Listener ============================
 document.addEventListener('DOMContentLoaded', async () => {
 
-  console.log('DOMContentLoaded: Page loaded, starting initialization.');
+  //console.log('DOMContentLoaded: Page loaded, starting initialization.');
 
   await Promise.all([
     fetchAndDisplayProperty('name', 'name-display'),
@@ -1258,21 +1258,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (tsEntryExists) {
     const sessionIsValid = await isSessionValid(); // Await the async call
     if(sessionIsValid)
-    { console.log("Session still active");
+    { //console.log("Session still active");
       const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content.html"]');
       if (illustrationGalleryTabToggle) {
         illustrationGalleryTabToggle.dataset.tabTarget = "illustrations_tab_content_for_admin.html";
-        console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
+        //console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
       } else {
         console.error("Illustration Gallery tab toggle element not found!");
       }
     }
     else
     { await setExpiryTimestampToZero(); 
-      console.log("Session expired");    
+      //console.log("Session expired");    
     }    
   } else {
-      console.log("No active sessions");
+      //console.log("No active sessions");
       await setExpiryTimestampToZero(); 
   }
 });
@@ -1281,7 +1281,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // This function contains all JavaScript logic for the "My Info" tab content
 async function initializeMyInfoContent() {
-  console.log("Initializing My Info tab content...");
+  //console.log("Initializing My Info tab content...");
   
   // Fetch and display card categories
   await Promise.all([
@@ -1301,7 +1301,7 @@ async function initializeMyInfoContent() {
 async function initializeIllustrationFormAndGallery() {
   
   // ------------------- upload image form and its operations ---------------------------------
-  console.log("Initializing Illustration Gallery tab content for admin.");
+  //console.log("Initializing Illustration Gallery tab content for admin.");
   const uploadForm = document.getElementById('uploadForm');
   const uploadResponseDiv = document.getElementById('uploadResponse');
   const imageUploadInput = document.getElementById('imageUpload');
@@ -1318,16 +1318,16 @@ async function initializeIllustrationFormAndGallery() {
 
   uploadForm.addEventListener('submit', async (event) => {
       event.preventDefault(); // Prevent the default form submission (page reload)
-      console.log("Upload form submitted!");
+      //console.log("Upload form submitted!");
       // ------- check if the session is still active -------------
       const sessionIsValid = await isSessionValid(); 
       if(!sessionIsValid){
         await setExpiryTimestampToZero();
-        console.log("session is expired");
+        //console.log("session is expired");
         const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content_for_admin.html"]');
         if (illustrationGalleryTabToggle) {
           illustrationGalleryTabToggle.dataset.tabTarget = "illustrations_tab_content.html";
-          console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
+          //console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
         } else {
           console.error("Illustration Gallery tab toggle element not found!");
         }
@@ -1335,7 +1335,7 @@ async function initializeIllustrationFormAndGallery() {
         return;
       }
       else{
-        console.log("session is active, you may upload the illustration");
+        //console.log("session is active, you may upload the illustration");
       }
 
       // Clear previous response message
@@ -1344,7 +1344,7 @@ async function initializeIllustrationFormAndGallery() {
 
       // Check if a file is selected
       if (imageUploadInput.files.length === 0) {
-          console.log('Please select an image to upload.');
+          //console.log('Please select an image to upload.');
           uploadResponseDiv.style.color = 'red';
           uploadResponseDiv.textContent = 'Please select an image to upload.';
           return;
@@ -1390,14 +1390,14 @@ async function initializeIllustrationFormAndGallery() {
   const logoutButton = document.getElementById('logoutButton'); 
 
   logoutButton.addEventListener('click', async () => {
-    console.log("Log Out button clicked!");
+    //console.log("Log Out button clicked!");
     // ------- check if the session is still active -------------
     await setExpiryTimestampToZero();
-    console.log("Logged out");
+    //console.log("Logged out");
       const illustrationGalleryTabToggle = document.querySelector('.tabs__toggle[data-tab-target="illustrations_tab_content_for_admin.html"]');
       if (illustrationGalleryTabToggle) {
         illustrationGalleryTabToggle.dataset.tabTarget = "illustrations_tab_content.html";
-        console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
+        //console.log("data-tab-target changed to:", illustrationGalleryTabToggle.dataset.tabTarget);
       } else {
         console.error("Illustration Gallery tab toggle element not found!");
       }
@@ -1413,7 +1413,7 @@ async function initializeIllustrationFormAndGallery() {
 async function initializeIllustrationGallery() {
   
   // ------------------- upload image form and its operations ---------------------------------
-  console.log("Initializing Illustration Gallery tab content for general user.");
+  //console.log("Initializing Illustration Gallery tab content for general user.");
   
   // ------------------ display uploaded images --------------------------
   await displayUploadedImages();
