@@ -59,3 +59,19 @@ To deploy your website with an SSL certificate, follow these steps:
     * Replace the content of your `nginx/Dockerfile` with the production-ready Dockerfile from `nginx_for_prod/Dockerfile`.
 
 * **Final Project Rebuild:** Rebuild your Docker project to apply the updated Nginx configuration and activate HTTPS.
+
+* **Changes to update_website.sh:** change the value of WEBSITE_DIR to actual directory location of "my_website" directory*
+
+* **Change the script permission:** chmod +x update_script.sh
+
+* **Commit all the changes locally, DO NOT PUSH**
+
+* **To make sure git pull does not modify local changes**:
+git update-index --skip-worktree nginx/nginx.conf
+git update-index --skip-worktree nginx/Dockerfile
+git update-index --skip-worktree update_website.sh
+
+* **Scheduling update_website.sh to pull new changes every day at 12 AM**:
+Run "crontab -e" to open crontab
+Add following line to the file "0 0 * * * <path_to_my_website>/update_website.sh"
+Save and close
