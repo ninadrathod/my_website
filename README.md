@@ -48,8 +48,9 @@ To deploy your website with an SSL certificate, follow these steps:
 * **Initial Project Build (HTTP):** Build your project using the provided `Makefile`. Please note that your website will initially be accessible via HTTP (port 80).
 
 * **Generate SSL Certificate:**
-    * On your server, gain interactive access to the `nginx` Docker container.
-    * Run the Certbot command (e.g., `cert --nginx` or a similar Certbot command configured for your setup) to generate the SSL certificate and private key. This command will typically create two files: `fullchain.pem` (the SSL certificate) and `privkey.pem` (the corresponding private key).
+    * On your server, gain interactive access to the `nginx` Docker container: $docker ps exec -it my-website-nginx "/bin/sh"
+    * Install certbot: $apk add certbot certbot-nginx
+    * Run the Certbot command (e.g., `certbot --nginx` or a similar Certbot command configured for your setup) to generate the SSL certificate and private key. This command will typically create two files: `fullchain.pem` (the SSL certificate) and `privkey.pem` (the corresponding private key).
 
 * **Copy Certificates:** Copy the content from the newly generated `fullchain.pem` and `privkey.pem` files into `nginx/fullchain.pem` and `nginx/privkey.pem` on your server's host machine, respectively.
 
