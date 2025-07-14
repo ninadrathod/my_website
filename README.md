@@ -24,8 +24,8 @@ To run this project locally, ensure you have Docker Desktop installed. Then:
 ### Additional `make` Commands
 
 * `make down`: Stop the running containers.
-* `make up`: Start the containers.
-* `make rebuild`: Stop, rebuild, and restart the containers.
+* `make up PROD=true`: Start the containers.
+* `make rebuild PROD=true`: Stop, rebuild, and restart the containers.
 * `make destroy_project`: Stop and remove all containers and associated data.
                                                                                                  |
 ### Deploying Your Website with SSL/HTTPS
