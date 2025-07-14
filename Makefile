@@ -2,6 +2,10 @@
 FRONTEND_DIR := frontend
 UPLOAD_SERVICE_DIR := upload-service
 
+# Define production flag (set to true for production, false for development)
+# To run in production mode: make build PROD=true
+PROD ?= false
+
 setup-images-dir:
 	@echo "Ensuring upload-service/images directory exists and has write permission..."
 	@if [ ! -d "$(UPLOAD_SERVICE_DIR)/images" ]; then \
@@ -13,10 +17,12 @@ setup-images-dir:
 	chmod 777 "$(UPLOAD_SERVICE_DIR)/images"
 
 # Target to build and start the Docker Compose application
-build: 
+build:
 	@echo "Building and starting Docker Compose application..."
 	docker-compose up -d --build
+ifeq ($(PROD), false)
 	docker exec -d -it frontend npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch
+endif
 	python3 load_data.py
 	@echo "Docker Compose application is running."
 
@@ -25,7 +31,9 @@ initial_build: setup-images-dir build
 up:
 	@echo "Building and starting Docker Compose application..."
 	docker-compose up -d
+ifeq ($(PROD), false)
 	docker exec -d -it frontend npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch
+endif
 	@echo "Docker Compose application is running."
 
 # Optional target to stop and remove containers

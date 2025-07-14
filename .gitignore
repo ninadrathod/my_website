@@ -7,7 +7,6 @@ upload-service/images/
 upload-service/.env
 frontend/node_modules/
 frontend/package-lock.json
-frontend/src/output.css
 venv/
 roughwork.txt
 nginx/certificate.crt
