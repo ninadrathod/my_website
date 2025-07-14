@@ -48,7 +48,7 @@ else
         source venv/bin/activate || { echo "Failed to activate virtual environment. Exiting rebuild process."; exit 1; }
 
         # --- Execute make rebuild ---
-        make rebuild
+        make rebuild PROD=true
         MAKE_STATUS=$?
 
         # Deactivate the virtual environment to clean up (optional)
