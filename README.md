@@ -17,7 +17,7 @@ To run this project locally, ensure you have Docker Desktop installed. Then:
     ```
 4.  Execute the initial build command:
     ```bash
-    make initial_build
+    make initial_build PROD=true
     ```
     Now, you should be able to access frontend through the localhost.
 
@@ -60,8 +60,6 @@ To deploy your website with an SSL certificate, follow these steps:
 
 * **Final Project Rebuild:** Rebuild your Docker project to apply the updated Nginx configuration and activate HTTPS.
 
-* **Changes to update_website.sh:** change the value of WEBSITE_DIR to actual directory location of "my_website" directory*
-
 * **Change the script permission:**
   ```bash
   chmod +x update_script.sh
@@ -73,9 +71,8 @@ To deploy your website with an SSL certificate, follow these steps:
 ```bash
   git update-index --skip-worktree nginx/nginx.conf
   git update-index --skip-worktree nginx/Dockerfile
-  git update-index --skip-worktree update_website.sh
 ```
 * **Scheduling update_website.sh to pull new changes every day at 12 AM**:
     * Run `crontab -e` to open crontab
-    * Add following line to the file `0 0 * * * <path_to_my_website>/update_website.sh`
+    * Add following line to the file `0 0 * * * <path_to_my_website>/update_website.sh <path_to_my_website>`
     * Save and close
