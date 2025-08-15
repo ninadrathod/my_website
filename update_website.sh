@@ -71,14 +71,4 @@ else
     fi
 fi
 
-# -----------------------------------------------------------------------------
-## Clear MongoDB Container Logs
-# These commands will run every time the script executes, regardless of git pull outcome or make rebuild.
-echo "Stopping, removing, and restarting MongoDB container to clear logs..."
-docker-compose stop mongodb || { echo "Failed to stop mongodb. Continuing..."; } # Stop just the mongodb service
-docker-compose rm -f mongodb || { echo "Failed to remove mongodb. Continuing..."; } # Remove the mongodb container (force removal)
-docker-compose up -d mongodb || { echo "Failed to start mongodb. Please check logs."; exit 1; } # Start a new mongodb container
-echo "MongoDB container restarted and logs cleared."
-# -----------------------------------------------------------------------------
-
 echo "--- Script finished at $(date) ---"

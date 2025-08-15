@@ -63,6 +63,7 @@ To deploy your website with an SSL certificate, follow these steps:
 * **Change the script permission:**
   ```bash
   chmod +x update_script.sh
+  chmod +x restart_mongodb.sh
   ```
 
 * **Commit all the changes locally, DO NOT PUSH**
@@ -75,4 +76,5 @@ To deploy your website with an SSL certificate, follow these steps:
 * **Scheduling update_website.sh to pull new changes every day at 12 AM**:
     * Run `crontab -e` to open crontab
     * Add following line to the file `0 0 * * * <path_to_my_website>/update_website.sh <path_to_my_website>`
+    * Add following line to the file `30 * * * * <path_to_my_website>/restart_mongodb.sh <path_to_my_website>`
     * Save and close
