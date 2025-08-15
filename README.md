@@ -46,6 +46,9 @@ To deploy your website with an SSL certificate, follow these steps:
 * **DNS Mapping:** Map your domain name(s) to your server's public IP address using A/AAAA records in your DNS settings.
 
 * **Initial Project Build (HTTP):** Build your project using the provided `Makefile`. Please note that your website will initially be accessible via HTTP (port 80).
+  ```bash
+    make initial_build PROD=true
+    ```
 
 * **Generate SSL Certificate:**
     * On your server, gain interactive access to the `nginx` Docker container: $docker ps exec -it my-website-nginx "/bin/sh"
@@ -61,6 +64,9 @@ To deploy your website with an SSL certificate, follow these steps:
     * Replace <public_IP_address> in nginx/nginx.conf with your actual public IP address
 
 * **Final Project Rebuild:** Rebuild your Docker project to apply the updated Nginx configuration and activate HTTPS.
+  ```bash
+    make rebuild PROD=true
+    ```
 
 * **Change the script permission:**
   ```bash
