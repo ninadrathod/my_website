@@ -57,6 +57,8 @@ To deploy your website with an SSL certificate, follow these steps:
 * **Update Nginx Configuration for Production:**
     * Replace the content of your `nginx/nginx.conf` with the production-ready configuration from `nginx_for_prod/nginx.conf`.
     * Replace the content of your `nginx/Dockerfile` with the production-ready Dockerfile from `nginx_for_prod/Dockerfile`.
+    * Replace <domain_name> in both the above files with your actual domain name ex: ninad.meverse.in.
+    * Replace <public_IP_address> in nginx/nginx.conf with your actual public IP address
 
 * **Final Project Rebuild:** Rebuild your Docker project to apply the updated Nginx configuration and activate HTTPS.
 
