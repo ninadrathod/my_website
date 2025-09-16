@@ -77,6 +77,13 @@
     },
     {
       "category": "projects",
+      "project_title": "CoFlow",
+      "type": "Independent",
+      "course_or_domain": "Domain: Parallel Processing",
+      "project_description": "CoFlow is a Python project designed to simplify the execution of tasks in parallel using a custom class. It helps you manage and trigger processes concurrently, which can significantly speed up your workflows.  It leverages multiprocessing to run tasks concurrently, managing dependencies and ensuring safe, reliable operation."
+    },
+    {
+      "category": "projects",
       "project_title": "Linux Kernel Compilation Performance Benchmarking",
       "type": "Academic",
       "course_or_domain": "Course: Contemporary Computing Platforms",
