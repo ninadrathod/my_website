@@ -97,7 +97,10 @@ services:
     depends_on:
       - frontend # Nginx needs the frontend to be available to proxy requests
     restart: always
-  
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot  
   
 networks:
   my-website-network:
