@@ -19,7 +19,7 @@ To run this project locally, ensure you have Docker Desktop installed. Then:
     ```bash
     make initial_build PROD=true
     ```
-    Now, you should be able to access frontend through the localhost.
+    Now, you should be able to access the frontend through the localhost.
 
 ### Additional `make` Commands
 
@@ -51,11 +51,28 @@ To deploy your website with an SSL certificate, follow these steps:
     ```
 
 * **Generate SSL Certificate:**
-    * On your server, gain interactive access to the `nginx` Docker container: $docker ps exec -it my-website-nginx "/bin/sh"
-    * Install certbot: $apk add certbot certbot-nginx
-    * Run the Certbot command (e.g., `certbot --nginx` or a similar Certbot command configured for your setup) to generate the SSL certificate and private key. This command will typically create two files: `fullchain.pem` (the SSL certificate) and `privkey.pem` (the corresponding private key).
-
-* **Copy Certificates:** Copy the content from the newly generated `fullchain.pem` and `privkey.pem` files into `nginx/fullchain.pem` and `nginx/privkey.pem` on your server's host machine, respectively.
+    * Initially, the "my-website-nginx" container will fail because it is mounting the certificate from the local directory, and it is not present. So, turn off the container:
+      ```bash
+      docker stop my-website-nginx
+      ```
+    * Run certbot in standalone mode:
+      ```bash
+      docker run -it --rm \
+      -v ./data/certbot/conf:/etc/letsencrypt \
+      -v ./data/certbot/www:/var/www/certbot \
+      --publish 80:80 \
+      --publish 443:443 \
+      certbot/certbot certonly \
+      --standalone \
+      -d <domain_name> \
+      -m <your_email@example.com> \
+      --agree-tos \
+      --no-eff-email
+      ```
+    * Start Nginx Container (after Certbot succeeds)
+      ```bash
+      docker start my-website-nginx
+      ```
 
 * **Update Nginx Configuration for Production:**
     * Replace the content of your `nginx/nginx.conf` with the production-ready configuration from `nginx_for_prod/nginx.conf`.
