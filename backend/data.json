@@ -116,7 +116,7 @@
     {
         "category": "technical_skills",
         "type": "Tools/Operating Systems",
-        "specific_list": ["Linux Shell","Splunk","GIMP/Adobe Photoshop"]
+        "specific_list": ["Linux Shell","Docker Containerization","Splunk","GIMP/Adobe Photoshop"]
     },
     {
       "category": "areas_of_interest",
