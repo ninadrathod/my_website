@@ -106,17 +106,17 @@
     {
       "category": "technical_skills",
       "type": "Programming Languages",
-      "specific_list": ["Python", "C", "C++"]
+      "specific_list": ["Python", "C/C++", "Javascript"]
     },
     {
       "category": "technical_skills",
       "type": "Data Analysis and Mining",
-      "specific_list": ["Splunk SSL"]
+      "specific_list": ["Splunk SSL","MS Excel"]
     },
     {
         "category": "technical_skills",
         "type": "Tools/Operating Systems",
-        "specific_list": ["Splunk","GIMP","Adobe Photoshop","Autosys (UNIX)","Ubuntu","Raspberry Pi OS (Linux)"]
+        "specific_list": ["Linux Shell","Splunk","GIMP/Adobe Photoshop"]
     },
     {
       "category": "areas_of_interest",
