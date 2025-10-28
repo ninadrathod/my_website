@@ -4,7 +4,7 @@
 To run this project locally, ensure you have Docker Desktop installed. Then:
 
 1.  Clone the repository and navigate to the `my_website` directory.
-2.  SMTP server for generating OTP. I have used gmail's SMTP server for my localhost (You may go through this video for reference).
+2.  SMTP server for generating OTP. I have used gmail's SMTP server for my localhost (You may go through this video for reference): https://youtu.be/y5IasMFYdBc?si=HQLDn9fRT3lCX-1D
 3.  Create a .env file in ".upload-service" directory and add the following value based on your SMTP server configurations.
     ```bash
     # .env file for SMTP configuration
